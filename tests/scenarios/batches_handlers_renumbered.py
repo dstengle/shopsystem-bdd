@@ -15,7 +15,7 @@ from pathlib import Path
 
 W, T, F = (sys.modules[n] for n in ("shop_work_queue_world", "shop_batches_world", "shop_world_four"))
 parts = F.parts
-KEEPS = ("write", "commit", "post", "keep", "make", "rewrite", "publish")     # requested.py's
+requested = sys.modules["vocab"].vocab4.requested     # KEEPS: the spellings of keep
 CONTRACT, PACK = "spec/adapters/cli.toml", "spec/packs/household.md"
 NOTES, SHARED = "spec/vocabulary/notes.md", "spec/vocabulary/shared.md"
 MOVED = "### moves\n\n- term `the person → actor the person` from shared to notes"
@@ -72,10 +72,29 @@ def build(step):
 T.BEFORE_START.append(build)
 
 
+# Each Given of these groups that reaches `given` (a Given a handler keyed by its kind takes first, "the item i1 meets
+# this readiness bar", never does), by its template, its verb or attribute and the kinds of its things, as
+# features/batches.feature says it: `build` writes what they describe, so each is only checked.
+_SHARED = {("GivenK", "item", ()), ("GivenK_A", "status", ("item",)), ("GivenK", "capability", ()),
+           ("GivenK", "batch", ()), ("GivenDoes", "holds", ("item", "requirement id")),
+           ("GivenDoes", "holds", ("capability", "requirement id"))}
+GIVENS = {"g190": _SHARED | {("GivenK", "term", ()), ("GivenK", "pack", ()), ("GivenDoes", "has", ("pack", "term")),
+                             ("GivenDoes", "holds", ("item", "term"))},
+          "g191": _SHARED | {("GivenK", "operation table", ()), ("GivenDoes", "holds", ("item", "operation table"))},
+          "g192": _SHARED | {("GivenK", "term", ()), ("GivenK", "element", ()), ("GivenK", "area", ()),
+                             ("GivenDoes", "mean", ("term", "element")), ("GivenDoes", "move", ("item", "term")),
+                             ("GivenDoes", "holds", ("area", "element"))}}
+
+
 def given(step):
-    """A Given of these groups: what `build` writes before the When."""
-    if group(step) is None:
+    """A Given of these groups: what `build` writes before the When; one its group's entry of `GIVENS` does not hold
+    refused, naming the step."""
+    tag = group(step)
+    if tag is None:
         return False
+    key = (step.template, step.attribute or step.term, tuple(k for k, _ in parts(step)))
+    if key not in GIVENS[tag]:
+        raise AssertionError("batches_handlers_renumbered takes no Given %s of %s: %s" % (key, tag, step.text))
 
 
 def _branch(step, rel):
@@ -129,7 +148,7 @@ def then(step):
     tag = group(step)
     if tag is None or "result" not in step.context:
         return False
-    verb = "keep" if step.term in KEEPS else {"have": "has", "hold": "holds"}.get(step.term, step.term)
+    verb = "keep" if step.term in requested.KEEPS else {"have": "has", "hold": "holds"}.get(step.term, step.term)
     kinds = tuple(k for k, _ in parts(step))
     key = (verb, kinds[-1]) if verb == "keep" else (verb, kinds)     # a keep's subject re-keyed to its program
     if step.template != "ThenDoes" or key not in THENS:

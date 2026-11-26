@@ -26,7 +26,7 @@ KEPT = Path(".shop") / "contracts"
 SAYS = {"requirement": ["notebook#r1", "notebook#r2"], "term": ["note", "tag", "parameter"]}
 NONCONFORMING = "- [r10] When the person adds a note, the notes service shall banana the note.\n"
 MALFORMED = "../1.2.0"    # a version not in the version form: it would name a folder outside .shop/contracts/
-KEEPS = ("write", "commit", "post", "keep", "make", "rewrite", "publish")
+requested = sys.modules["vocab"].vocab4.requested     # KEEPS: the spellings of keep
 
 
 def mine(step):
@@ -152,7 +152,7 @@ def _contract(step, name):
 def then_keeps(step):
     """`the specification service keeps the contract c2` (committed), `... the requirement r1`, `... the term t1`
     (the contract kept holds it), and their negation."""
-    if not mine(step) or "published" not in step.context or step.term not in KEEPS:
+    if not mine(step) or "published" not in step.context or step.term not in requested.KEEPS:
         return False
     w, name, positive = world(step), step.names[0], not step.template.endswith("Not")
     _done(step)

@@ -5,10 +5,11 @@ taken before migration-tools' own: "the upgrades service keeps the bounded conte
 import re
 
 from scenarios import migration_tools_handlers as M
+from scenarios import requested
 from scenarios import upgrades_handlers_found as F
 
 local = M.local
-KEEPS = ("write", "commit", "post", "keep", "make", "rewrite", "publish")
+
 IMPORTS = re.compile(r"^imports: \[(?P<names>[^\]]*)\]$", re.MULTILINE)
 
 
@@ -21,7 +22,7 @@ def kept(step):
     """the upgrades service keeps the bounded context b1; the bounded context b1 imports `base`."""
     if not M.migration(step):
         return False
-    if step.term in KEEPS and step.nps and context(step.nps[0]):
+    if step.term in requested.KEEPS and step.nps and context(step.nps[0]):
         return F.scaffolded(step)
     if step.term == "import" and step.subject and context(step.subject):
         assert step.context["done"].returncode == 0, M.said(step)
