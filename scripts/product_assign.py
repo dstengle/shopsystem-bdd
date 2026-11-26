@@ -3,13 +3,16 @@ to the one bounded context whose capabilities serve it (`assign`), kept under th
 actor mapped to the actor a bounded context's model calls it by (`map_actor`), kept under the context's `actors` as
 `{product actor: actor}`, in the product dict of product_layer (its `contexts`, product_map's), kept by the store the
 caller gives (product_store's). A job is assigned once: one a bounded context holds already is refused naming the
-job; a product actor the product does not hold is refused naming it."""
+job; a bounded context whose id is not of the context id form (product_map's `conformed`, b793) is refused naming the
+id; a product actor the product does not hold is refused naming it."""
 from plumbing.shop_refused import Refused
+from product_map import conformed
 
 
 def assign(product, job, context):
-    """The product with `job` among the jobs of the bounded context `context`; refused naming the job when a bounded
-    context holds it already."""
+    """The product with `job` among the jobs of the bounded context `context`; refused naming the id when it is not of
+    the context id form, and the job when a bounded context holds it already."""
+    conformed(context, "parameter:bounded context")
     held = product.get("contexts", {})
     for ident, entry in held.items():
         if job in entry.get("jobs", []):
