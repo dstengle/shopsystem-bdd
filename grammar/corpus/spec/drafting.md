@@ -1387,3 +1387,20 @@ shall [x1: agent the person (constant), x4: service the drafting service (consta
       in(x2, x5)
     keep(e2, subject: x4, object: x5)
 ```
+
+## r91
+From: b768 r91.
+
+```reading
+When the person reinstates a requirement id in an item that holds a requirement that retires the requirement id, the drafting service shall keep an item that holds no requirement that retires the requirement id.
+shall [x1: agent the person (constant), x5: service the drafting service (constant)]
+  when [x2: requirement id, x3: item, x4: requirement]
+    retire(subject: x4, object: x2)
+    in(x4, x3)
+    request(e1, drafting.reinstate requirement, subject: x1, object: x2, in: x3)
+  response [x6: item]
+    not [x7: requirement]
+      retire(subject: x7, object: x2)
+      in(x7, x6)
+    keep(e2, subject: x5, object: x6)
+```

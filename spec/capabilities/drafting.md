@@ -7,7 +7,7 @@ area: tracking
 specifies: service drafting
 language: codified-2
 retired: []
-unbuilt: []
+unbuilt: [r91]
 ---
 
 # Drafting
@@ -306,4 +306,7 @@ capabilities, retirements, rewordings and chores.
 
 ### [g89] Reinstating a requirement id that the item does not retire is refused
 - [r89] If the person reinstates a requirement id in an item that does not hold the requirement id, then the drafting service shall refuse the request and name the requirement id.
+
+### [g91] Reinstating a requirement id takes the retirement of the item's own requirement out
+- [r91] When the person reinstates a requirement id in an item that holds a requirement that retires the requirement id, the drafting service shall keep an item that holds no requirement that retires the requirement id.
 

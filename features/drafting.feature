@@ -877,3 +877,16 @@ Feature: Drafting
     When the person reinstates the requirement id r1 in the item i1
     Then the drafting service keeps the item i2
     And the item i2 does not hold the requirement id r1
+
+  @g91 @r91
+  Scenario: Reinstating a requirement id takes the retirement of the item's own requirement out
+    Given a requirement r2
+    And a requirement id r1
+    And the requirement r2 retires the requirement id r1
+    And an item i1
+    And the item i1 holds the requirement r2
+    And a requirement r3
+    And the requirement r3 retires the requirement id r1
+    When the person reinstates the requirement id r1 in the item i1
+    Then the drafting service keeps the item i2
+    And the item i2 does not hold the requirement r3
