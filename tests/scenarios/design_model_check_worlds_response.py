@@ -89,14 +89,29 @@ def plural(step):
     requesting(step, PLURAL)
 
 
+# the consequence c1 the Then expects, by the prepositions the scenario's Givens bring in (b783): of two, lodge's
+# frame the line's kinds pick, "on" a shelf (g46); of one its two frames share, "on" the registry (g47)
+SAID = {2: "shall lodge a design-decision on a shelf with a keeper (by",
+        1: "shall lodge a design-decision on the registry with a keeper (by"}
+
+
+def shared(step):
+    """True in consistency's g47, whose frames share their preposition (b756): the world `framed` builds, by group."""
+    found = sys.modules["vocab"].vocab4.requested.scenario(step.request.node)
+    return found is not None and Path(found.feature.filename).stem == "consistency" and "g47" in found.tags
+
+
 def framed(step):
     """lodging's world with lodge's two frames of two prepositions, "with" <keeper> first (b751); of one preposition,
-    "on" <agent>, in consistency's g47, whose frames share their preposition (b756), picked by its group (b761)."""
-    found = sys.modules["vocab"].vocab4.requested.scenario(step.request.node)
-    if found is not None and Path(found.feature.filename).stem == "consistency" and "g47" in found.tags:
+    "on" <agent>, in consistency's g47, whose frames share their preposition (b756), picked by its group (b761); the
+    consequence c1 said as the scenario's own prepositions say it, not as the world built (b783)."""
+    if shared(step):
         lodging(step, SHARED, "the registry")
     else:
         lodging(step, FRAMED)
+    prepositions = len(step.context.get("kinds", {}).get("preposition", []))
+    assert prepositions in SAID, (step.request.node.nodeid, "prepositions", prepositions)
+    H.says(step, "c1", SAID[prepositions])
 
 
 ROWS = [
