@@ -121,3 +121,17 @@ def test_reached_by_an_input_taken_out(tmp_path):
     root, _ = _context(tmp_path)
     (root / "spec" / "vocabulary" / "notes.md").unlink()
     assert batch_reached.reached(root)
+
+
+def _committed(root, path):
+    _touch(root / path)
+    _git(root, "add", "-A")
+    _git(root, "-c", "user.name=t", "-c", "user.email=t@t", "commit", "-q", "-m", "one input")
+
+
+@pytest.mark.parametrize("path", ["spec/packs/household.md", "provider/stock/contract.toml"])
+def test_reached_by_an_input_taken_out_when_it_was_the_last_of_its_folder(tmp_path, path):
+    root, _ = _context(tmp_path)
+    _committed(root, path)                                           # the one pack, the one provider contract
+    (root / path).unlink()
+    assert batch_reached.reached(root)
