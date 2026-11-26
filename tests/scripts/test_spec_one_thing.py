@@ -49,6 +49,14 @@ def test_a_response_request_with_a_plural_object_is_found():
     assert spec_one_thing.plural(VOCAB, request) is None
 
 
+def test_the_request_a_reply_is_on_with_a_plural_object_is_found():
+    """b726: "the request to remove every note", its noun first, is a request wherever it stands."""
+    replied = ["k_request_One", ["k_request_Simple", ["rq_remove_1_1", "k_request_n", np("DetEvery")]]]
+    assert spec_one_thing.plural(VOCAB, trigger(["e_complete_action_2_1", replied]))[0] == "remove"
+    assert spec_one_thing.plural(VOCAB, ["rq_remove_1_1", "k_request_n", np("DetA")]) is None
+    assert spec_one_thing.plural(VOCAB, ["rq_follow_2_1", "k_request_n", np("DetEvery")]) is None
+
+
 def test_two_readings_by_two_frames_of_one_verb_name_both():
     a, b = trigger("e_list_action_4_1"), trigger(["e_list_action_3_1", np("DetThePl", "k_checklist")])
     assert spec_one_thing.frames(VOCAB, a, b) == ['"agent lists the checklists" (notes.browse)',
