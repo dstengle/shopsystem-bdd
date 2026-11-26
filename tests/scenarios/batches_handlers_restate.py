@@ -1,8 +1,8 @@
-"""A model line that restates an operation, laid by `work batch start` and taken out by `work batch park` (batches
-r87, r91, b463, b485): the domain-model fixture's spec as the world's (its operation `archive(note)`), the item's line
-of notebook and its `### notes model` block holding notes' `archive` with a parameter added (r87) or as the model
-holds it, byte for byte (r91, the park after the lay), and the Thens read `spec/model/notes.md` off the batch's
-branch after the command."""
+"""A model line that restates an operation, taken out by `work batch park` (batches r91, b463, b485; its lay is
+laying#r32's, laying_handlers_model's, b746): the domain-model fixture's spec as the world's (its operation
+`archive(note)`), the item's line of notebook and its `### notes model` block holding notes' `archive` with a parameter
+added, laid as the model holds it, byte for byte, and the Thens read `spec/model/notes.md` off the batch's branch
+after the park."""
 import shutil
 import sys
 from pathlib import Path
@@ -65,17 +65,6 @@ def _model(step):
 
 
 @four("ThenDoes", "holds", *BOTH)
-def model_holds(step):
-    """this domain model holds the model line m1: the batch's notes model declares `archive` once, as the line
-    says it."""
-    (k1, _), (k2, _) = parts(step)
-    if k1 not in ("domain model", "model") or k2 != "model line":     # "this domain model" is ("model", None)
-        return False
-    lines = _model(step)
-    assert [x for x in lines if x.startswith("  operation archive(")] == [LINE], lines
-
-
-@four("ThenDoes", "holds", *BOTH)
 def model_holds_operation(step):
     """the domain model d1 holds the operation o1: after the park, the batch's notes model declares `archive` once, as
     the model held it before the lay."""
@@ -86,27 +75,11 @@ def model_holds_operation(step):
     assert [x for x in lines if x.startswith("  operation archive(")] == [OLD], lines
 
 
-@four("ThenDoesNot", "holds", *BOTH)
-@four("ThenDoesNot", "hold", *BOTH)
-def model_holds_not(step):
-    """the domain model d1 does not hold the operation o1 (the line it was, laid over) or the model line m1 (taken
-    out by the park, the operation's own line put back)."""
-    (k1, _), (k2, _) = parts(step)
-    if k1 != "domain model" or k2 not in ("operation", "model line"):
-        return False
-    lines = _model(step)
-    gone, kept = (OLD, LINE) if k2 == "operation" else (LINE, OLD)
-    assert gone not in lines and lines.count(kept) == 1, (step.text, lines)
-
-
 def keeps(step):
-    """the batches service keeps the model line m1 or the domain model d1: spec/model/notes.md on the batch's
-    branch."""
-    if parts(step)[1][0] not in ("model line", "domain model") or not step.context.get("restating"):
+    """the batches service keeps the domain model d1: spec/model/notes.md on the batch's branch."""
+    if parts(step)[1][0] != "domain model" or not step.context.get("restating"):
         return False
-    lines = _model(step)
-    if parts(step)[1][0] == "model line":
-        assert LINE in lines, lines
+    _model(step)
 
 
 for _verb in KEEPS:       # each key requested.py tries in turn of "keeps", so no other one passes

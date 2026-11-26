@@ -28,7 +28,7 @@ def given_instance(step):
 
 def given_retires(step):
     """`the requirement r1 (r5) retires the requirement id r4 (r7)`: the world of two items retiring one group."""
-    if not mine(step) or step.term != "retire":
+    if not mine(step) or step.term != "retire" or not step.text.startswith("the requirement "):   # an item's: b746's
         return False
     world(step)["retiring"] = True
 
