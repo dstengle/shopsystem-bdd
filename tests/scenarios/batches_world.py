@@ -32,6 +32,7 @@ CAP = "spec/capabilities/work-queue.md"
 AFTER_BATCH = []        # what handler modules do once a batch is made, each called with (step, its name) (b324)
 BEFORE_RUN = []         # what handler modules do just before `work batch <command>` runs, called with step (b449)
 BEFORE_START = []       # what handler modules do before `work batch start`'s world is prepared, called with step (b488)
+AFTER_SUBMIT = []       # what handler modules do once a batch's submit is refused, called with (step, its name) (b713)
 BEFORE_BATCH = []       # what handler modules do once every task has its item, before the batches are made (b702)
 
 

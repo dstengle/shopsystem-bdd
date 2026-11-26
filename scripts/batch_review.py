@@ -6,7 +6,7 @@ commit must cite its item (or an earlier in-batch item, whose branch it merged) 
 batch's worktree, one commit takes every parked item's lines out of `spec/` (plan 4 review, B1), each in-batch item's
 branch is merged into `batch-<n>` with `--no-ff` in task order, each after the ones before (batch_merge) (a parked item's branch never is, so its commits stay out), the
 tests run there (the ids a failed run names kept under the batch's name, batch_rerun, for the poll's `fix task`:
-batch_broken, b696), the branch is pushed to the base's remote, and a draft pull request is created through gh unless the
+batch_broken, b696, with each task branch's head as submitted, so that a later commit reads as a fix, b713), the branch is pushed to the base's remote, and a draft pull request is created through gh unless the
 batch has one already (plan 5's fix loop pushes only, once each commit since the last review cites an open finding
 and each open finding has a commit: `batch_fix.check`). Last, the batch is `in-review` with its pull request,
 committed on the base. A refusal while merging, testing, pushing or creating puts `batch-<n>` (and the remote's) back
@@ -16,6 +16,7 @@ import subprocess
 
 import backlog_items
 import batch_base_merge
+import batch_broken
 import batch_fix
 import batch_gh
 import batch_merge
@@ -143,6 +144,7 @@ def review(root, name):
             _take_out_parked(root, tree, batch)
             for task, item in mine:
                 _merge(root, tree, batch, task, item, mine)
+            batch_broken.submitted(root, batch, [t for t, _ in mine])      # a later commit a fix (b713)
             with batch_timings.timed(root, batch.name, "review"):       # the test run's duration (b73)
                 tests_pass(root, tree, "%s: %s" % (COMMAND, batch.name), key=batch.name)   # its failures kept (b696)
             push(root, where, batch.branch, COMMAND)
