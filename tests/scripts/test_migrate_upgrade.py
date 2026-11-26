@@ -14,7 +14,7 @@ from unittest import mock
 SCRIPTS = Path(__file__).resolve().parents[2] / "scripts"
 if str(SCRIPTS) not in sys.path:
     sys.path.append(str(SCRIPTS))
-import migrate_upgrade
+from upgrades import migrate_upgrade
 
 INDEX = "---\nid: bounded-context/example.org/acme/shop\n---\n# shop\n"
 

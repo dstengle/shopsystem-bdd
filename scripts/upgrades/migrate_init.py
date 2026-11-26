@@ -11,11 +11,12 @@ directory is refused, never merged into; an existing `features/` or conftest is 
 import re
 from pathlib import Path
 
-from migrate_upgrade import identity, plugin_version
 from plumbing import shop_files
 from plumbing.migrate_write import top_level
 from plumbing.shop_refused import Refused
 from record_write import README_HEAD
+
+from upgrades.migrate_upgrade import identity, plugin_version
 
 FORM = re.compile(r"bounded-context/[a-z0-9-]+(\.[a-z0-9-]+)+(/[A-Za-z0-9][A-Za-z0-9._-]*)+")
 KEEP = ("spec/model/.gitkeep", "spec/vocabulary/.gitkeep", "spec/capabilities/.gitkeep", ".shop/backlog/.gitkeep")

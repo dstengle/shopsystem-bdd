@@ -8,20 +8,23 @@ import sys
 import types
 from pathlib import Path
 
-import migrate_upgrade_answers
-import migrate_upgrade_cnl4
-import migrate_upgrade_codified
-import migrate_upgrade_commands
-import migrate_upgrade_conftest
-import migrate_upgrade_domain
-import migrate_upgrade_frames
-import migrate_upgrade_ids
-import migrate_upgrade_simplified
-import migrate_upgrade_values
 from plumbing import shop_files
 from plumbing.migrate_write import check_moves, git, top_level, uncommitted
 
-SCRIPTS = Path(__file__).resolve().parent
+from upgrades import (
+    migrate_upgrade_answers,
+    migrate_upgrade_cnl4,
+    migrate_upgrade_codified,
+    migrate_upgrade_commands,
+    migrate_upgrade_conftest,
+    migrate_upgrade_domain,
+    migrate_upgrade_frames,
+    migrate_upgrade_ids,
+    migrate_upgrade_simplified,
+    migrate_upgrade_values,
+)
+
+SCRIPTS = Path(__file__).resolve().parents[1]
 VERSION_FILE = ".shop/plugin-version"
 UNRECORDED = "0.23.1"
 BATCH = 500  # paths a `git add` stages at once: one process per batch, not one per file

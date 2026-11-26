@@ -9,7 +9,7 @@ SCRIPTS = REPO / "scripts"
 
 KEPT_GLOBS = ("backlog_*.py", "batch_*.py", "conversation_*.py", "intake_moves.py", "readiness_bar.py", "request_*.py",
               "measure_cost.py", "measure_defect.py", "measure_batch*.py", "measure_show.py", "measure_write.py",
-              "plumbing/*.py", "spec_*.py", "features*.py", "tools*.py", "model*.py", "migrate*.py",
+              "plumbing/*.py", "spec_*.py", "features*.py", "tools*.py", "model*.py", "upgrades/*.py",
               "work_items.py")
 KEPT_SCRIPTS = ("work", "measure", "conversation_hook", "spec", "model", "features", "tools", "migrate")
 

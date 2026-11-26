@@ -14,7 +14,8 @@ import spec_lexicon
 import spec_meaning
 import spec_read
 import spec_value_kinds
-from migrate_upgrade_ids import Changes
+
+from upgrades.migrate_upgrade_ids import Changes
 
 NAME = "value kinds"
 

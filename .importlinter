@@ -1,6 +1,7 @@
 [importlinter]
 root_packages =
     plumbing
+    upgrades
 include_external_packages = True
 
 [importlinter:contract:plumbing-alone]
@@ -125,23 +126,6 @@ forbidden_modules =
     measure_defect
     measure_show
     measure_write
-    migrate_init
-    migrate_ledger
-    migrate_spec
-    migrate_upgrade
-    migrate_upgrade_answers
-    migrate_upgrade_cnl4
-    migrate_upgrade_cnl4_report
-    migrate_upgrade_codified
-    migrate_upgrade_commands
-    migrate_upgrade_conftest
-    migrate_upgrade_domain
-    migrate_upgrade_domain_report
-    migrate_upgrade_domain_scaffold
-    migrate_upgrade_frames
-    migrate_upgrade_ids
-    migrate_upgrade_simplified
-    migrate_upgrade_values
     model_adapter
     model_bound
     model_catalogue
@@ -284,4 +268,25 @@ forbidden_modules =
     tools_map
     tools_refs
     tools_size
+    upgrades
     work_items
+
+[importlinter:contract:upgrades-apart]
+name = The upgrades area imports no module of the areas spec/model/upgrades.md does not import: registry, laying, measurement (b766)
+type = forbidden
+source_modules =
+    upgrades
+forbidden_modules =
+    contract_registry
+    contract_registry_folder
+    contract_registry_github
+    laying
+    laying_inprocess
+    measure_batch
+    measure_batch_read
+    measure_batch_sessions
+    measure_batch_show
+    measure_cost
+    measure_defect
+    measure_show
+    measure_write

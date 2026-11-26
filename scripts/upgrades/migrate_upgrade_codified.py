@@ -17,8 +17,9 @@ import json
 import re
 import subprocess
 
-from migrate_upgrade_ids import Changes, context_path
 from model_parse import frontmatter
+
+from upgrades.migrate_upgrade_ids import Changes, context_path
 
 RESTATED = "spec/restated.json"
 CAPS = "spec/capabilities"
