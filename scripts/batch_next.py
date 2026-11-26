@@ -12,6 +12,8 @@ finding, park item, finish or build task (running), prepare task (pending), subm
 an item still `in-batch` count; a building batch with none of them stops. Each step names the command its result is
 reported through (`report`). The step is printed as lines, and is the content of a `returned` response (the envelope
 under `--json`)."""
+from pathlib import Path
+
 import backlog_items
 import batch_driver
 import batch_findings
@@ -89,7 +91,8 @@ def report(batch, instruction, task, finding):
             "finish task": "shop work batch done %s %s" % (name, task.task if task else ""),
             "park item": "shop work batch park %s %s --question <question>" % (name, task.item if task else ""),
             "submit batch": "shop work batch review %s" % name,
-            "review change": "shop work batch brief %s, then shop work batch reviewed %s" % (name, name),
+            "review change": "shop work batch brief %s, the reply saved as the findings file, then shop work batch "
+                             "reviewed %s" % (name, name),
             "fix finding": "a commit on %s citing Finding: %s, then shop work batch review %s" % (
                 next((t.branch for t in batch.tasks if finding and t.item == finding.item), ""), finding.fid if finding else "", name),
             }.get(instruction)
@@ -101,7 +104,7 @@ def _task(task):
 
 def poll(root, name):
     """The batch step of the batch `name`, as a dict: its batch, status, instruction, the task, batch brief, review
-    folder and review finding it is about (None where it is about none) and the command to report through."""
+    folder, findings file (where `work batch reviewed` reads the reviewer's reply) and review finding it is about (None where it is about none) and the command to report through."""
     batch = batch_plan.find(root, name)
     tasks = [t for t in batch.tasks if _in_batch(root, t)]
     unfixed = _unfixed(root, batch) if batch.status == "building" else []
@@ -113,6 +116,7 @@ def poll(root, name):
             "task": _task(task) if task else None,
             "batch brief": str(batch_driver.path(root, batch.name)) if instruction == "build task" else None,
             "review folder": folder,
+            "findings file": str(Path(folder) / "findings.md") if folder else None,
             "review finding": {"finding": finding.fid, "title": finding.title, "item": finding.item,
                                "where": finding.where} if finding else None,
             "report": report(batch, instruction, task, finding)}
@@ -126,7 +130,7 @@ def text(step):
     if step["review finding"]:
         f = step["review finding"]
         lines.append("review finding: %s %s (%s, %s)" % (f["finding"], f["title"], f["item"], f["where"] or "-"))
-    for key in ("batch brief", "review folder", "report"):
+    for key in ("batch brief", "review folder", "findings file", "report"):
         if step[key]:
             lines.append("%s: %s" % (key, step[key]))
     return "\n".join(lines) + "\n"

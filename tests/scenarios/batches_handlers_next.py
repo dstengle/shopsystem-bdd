@@ -94,7 +94,8 @@ def _fid(step, name):
 @first("ThenPrints", "`work`")
 def returns(step):
     """`the batches service returns the batch step b2` (a batch step the content is), `... the task t1` (the plan's
-    task), `... the batch brief b2` (its path), `... the review folder r1` (its path), `... the review finding r2`."""
+    task), `... the batch brief b2` (its path), `... the review folder r1` (its path), `... the findings file f1` (its
+    path, `findings.md` in the review folder returned), `... the review finding r2`."""
     if "polled" not in step.context:
         return False
     content = _step(step)
@@ -109,6 +110,10 @@ def returns(step):
     elif kind == "review folder":
         want = Path(step.context["review_folders"][name]).resolve()
         assert content["review folder"] and Path(content["review folder"]) == want, (step.text, content)
+    elif kind == "findings file":
+        want = Path(content["review folder"] or "") / "findings.md"
+        assert content.get("findings file") and Path(content["findings file"]) == want, (step.text, content)
+        step.context.setdefault("findings_files", {})[name] = content["findings file"]
     elif kind == "review finding":
         assert content["review finding"] and content["review finding"]["finding"] == _fid(step, name), (
             step.text, content)
@@ -122,3 +127,14 @@ def instruction_is(step):
     content = step.context.get("batch_steps", {}).get(step.names[0])
     assert content is not None, ("no batch step returned", step.text)
     assert content["instruction"] == step.values[0].strip("`"), (step.text, content)
+
+
+@first("ThenDoes", "holds")
+def folder_holds(step):
+    """`the review folder r1 holds the findings file f1`: the findings file returned is `findings.md` in r1's path."""
+    (k1, n1), (k2, n2) = parts(step)
+    if (k1, k2) != ("review folder", "findings file") or "polled" not in step.context:
+        return False
+    found = step.context.get("findings_files", {}).get(n2)
+    assert found, ("no findings file returned", step.text)
+    assert Path(found) == Path(step.context["review_folders"][n1]).resolve() / "findings.md", (step.text, found)

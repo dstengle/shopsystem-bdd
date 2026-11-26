@@ -38,7 +38,14 @@ def test_the_lines():
     b = batch("building", "running")
     instruction, task, finding = batch_next.pick(b, b.tasks, [], {"t1"})
     step = {"batch": "batch-1", "status": "building", "instruction": instruction,
-            "task": batch_next._task(task), "batch brief": None, "review folder": None, "review finding": None,
+            "task": batch_next._task(task), "batch brief": None, "review folder": None, "findings file": None, "review finding": None,
             "report": batch_next.report(b, instruction, task, finding)}
     assert batch_next.text(step) == ("batch-1 building: finish task\ntask: t1 b1 (running), branch batch-1-b1\n"
                                      "report: shop work batch done batch-1 t1\n")
+
+
+def test_a_review_names_its_findings_file():
+    step = {"batch": "batch-1", "status": "in-review", "instruction": "review change", "task": None,
+            "batch brief": None, "review folder": "/w/batch-1-review-1", "findings file": "/w/batch-1-review-1/findings.md",
+            "review finding": None, "report": batch_next.report(batch("in-review"), "review change", None, None)}
+    assert "findings file: /w/batch-1-review-1/findings.md\n" in batch_next.text(step)
