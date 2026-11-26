@@ -7,7 +7,7 @@ area: execution
 specifies: object batch, object task, service batches
 language: codified-2
 retired: [g69, r69, g82, r82, g88, r88, g53, r53, g59, r59, g51, r51, g103, r103, g50, r50, g54, r54, g55, r55, g57, r57, g58, r58, g65, r65, g89, r89, g93, r93, g94, r94, g97, r97, g101, r101, g107, r107, g138, r138, g140, r140, g139, r139, g136, r136, g137, r137, g145, r145, g146, r146, g152, r152, g149, r149, g154, r154, g160, r160, g166, r166, g108, r108, g106, r106, g60, r60, g130, r130, g71, r71, g72, r72, g73, r73, g74, r74, g75, r75, g113, r113, g114, r114, g115, r115, g157, r157, g164, r164, g167, r167, g169, r169, g64, r64, g95, r95, g128, r128, g132, r132, g76, r76, g124, r124, g129, r129, g151, r151, g79, r79, g80, r80, g92, r92, g126, r126, g87, r87, g116, r116, g120, r120, g121, r121, g117, r117, g118, r118, g127, r127, g133, r133, g134, r134, g142, r142, g81, r81, g90, r90, g156, r156, g91, r91, g119, r119, g155, r155]
-unbuilt: [r191, r192]
+unbuilt: [r192]
 ---
 
 # Batches

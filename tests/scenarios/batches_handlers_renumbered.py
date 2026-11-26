@@ -4,7 +4,8 @@ of one of their groups (`mine`). A scenario's world is its group's (`WORLDS`), w
 (batches_world's BEFORE_START), so the Givens record nothing: the item i1 `ready`, its group and requirement ids `g1`
 and `r1`, which its capability holds already (laying_handlers_model's `colliding`), beside a term of the context's own
 pack `household` (g190, laying_handlers_pieces' block, readiness_world's passing line in work-queue), a table of
-`notes.archive` (g191, the same line, on the domain-model fixture) or the term `the person` moved from shared to notes
+`notes.archive` (g191, the same line, the contract holding another table of it before, as no model declares it on the
+codified spec, which the request pack would not read the line in) or the term `the person` moved from shared to notes
 (g192, notebook's line). The Thens read the batch's branch: the item's line laid under an id the pick gave it, in place
 of `r1`, which the capability keeps, and what the item holds beside it (the pack's term under its `## Glossary`, the
 contract's one table of `notes.archive`, notes' layer holding the term and shared's not)."""
@@ -18,7 +19,7 @@ KEEPS = ("write", "commit", "post", "keep", "make", "rewrite", "publish")     # 
 CONTRACT, PACK = "spec/adapters/cli.toml", "spec/packs/household.md"
 NOTES, SHARED = "spec/vocabulary/notes.md", "spec/vocabulary/shared.md"
 MOVED = "### moves\n\n- term `the person → actor the person` from shared to notes"
-GROUPS = ("g190",)
+GROUPS = ("g190", "g191")
 
 
 def _module(name):
@@ -43,14 +44,18 @@ def _passing():
 
 
 def _block(step, tag):
-    """The item's `## Requirements`, under colliding ids; the domain-model fixture beside the spec of g191 and g192."""
+    """The item's `## Requirements`, under colliding ids; g191's contract holding table `o2` of the operation, and
+    the domain-model fixture beside the spec of g192."""
     M = _model()
     if tag == "g190":
         pieces = _module("laying_handlers_pieces.py")
         return M.colliding(_passing() + "\n\n### %s pack\n\n%s" % (pieces.PACK, pieces.TERM))
-    M._fixture(step)
     if tag == "g191":
+        contract = step.repo / CONTRACT
+        contract.parent.mkdir(parents=True, exist_ok=True)
+        contract.write_text('[programs]\nnotes = "notes.py"\n\n%s\n' % M.table("o2"))
         return M.colliding(_passing() + "\n\n### cli adapter\n\n```toml\n%s\n```" % M.table("o1"))
+    M._fixture(step)
     return M.colliding(M.NOTEBOOK % MOVED)
 
 
