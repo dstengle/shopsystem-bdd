@@ -2,11 +2,14 @@
 folders, and batches_handlers_finding's review with its `fix now` findings), the batch brief a Given gives the batch
 written where `work batch start` writes it (batch_driver's `path`), `work batch next <batch> --json` run, and the
 Thens, first in their chains, read the batch step off the envelope's content: its instruction, and the task, batch
-brief, review folder or review finding it returns."""
+brief, review folder or review finding it returns. A scenario of an item that breaks in the batch's workspace once
+every task is done (r149, b696) is a submit the whole suite refused: `work batch review` run before the poll with
+`[batch] tests` that fail naming the item's scenario test, as pytest's short summary names it."""
 import json
 import sys
 from pathlib import Path
 
+import batch_broken
 import batch_driver
 from batch_next import INSTRUCTIONS
 
@@ -71,11 +74,31 @@ def briefed(step, name):
 T.AFTER_BATCH.append(briefed)
 
 
+def failing_suite(step, item):
+    """`[batch] tests` that fail naming the scenario test of the item's group (titled as the item is)."""
+    test = "tests/scenarios/test_work_queue.py::%s" % batch_broken.test_name(step.context["item_fields"][item]["title"])
+    return "[batch]\ntests = '''python3 -c \"print('FAILED %s - broken'); raise SystemExit(1)\"'''\n" % test
+
+
+def refused_submit(step, batch):
+    """The batch's submit refused by its whole-suite run, when the scenario of an item breaks and every task is done."""
+    tasks = step.context["given"].get("task", {}).values()
+    if not tasks or any(t.get("status") != "done" for t in tasks):
+        return
+    done = T.run_batch(step, "review", T.batch_name(step, batch))
+    assert done.returncode != 0 and "FAILED" in done.stderr, (done.stdout, done.stderr)
+
+
 @four("WhenRuns", "`work batch next`", *BOTH)
 def batch_next(step):
+    failing = step.context.get("failing")
+    if failing:
+        step.context["delivery"] = failing_suite(step, failing)
     T.prepare(step)
     T.ensure_batch(step)
     batch = next(n for n in step.names if n in step.context["given"]["batch"])
+    if failing:
+        refused_submit(step, batch)
     done = T.run_batch(step, "next", T.batch_name(step, batch), "--json")
     step.context["polled"] = json.loads(done.stdout) if done.returncode == 0 else None
 
