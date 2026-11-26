@@ -1,10 +1,10 @@
 """`work batch amend <item>` (batches r81-r83, b460): an `in-batch` item whose lines changed (`work line` on it,
 drafting r38-r40) laid again on its batch's branch `batch-<n>` and on its task's branch, when the task has one.
 
-On each, in its worktree (made, and removed again, when it is not there), the item's lines as last laid
-(`batch_parked.as_laid`) are taken out against the batch's base (`batch_parked.base_of`, as a park takes them out:
-b704) and its lines as they now read laid in (the laying service's lift and lay, laying, b611), in one commit citing the
-item, whose `Laid:` line names the base's commit that holds the item as laid, so that a later park, review or amend
+On each, in its worktree (made, and removed again, when it is not there), the laying service lifts the item as the
+base's commit of its last `Laid:` line holds it, else the batch's base (`batch_parked.base_of`), and puts the operation
+tables back as the batch's base held them (as a park takes them out: b704, b769), and lays its lines as they now read
+(laying, b611), in one commit citing the item, whose `Laid:` line names the base's commit that holds the item as laid, so that a later park, review or amend
 takes out the lines the branch holds. Its new ids are renumbered past the batch branch's (the other items' lines
 laid there), the item committed on the base when they move. A line laid
 before with the same text keeps its place in `unbuilt:`, built or not; a new or changed line is unbuilt, and a line
@@ -104,21 +104,31 @@ def _corpus(tree, old, new):
     return changed
 
 
-def relay(tree, old, new, renumber=False, root=None, base=None, batch=None):
-    """`old`'s lines out of the worktree, against the commit `base` (the batch's base, as a park takes them out: b704),
-    and `new`'s in (renumbered past the tree's first, with `renumber`), the worktree then prepared for the batch (its
-    name) with `new` (b758); with `root`, `new` checked by the readiness bar over the worktree before it is laid
-    (b486); the paths changed and the renumbered pairs."""
-    caps = set(_lines(old)) | set(_lines(new))
-    before = _unbuilt(tree, caps)
-    changed = laying.changed(laying.lift(old, tree, COMMAND, base), COMMAND)
+def _taken(reply):
+    """{capability: {r<n>: text}} of the lines a lift's reply took out."""
+    out = {}
+    for ident, text in reply.content.get("lifted", {}).items():
+        capability, rid = ident.split("#", 1)
+        out.setdefault(capability, {})[rid] = text
+    return out
+
+
+def relay(tree, lifted, new, renumber=False, root=None, base=None, laid=None, batch=None):
+    """The item `lifted` taken out of the worktree as the commit `laid` (default `base`) holds it, as given with
+    neither, against the commit `base` (the batch's base, as a park takes them out: b704, b769), the lines it took out
+    read off the lift's reply, and `new`'s lines in (renumbered past the tree's first, with `renumber`), the worktree
+    then prepared for the batch (its name) with `new` (b758); with `root`, `new` checked by the readiness bar over the
+    worktree before it is laid (b486); the paths changed and the renumbered pairs."""
+    before = _unbuilt(tree, set(_lines(new)))
+    reply = laying.lift(lifted, tree, COMMAND, base, laid)
+    changed, old = laying.changed(reply, COMMAND), _taken(reply)
     pairs = backlog_lines.renumber(tree, new, {}) if renumber else []
     if root is not None:
         _bar(root, tree, new)
     changed += laying.changed(laying.lay(new, tree, COMMAND), COMMAND)
     changed += laying.changed(laying.prepare(tree, batch, [new], COMMAND), COMMAND)
-    changed += _keep_built(tree, _lines(old), _lines(new), before)
-    changed += _corpus(tree, _lines(old), _lines(new))
+    changed += _keep_built(tree, old, _lines(new), before)
+    changed += _corpus(tree, old, _lines(new))
     return list(dict.fromkeys(changed)), pairs
 
 
@@ -188,17 +198,16 @@ def amend(root, name, finding=None):
     with locked(root):
         item, batch, task = _checked(root, name)
         findings = _finding(root, batch, item, finding)
-        old = batch_parked.as_laid(root, batch, [item])[0]
         base = batch_parked.base_of(root, batch)
+        last = batch_parked.amended(root, batch, item)
         heads, made, laid_on, undo = {}, [], [], None
         try:
             tree = _tree(root, trees_dir(root) / batch.name, batch.branch, heads, made)
-            changed, pairs = relay(tree, old, item, renumber=True, root=root, base=base,
-                                  batch=batch.name)
+            changed, pairs = relay(tree, item, item, renumber=True, root=root, base=base, laid=last, batch=batch.name)
             trees = [(tree, batch.branch, changed)]
             if has_branch(root, task.branch):
                 there = _tree(root, tree_of(root, batch, task), task.branch, heads, made)
-                trees.append((there, task.branch, relay(there, old, item, base=base, batch=batch.name)[0]))
+                trees.append((there, task.branch, relay(there, item, item, base=base, laid=last, batch=batch.name)[0]))
             reopened = task.status == "done"
             if reopened:
                 task.status = "running"

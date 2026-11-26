@@ -610,3 +610,29 @@ Feature: Laying
     Then the laying service keeps `registry`
     And the laying service keeps the area a1
     And the area a1 does not import `tracking`
+
+  @g47 @r47
+  Scenario: A lift that puts back a group leaves out the Relied on by of a line another requirement in the workspace retires
+    Given a requirement r2
+    And a requirement group r3
+    And the requirement group r3 has the requirement r2
+    And a requirement id r4
+    And the requirement r2 has the requirement id r4
+    And a requirement r1
+    And the requirement r1 retires the requirement id r4
+    And an item i1
+    And the item i1 holds the requirement r1
+    And a requirement r6
+    And the requirement group r3 has the requirement r6
+    And a requirement id r7
+    And the requirement r6 has the requirement id r7
+    And a requirement r5
+    And the requirement r5 retires the requirement id r7
+    And a workspace w1
+    And the workspace w1 holds the requirement r5
+    And a requirement id r8
+    And the requirement r6 supports the requirement id r8
+    When the batches service lifts the item i1 from the workspace w1
+    Then the laying service keeps the requirement r9
+    And the requirement group r3 has the requirement r9
+    And the requirement r9 does not support the requirement id r8

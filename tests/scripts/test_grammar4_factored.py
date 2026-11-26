@@ -2,9 +2,11 @@
 it may follow (`O_RS`), and attached to the noun of each kind under it (`K_RelCN_O`), in place of a fun per gap and
 kind. A refactor with no change of meaning: every live line of this repository and of docs/examples/notes-cli/ reads
 to the logical form it read to before, kept in tests/scripts/fixtures/grammar4-factored/forms.json, which `write`
-made from the grammar before the factoring."""
+made from the grammar before the factoring. A verb's sense number (`import#2`) is the lexicon's order, not a meaning: a
+new sense of a word renumbers the older ones, so a form is kept and compared with every sense number taken out (b767)."""
 import json
 import pathlib
+import re
 import sys
 
 import spec_grammar4
@@ -42,9 +44,18 @@ def reading(root, line):
     return "refused: %s" % why if why else spec_lf.show(spec_lf.form(vocab, parsed.tree))
 
 
+SENSE = re.compile(r"\b([a-z][\w-]*)#\d+\(")
+
+
+def unsensed(form):
+    """`form` with every verb's sense number taken out: `import#2(` as `import(`."""
+    return SENSE.sub(r"\1(", form)
+
+
 def forms():
-    """{root's name: {id: {line, form}}} of every live line."""
-    return {name: {rid: {"line": line, "form": reading(root, line)} for rid, line in sorted(lines(root).items())}
+    """{root's name: {id: {line, form}}} of every live line, its form unsensed."""
+    return {name: {rid: {"line": line, "form": unsensed(reading(root, line))}
+                   for rid, line in sorted(lines(root).items())}
             for name, root in ROOTS.items()}
 
 
@@ -60,7 +71,8 @@ def test_every_live_line_reads_to_the_form_it_read_to_before_the_factoring():
     changed = ["%s %s: %s\n  was: %s\n  now: %s" % (name, rid, line["line"], line["form"],
                                                    now[name].get(rid, {}).get("form"))
                for name, ids in kept.items() for rid, line in ids.items()
-               if now[name].get(rid, {}).get("line") == line["line"] and now[name][rid]["form"] != line["form"]]
+               if now[name].get(rid, {}).get("line") == line["line"]
+               and now[name][rid]["form"] != unsensed(line["form"])]
     assert changed == []
 
 
@@ -74,3 +86,9 @@ def test_the_grammar_makes_no_fun_per_gap_and_kind():
     for root in ROOTS.values():
         source = "\n".join(spec_grammar4.sources(root)[1].values())
         assert "_Obj_" not in source
+
+
+def test_a_sense_number_is_no_change_of_meaning():
+    was = "    import#2(subject: x1, object: x2)"
+    assert unsensed(was) == unsensed("    import#3(subject: x1, object: x2)") == "    import(subject: x1, object: x2)"
+    assert unsensed("request(e1, notes.add#r2, subject: x1)") == "request(e1, notes.add#r2, subject: x1)"

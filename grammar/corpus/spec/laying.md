@@ -805,3 +805,30 @@ shall [x1: area `registry` (parameter), x4: area `tracking` (parameter), x5: ser
       import#3(subject: x8, object: x4)
     keep(e3, subject: x7, object: x8)
 ```
+
+## r47
+From: b761 r47.
+
+```reading
+While an item holds a requirement that retires the requirement id of a requirement of a requirement group and a workspace holds another requirement that retires the requirement id of another requirement of the requirement group and the requirement supports a requirement id, when the batches service lifts the item from the workspace, the laying service shall keep a requirement of the requirement group that does not support the requirement id.
+shall [x11: service the batches service (constant), x12: service the laying service (constant)]
+  while [x1: item, x2: requirement, x3: requirement, x4: requirement group, x5: requirement id, x6: workspace, x7: requirement, x8: requirement, x9: requirement id, x10: requirement id]
+    of(x3, x4)
+    of(x5, x3)
+    retire(subject: x2, object: x5)
+    in(x2, x1)
+    distinct(x7, x3)
+    distinct(x8, x3)
+    of(x8, x4)
+    of(x9, x8)
+    retire(subject: x7, object: x9)
+    in(x7, x6)
+    support(subject: x8, object: x10)
+  when
+    request(e1, laying.lift, subject: x11, object: x1, from: x6)
+  response [x13: requirement]
+    of(x13, x4)
+    not
+      support(subject: x13, object: x10)
+    keep(e2, subject: x12, object: x13)
+```

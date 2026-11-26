@@ -192,3 +192,7 @@ Relied on by: batches#r182, batches#r185
 - [r46] While the kind of the `registry` area is `port` and an item holds a capability that the `registry` area holds and the `registry` area imports the `tracking` area, when the batches service lifts the item from a workspace, the laying service shall keep the `registry` area and keep an area that does not import the `tracking` area.
 Relied on by: batches#r182, batches#r185
 
+### [g47] A lift that puts back a group leaves out the Relied on by of a line another requirement in the workspace retires
+- [r47] While an item holds a requirement that retires the requirement id of a requirement of a requirement group and a workspace holds another requirement that retires the requirement id of another requirement of the requirement group and the requirement supports a requirement id, when the batches service lifts the item from the workspace, the laying service shall keep a requirement of the requirement group that does not support the requirement id.
+Relied on by: batches#r182
+

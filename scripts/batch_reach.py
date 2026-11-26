@@ -5,8 +5,8 @@ A capability's scenario test `tests/scenarios/test_<capability>.py` is reached w
 of the capability, or a kept change of the task (a commit on its branch since the batch's lines commit) touches the
 capability's feature `features/<capability>.feature` or the test itself. A test of `tests/scripts/` is reached when
 the change touches it, or touches a module it names: a file of `scripts/` or a helper of `tests/scripts/` whose stem
-the test's text holds as a word (a helper that names a touched module counting as touched), or whose stem's first
-part opens the test's name (`batch_tasks.py` reaches `test_batch_*.py`). Every other test is run. A change to a
+the test's text holds as a word, a module of a package also after its package's dotted name (`plumbing.shop_files`,
+b771) (a helper that names a touched module counting as touched), or whose stem's first part opens the test's name (`batch_tasks.py` reaches `test_batch_*.py`). Every other test is run. A change to a
 `conftest.py` or `pytest.ini` reaches every test.
 
 The tests not reached are given to the pytest plugin `work_items` as `$SHOPSYSTEM_UNREACHED`, one path a line
@@ -34,21 +34,31 @@ def _scenario_tests(tree, capabilities, changed):
     return found
 
 
-def _names(text, stem):
-    return re.search(r"(?<![\w.])%s(?!\w)" % re.escape(stem), text) is not None
+def _names(text, module):
+    """Whether `text` names `module`, a (package, stem) pair, as a word not after a dot, or after its package's name
+    and a dot."""
+    package, stem = module
+    after = r"|(?<=(?<![\w.])%s\.)" % re.escape(package) if package else ""
+    return re.search(r"(?:(?<![\w.])%s)%s(?!\w)" % (after, re.escape(stem)), text) is not None
+
+
+def _module(path):
+    """A changed file's (package, stem): its package the dotted folders between `scripts/` and it ("" when none)."""
+    parts = Path(path).parts
+    return ".".join(parts[1:-1]) if parts[0] == "scripts" else "", Path(path).name.removesuffix(".py")
 
 
 def _script_tests(tree, changed):
     here = Path(tree) / "tests" / "scripts"
-    stems = {Path(p).name.removesuffix(".py") for p in changed
+    stems = {_module(p) for p in changed
              if p.startswith("scripts/") or (p.startswith("tests/scripts/") and p.count("/") == 2)}
     helpers = [p for p in sorted(here.glob("*.py")) if not p.name.startswith("test_")]
-    stems |= {p.stem for p in helpers if any(_names(p.read_text(), s) for s in stems)}
+    stems |= {("", p.stem) for p in helpers if any(_names(p.read_text(), s) for s in stems)}
     found = []
     for test in sorted(here.glob("test_*.py")):
         rel = test.relative_to(tree).as_posix()
         text = test.read_text()
-        reached = rel in changed or any(_names(text, s) or test.stem.startswith("test_%s" % s.split("_")[0])
+        reached = rel in changed or any(_names(text, s) or test.stem.startswith("test_%s" % s[1].split("_")[0])
                                         for s in stems)
         if not reached:
             found.append(rel)

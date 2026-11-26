@@ -43,3 +43,16 @@ def test_check_run_in_the_tree(tmp_path):
     (tmp_path / "f").write_text("x")
     assert backlog_chore.run(backlog_chore.Chore(("f",), "test -f f"), tmp_path)[0] == 0
     assert backlog_chore.run(backlog_chore.Chore(("f",), "test -f g"), tmp_path)[0] == 1
+
+
+def test_check_finds_the_plugin_scripts_with_the_trees_python(tmp_path, monkeypatch):
+    monkeypatch.delenv("PYTHONPATH", raising=False)
+    check = "python3 -c 'import sys, work_items; print(sys.executable)'"
+    code, out = backlog_chore.run(backlog_chore.Chore(("f",), check), tmp_path)
+    assert code == 0, out
+    venv = tmp_path / ".venv" / "bin"
+    venv.mkdir(parents=True)
+    (venv / "python").write_text("#!/bin/sh\necho venv-python \"$@\"\n")
+    (venv / "python").chmod(0o755)
+    code, out = backlog_chore.run(backlog_chore.Chore(("f",), check), tmp_path)
+    assert code == 0 and out.startswith("venv-python -c"), out

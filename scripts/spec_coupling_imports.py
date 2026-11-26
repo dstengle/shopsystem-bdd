@@ -3,7 +3,8 @@
 folders; a file two tables match the first table's, a file none matches no area's: `area_of`), and each tracked Python
 file (a `.py` file or one with a `python` shebang) of one area whose import or from-import statement, read by ast,
 names a tracked Python file of another area (a bare name a file of the importer's folder, else a dotted name resolved
-under the root: `imported`), the coupling of the imported file's area by the importer's holding `<importer> ->
+under the root, else under each folder that holds an area's file, a package's by the folder above its packages, as the
+path a program or a test runs with: `folders`, `imported`, b772), the coupling of the imported file's area by the importer's holding `<importer> ->
 <imported>` (`imports`)."""
 import ast
 import re
@@ -76,13 +77,28 @@ def _names(tree):
             yield from ((node.level, ".".join(filter(None, (node.module, a.name)))) for a in node.names)
 
 
-def imported(importer, level, module, files):
-    """The tracked Python file `module` names from `importer`, else None."""
+def folders(declared, files):
+    """The sorted folders that hold an area's file among `files`, a file of a package by the folder above its
+    packages (a folder holding an `__init__.py` of `files`): where an absolute import is looked up past the root."""
+    found = set()
+    for name in files:
+        if area_of(declared, name) is None:
+            continue
+        folder = PurePosixPath(name).parent
+        while str(folder) != "." and str(folder / "__init__.py") in files:
+            folder = folder.parent
+        found.add(str(folder))
+    return sorted(found)
+
+
+def imported(importer, level, module, files, extra=()):
+    """The tracked Python file `module` names from `importer`, else None; an absolute name looked up in the
+    importer's folder, the root, then each of `extra` (`folders`)."""
     folder = PurePosixPath(importer).parent
     for _ in range(max(level - 1, 0)):
         folder = folder.parent
     parts = module.split(".")
-    bases = [folder] if level else [folder, PurePosixPath(".")]
+    bases = [folder] if level else [folder, PurePosixPath("."), *map(PurePosixPath, extra)]
     for base in bases:
         for candidate in (base.joinpath(*parts[:-1], parts[-1] + ".py"), base.joinpath(*parts, "__init__.py")):
             name = str(candidate)
@@ -97,6 +113,7 @@ def imports(root):
     if not declared:
         return
     files = set(tracked(root))
+    extra = folders(declared, files)
     for importer in sorted(files):
         by = area_of(declared, importer)
         if by is None:
@@ -106,7 +123,7 @@ def imports(root):
         except (SyntaxError, UnicodeDecodeError, ValueError):
             continue
         for level, module in sorted(set(_names(tree))):
-            target = imported(importer, level, module, files)
+            target = imported(importer, level, module, files, extra)
             area = target and area_of(declared, target)
             if area and area != by:
                 yield area, by, "%s -> %s" % (importer, target)
