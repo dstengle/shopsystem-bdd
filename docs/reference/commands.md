@@ -1247,6 +1247,23 @@ $ shop spec context missingmass.io/shopsystem/shopsystem-bdd --addresses specifi
 declared the bounded context missingmass.io/shopsystem/shopsystem-bdd kept by missingmass.io/shopsystem/shop
 ```
 
+### `shop spec trace`
+
+Prints a job's trace, writing nothing: the requirements of the requirement groups that serve the job (their
+`serves:` line), every requirement the requests of a requirement in the trace reach (a line triggered on a request it
+covers, followed up to three hops), each adapter spec whose `realises:` names a port line in the trace, and the
+traces of the jobs it needs (its needs in the product file), each requirement and adapter spec once with why it is
+in the trace. A job no requirement group serves is refused naming it.\
+Synopsis: `shop spec trace <job>`
+
+```console
+$ shop spec trace j1 --json
+```
+
+Each requirement is printed as `<capability>#r<n> (<why>): <its text>`, the why one of `served by <capability>#g<n>`,
+`governs the operation <capability>#r<n> uses` and `needed job <job>: ...`, and each adapter spec as
+`adapter spec <id> (realises the port line <capability>#r<n>)`.
+
 ### `shop spec assign`
 
 Assigns a job of the product to the one bounded context whose capabilities serve it, kept among the bounded
