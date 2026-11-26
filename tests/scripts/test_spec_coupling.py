@@ -65,7 +65,7 @@ def test_imports_between_areas_resolve_bare_dotted_and_from_names(tmp_path):
     or of a module the repository does not hold couples nothing."""
     import spec_coupling_imports
     root = _repo(tmp_path, {
-        "a/store.py": "", "a/pkg/__init__.py": "", "a/pkg/deep.py": "", "b/a_kept.py": "",
+        "a/pkg/store.py": "", "a/pkg/__init__.py": "", "a/pkg/deep.py": "", "b/a_kept.py": "",
         "b/shelf.py": "import store\nimport a_kept\nimport os\nfrom a.pkg import deep\nimport b.other\n",
         "b/other.py": "", "b/x.py": "from . import other\n",
     }, '[a]\nmodules = ["a/**", "b/a_*.py"]\n\n[b]\nmodules = ["b/*.py"]\n')
@@ -81,3 +81,22 @@ def test_a_file_two_tables_match_is_the_first_tables(tmp_path):
     assert spec_coupling_imports.area_of(declared, "src/x_y.py") == "one"
     assert spec_coupling_imports.area_of(declared, "src/deep/x_y.py") == "one"
     assert spec_coupling_imports.area_of(declared, "other/x_y.py") is None
+
+
+def test_an_import_resolves_through_an_area_folder(tmp_path):
+    """b772: after the importer's folder and the root, a name resolves under each folder that holds an area's file,
+    a package's file by the folder above its packages: a test's bare name, a module of `src/` and a dotted name
+    through a package (`plumbing.store`), the package's own file in no area, each name an area's file."""
+    import spec_coupling_imports
+    root = _repo(tmp_path, {
+        "src/a_one.py": "", "src/plumbing/__init__.py": "", "src/plumbing/store.py": "",
+        "src/kit/__init__.py": "", "src/kit/b_deep.py": "import a_one\nfrom plumbing.store import x\n",
+        "src/b_two.py": "import kit.b_deep\n", "tests/b_test.py": "import a_one\n",
+    }, '[a]\nmodules = ["src/a_*.py", "src/plumbing/store.py"]\n\n[b]\nmodules = ["src/b_*.py", "src/kit/b_*.py",'
+       ' "tests/b_*.py"]\n')
+    found = sorted(spec_coupling_imports.imports(root))
+    assert found == [("a", "b", "src/kit/b_deep.py -> src/a_one.py"),
+                     ("a", "b", "src/kit/b_deep.py -> src/plumbing/store.py"),
+                     ("a", "b", "tests/b_test.py -> src/a_one.py")]
+    files = set(spec_coupling_imports.tracked(root))
+    assert spec_coupling_imports.folders(spec_coupling_imports.groups(root), files) == ["src", "tests"]
