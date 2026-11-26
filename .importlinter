@@ -51,6 +51,7 @@ forbidden_modules =
     backlog_retires
     backlog_retract
     backlog_reword
+    backlog_said
     backlog_section
     backlog_section_render
     backlog_serves

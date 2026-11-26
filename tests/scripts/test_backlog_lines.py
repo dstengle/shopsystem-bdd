@@ -99,7 +99,7 @@ def test_term_writes_a_term_bullet(ready_repo):
     write_item(ready_repo, "b1", status="shaped")
     done = work(ready_repo, "line", "b1", "--into", "work-queue", "--term", TERM)
     assert done.returncode == 0, done.stderr
-    assert done.stdout == 'b1 "Fix the parser": a term of work-queue\n'
+    assert done.stdout == 'b1 "Fix the parser": a term of work-queue: %s\n' % TERM
     assert blocks(ready_repo) == [Block("work-queue", [TERM], [])]
     before = state(ready_repo)
     done = work(ready_repo, "line", "b1", "--into", "work-queue", "--term", "- frobnicate")

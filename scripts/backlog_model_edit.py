@@ -185,18 +185,22 @@ def remove_term(root, name, term, into=None):
 
 
 def reword_term(root, name, term, entry, into=None):
-    """`--reword-term`: the item's term replaced by `entry` (a model block's checked as `--term`'s are), committed."""
+    """`--reword-term`: the item's term replaced by `entry` (a model block's checked as `--term`'s are), committed;
+    the item, the entry and whether it changed: an entry the item holds already is left as it is, nothing committed
+    (drafting r105, b829)."""
     item, blocks = _opened(root, name)
     term = one_line(term, "term").strip()
     if not entry:
         raise Refused("work line: --reword-term %s takes the entry that replaces it" % term)
-    kind = _term_at(blocks, term, root, into)[0]
+    kind, _, bullet = _term_at(blocks, term, root, into)
     new = backlog_model._entries([entry])[0] if kind == "model" else one_line(entry, "term")
+    if new == bullet:
+        return item, new, False
     _replace_term(item, blocks, term, new, root, into)
     import backlog_term_rules
     backlog_term_rules.refuse(root, item, [new])        # a term that breaks a lexicon rule (b810, b826, drafting r102)
     commit(root, item, "work line: %s rewords the term %s" % (label(item), term))
-    return item
+    return item, new, True
 
 
 def cmd(args):
@@ -220,6 +224,8 @@ def cmd(args):
     elif flag == "remove_term":
         item, said = remove_term(args.root, args.name, value, args.into), "term %s removed"
     else:
-        item, said = reword_term(args.root, args.name, value, args.text, args.into), "term %s reworded"
+        item, entry, changed = reword_term(args.root, args.name, value, args.text, args.into)
+        print(__import__("backlog_said").term_reworded(item, value.strip(), entry, changed))
+        return 0
     print("%s: %s" % (label(item), said % value.strip().split("\n")[0]))
     return 0

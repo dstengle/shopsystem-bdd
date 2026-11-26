@@ -1,5 +1,5 @@
-"""drafting's model lines and terms taken back out of an item or reworded (drafting r43-r50, b367; r95, b800), in a context with
-a domain model (tests/scripts/fixtures/domain-model/'s spec, the area notes). Each a `local` handler that takes a step
+"""drafting's model lines and terms taken back out of an item or reworded (drafting r43-r48, r50, b367; r95, b800;
+r105, b829: a reworded term returned), in a context with a domain model (tests/scripts/fixtures/domain-model/'s spec, the area notes). Each a `local` handler that takes a step
 of those scenarios (`mine`) and returns False on any other: the item, written at the When, holds a `### notes model`
 block of two elements (`object folder`, the model line m1, and `object shelf`) and their two entries (folder's the
 term t1), unless a Given says it does not hold m1 or t1; `work line --remove-model`, `--reword-model`,
@@ -24,7 +24,7 @@ def shared(name, file):
 W = shared("shop_work_queue_world", "work_queue_world.py")
 B = shared("shop_backlog_world", "backlog_world.py")
 local = W.local
-TAGS = {"r43", "r44", "r45", "r46", "r47", "r48", "r49", "r50", "r95"}
+TAGS = {"r43", "r44", "r45", "r46", "r47", "r48", "r105", "r50", "r95"}
 FIXTURE = Path(__file__).resolve().parents[1] / "scripts" / "fixtures" / "domain-model" / "spec"
 M1, OTHER = "object folder\n  attributes: name (text)", "object shelf\n  attributes: label (text)"
 M2 = "object folder\n  attributes: title (text)"
@@ -36,7 +36,7 @@ OPTIONS = ("--remove-model", "--reword-model", "--remove-term", "--reword-term")
 
 
 def mine(step):
-    """True when the step is of drafting's scenarios of r43-r50."""
+    """True when the step is of drafting's scenarios of r43-r50 (r49 reworded as r105) and r95."""
     found = sys.modules["vocab"].vocab4.requested.scenario(step.request.node)
     return sys.modules["vocab"].origin(step.request.node) == "drafting" and found is not None \
         and bool(TAGS & set(found.tags))
@@ -122,6 +122,8 @@ def kept(step):
     committed, the old text gone."""
     if not mine(step):
         return False
+    if step.term == "write":        # returns, re-keyed (requested's `trying`)
+        return returns(step)
     done, world = step.context["result"], _world(step)
     if step.term == "refuse":
         assert done.returncode != 0 and "usage:" not in done.stderr, (done.stdout, done.stderr)
@@ -136,6 +138,17 @@ def kept(step):
     old = {"m2": "m1", "t2": "t1"}[name]
     assert _held(text, name) and (name == "m2" or not _held(text, old)), (step.text, text)
     assert name != "m2" or text.count("object folder\n") == 1, text
+    return None
+
+
+@local("ThenPrints")
+def returns(step):
+    """the drafting service returns the term t2 (r105): its entry printed whole, the run completed."""
+    if not mine(step):
+        return False
+    done = step.context["result"]
+    name = re.search(r"\bterm (t\d+)", step.text).group(1)
+    assert done.returncode == 0 and TEXTS[name] in done.stdout, (done.stdout, done.stderr)
     return None
 
 
