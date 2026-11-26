@@ -15,7 +15,7 @@ pull_request:
 | task | item | status | branch |
 |---|---|---|---|
 | t1 | b726 | done | batch-129-b726 |
-| t2 | b725 | running | batch-129-b725 |
+| t2 | b725 | done | batch-129-b725 |
 | t3 | b727 | running | batch-129-b727 |
 
 ## Plan
