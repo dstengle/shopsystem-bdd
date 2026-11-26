@@ -205,3 +205,6 @@ The requirements examined together: contradictions, what a line adds over the ot
 ### [g46] spec explain says a request's recipient with the preposition of the frame its line uses when the verb has frames of different prepositions
 - [r46] While a requirement has a trigger and the requirement has a consequence and another requirement that has the trigger uses `response-request` and `oblique-role` and a term has a frame that has a preposition and the term has another frame that has another preposition, when the person explains the requirement, the language service shall return the requirement and the consequence.
 
+### [g47] spec explain says a request's recipient with the preposition its verb's frames share when no frame fits the kinds of the request
+- [r47] While a requirement has a trigger and the requirement has a consequence and another requirement that has the trigger uses `response-request` and `oblique-role` and a term has a frame that has a preposition and the term has another frame that has the preposition, when the person explains the requirement, the language service shall return the requirement and the consequence.
+

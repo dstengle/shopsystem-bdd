@@ -101,12 +101,13 @@ class Explain:
 
     def word(self, L, verb, parts):
         """The words before the second slot of the frame of `verb` whose slots' kinds `parts` are of (or under), as
-        spec_steps4_boxes.fits picks a frame, else of its only frame (b751)."""
+        spec_steps4_boxes.fits picks a frame, else the words all its frames share, else its first frame's (b751, b756:
+        an actor's kind, which no frame reads, never drops the preposition)."""
         frames = self.oblique.get(verb, [])
         kinds = [self.kind(L, p) for p in parts]
         fit = [w for w, slots in frames
                if all(k is not None and s in self.vocab.ancestors(k) for k, s in zip(kinds, slots))]
-        return fit[0] if fit else frames[0][0] if len(frames) == 1 else ""
+        return fit[0] if fit else frames[0][0] if frames else ""
 
     def request(self, L, e, x, rest):
         """`rest` of a response's request (`req(O,Ps)`) with its object, and the recipient after the verb's word

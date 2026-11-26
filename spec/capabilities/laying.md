@@ -32,3 +32,7 @@ Relied on by: batches#r180
 - [r4] While an item holds no requirement that violates a rule whose severity is `error`, when the batches service checks the item in a workspace, the laying service shall complete the request.
 Relied on by: batches#r180
 
+### [g5] A lift of an item keeps out a requirement of the same group that another requirement in the workspace retires
+- [r5] While an item holds a requirement that retires the requirement id of a requirement of a requirement group and a workspace holds another requirement that retires the requirement id of another requirement of the requirement group, when the batches service lifts the item from the workspace, the laying service shall keep a workspace that does not hold the requirement.
+Relied on by: batches#r182
+

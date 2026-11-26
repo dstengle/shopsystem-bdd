@@ -89,6 +89,7 @@ requirements = [
   "consistency#r13: If the person explains a requirement id that no capability holds, then the language service shall refuse the request and name the requirement id.",
   "consistency#r45: While a requirement has a trigger and the requirement has a consequence and another requirement that has the trigger uses `response-request` and `oblique-role`, when the person explains the requirement, the language service shall return the requirement and the consequence.",
   "consistency#r46: While a requirement has a trigger and the requirement has a consequence and another requirement that has the trigger uses `response-request` and `oblique-role` and a term has a frame that has a preposition and the term has another frame that has another preposition, when the person explains the requirement, the language service shall return the requirement and the consequence.",
+  "consistency#r47: While a requirement has a trigger and the requirement has a consequence and another requirement that has the trigger uses `response-request` and `oblique-role` and a term has a frame that has a preposition and the term has another frame that has the preposition, when the person explains the requirement, the language service shall return the requirement and the consequence.",
 ]
 [operations."language.explain".parameters]
 text = { positional = 1 }

@@ -1,9 +1,11 @@
 """The registry's handlers of the (template, term) keys whose one registry handler was supervision's, retired in
 plugin 0.31.0 (workflow simplification plan 9, Task 3). A feature's own handler (`work_queue_world.local`) takes each
-of these steps first; these are what is left when none does. The Given records nothing, as supervision's recorded
-nothing another feature read: the When's handler reads the scenario's text. A Then or a When no feature's handler
-took fails, naming the step, so that no step passes unchecked. The keys of requests' codified-2 steps (read in the
-step grammar 4, whose terms are the verbs and row words) are here too: requests' locals take each of its steps."""
+of these steps first; these are what is left when none does. A Given records nothing only of the kinds, verbs and
+default values `given_recorded` allows (`INTRODUCED`, `NEGATIVE`, `DEFAULTS`), the When's handler reading the
+scenario's text; any other Given fails through scenario_unread, naming the scenario, until a world of its own reads it
+(b748). A Then or a When no feature's handler took fails, naming the step, so that no step passes unchecked. The
+keys of requests' codified-2 steps (read in the step grammar 4, whose terms are the verbs and row words) are here
+too: requests' locals take each of its steps."""
 import importlib.util
 import sys
 from pathlib import Path
