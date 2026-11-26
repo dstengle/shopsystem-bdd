@@ -71,7 +71,7 @@ def line_facts(lines, ident, form, port):
     trigger = next((p for p in form.parts if p.op in ("when", "if")), None)
     said = [a for a in (trigger.body if trigger else ()) if isinstance(a, Atom)]
     for a in said:
-        if a.pred != "event" or a.args[1] not in VERBS:
+        if not lines.packed(a, VERBS):      # the request pack's sense, not a context's beside it (b847)
             continue
         for label, ref in a.args[3]:
             obj = lines.obj(getattr(ref, "kind", None)) if label != "subject" else None
@@ -82,6 +82,6 @@ def line_facts(lines, ident, form, port):
     requested = [a.args[1] for a in said if a.pred == "request" and not isinstance(a.args[0], Ref)]
     response = [a for p in form.parts if p.op == "response" for a in _negated(p.body)]
     for a, negated in response:
-        if negated and a.pred == "event" and a.args[1] in VERBS:
+        if negated and lines.packed(a, VERBS):
             out += [("denies", ident, o, k) for o in requested for k in VERBS[a.args[1]]]
     return out

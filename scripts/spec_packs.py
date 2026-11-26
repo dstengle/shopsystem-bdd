@@ -14,6 +14,7 @@ grammar of codified-1 does not read the packs' words: `model lexicon` and these 
 import re
 from pathlib import Path
 
+import spec_frames
 import spec_lexicon
 
 PLUGIN = Path(__file__).resolve().parents[1] / "grammar" / "packs"
@@ -104,10 +105,32 @@ def unmarked(root, lexicon=None):
     return out
 
 
+def overlapping(root, lexicon=None):
+    """(term, pack, the pack's frame) of each verb of the context's that keeps the request pack's sense beside its own
+    (spec_lexicon's `beside`, b847) and whose frames take in every slot the same kind as the pack's, or one under or
+    over it (v_t15): no line's kinds would tell the two senses apart. An actor is a subject of its own, which only it
+    fills (spec_lf_clause)."""
+    lexicon = lexicon or spec_lexicon.read(root)
+    if not any(spec_lexicon.beside(t) for t in lexicon.terms):
+        return []
+    layered = layers(root, lexicon)
+    pack = {t.term: t for layer, t in layered if layer == "pack request" and t.category == "event"}
+    merged = spec_lexicon.Lexicon([t for _, t in layered])
+    known, under = spec_frames.names(merged, frozenset(("thing", "agent"))), spec_frames.below(merged)
+    return [(t, "request", pack[t.term].frame) for layer, t in layered
+            if not layer.startswith("pack ") and spec_lexicon.beside(t) and t.term in pack
+            and spec_frames.overlap(spec_frames.frames(t, known), spec_frames.frames(pack[t.term], known), under,
+                                    top=("thing",))]
+
+
 def problems(root, lexicon=None):
-    """v_t16 and v_t17 as (code, subject, message)."""
+    """v_t16, v_t17 and v_t15 of a verb beside a pack's (`overlapping`) as (code, subject, message)."""
     out = [("v_t17", n, "spec/index.md imports the pack %s, which neither grammar/packs/ nor spec/packs/ has" % n)
            for n in missing(root)]
+    out += [("v_t15", t.term, "%s: the verb %s takes in every slot the kinds the pack %s's %s takes (Frame: %s), or "
+             "kinds under or over them: give it a frame whose subject is an actor or a kind that is no %s, or "
+             "another verb" % (t.where, t.term, pack, t.term, frame, frame.split()[0]))
+            for t, pack, frame in overlapping(root, lexicon)]
     out += [("v_t16", term, "%s: the pack %s defines %s too; mark the entry Redefines: %s" % (
         where, ", ".join(packs), term, ", ".join(packs))) for (where, term), packs in unmarked(root, lexicon).items()]
     return sorted(out)

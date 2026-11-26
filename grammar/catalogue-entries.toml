@@ -229,9 +229,9 @@ since = "b123"
 changed = []
 
 [rules.v_t6]
-purpose = "Distinct terms read differently, so a line's words always identify which term is meant."
+purpose = "Distinct terms read differently, and no term is spelled as a word the grammar spells itself, so a line's words always identify which term is meant."
 since = "b123"
-changed = []
+changed = ["b847"]
 
 [rules.v_t11]
 purpose = "Each verb says which kinds of thing it relates, so lines using it can be parsed and checked for sense."
@@ -254,9 +254,9 @@ since = "b131"
 changed = []
 
 [rules.v_t15]
-purpose = "A verb's senses are told apart by the kinds they take, so a line using the verb has one reading."
+purpose = "A verb's senses, two of its own or its own beside a pack's it redefines, are told apart by the kinds they take, so a line using the verb has one reading."
 since = "b131"
-changed = []
+changed = ["b847"]
 
 [rules.v_t16]
 purpose = "Overriding a pack's word is deliberate and visible, never an accidental clash with an imported meaning."

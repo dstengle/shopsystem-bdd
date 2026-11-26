@@ -244,7 +244,8 @@ SENSES = {"aspectless": "- **V** (verb): an agent marks a text. Frame: agent Vs 
                           "- **V** (verb, state): a session bears a text's mark. Frame: session Vs text.\n"),
           "oblique": "- **V** (verb, action): an agent keeps a thing in a text. Frame: agent Vs thing in text.\n"}
 REFUSED = {"aspectless": "v_t14  a verb's entry says neither state nor action",
-           "overlapping": "v_t15  two entries of one verb take, in every slot, the same kind or one kind under the other"}
+           "overlapping": "v_t15  two senses of one verb, two entries or an entry and a pack's it redefines, take in "
+                          "every slot the same kind or one kind under the other"}
 
 
 @handler("GivenK_C", "request")
