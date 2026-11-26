@@ -1698,3 +1698,88 @@ shall [x5: thing `reply-trigger` (parameter), x6: agent the person (constant), x
   response
     complete(e2, subject: x8, object: x9)
 ```
+
+## r126
+From: b636 r126.
+
+```reading
+When the person obtains a contract from a bounded context with a version, the specification service shall retrieve the contract with the bounded context and the version.
+shall [x1: agent the person (constant), x5: service the specification service (constant)]
+  when [x2: contract, x3: bounded context, x4: version]
+    request(e1, specification.obtain, subject: x1, object: x2, from: x3)
+    param(e1, version, x4)
+  response
+    request(e2, contract registry.retrieve, subject: x5, object: x2)
+    param(e2, bounded context, x3)
+    param(e2, version, x4)
+```
+
+## r127
+From: b636 r127.
+
+```reading
+When the person publishes a contract with a version, the specification service shall deposit the contract with the version.
+shall [x1: agent the person (constant), x4: service the specification service (constant)]
+  when [x2: contract, x3: version]
+    request(e1, specification.publish, subject: x1, object: x2)
+    param(e1, version, x3)
+  response
+    request(e2, contract registry.deposit, subject: x4, object: x2)
+    param(e2, version, x3)
+```
+
+## r128
+From: b636 r128.
+
+```reading
+When the contract registry service completes the request to deposit a contract, the specification service shall keep the contract.
+shall [x1: service the contract registry service (constant), x4: service the specification service (constant)]
+  when [x2: request, x3: contract]
+    request(x2, contract registry.deposit, object: x3)
+    complete(e1, subject: x1, object: x2)
+  response
+    keep(e2, subject: x4, object: x3)
+```
+
+## r129
+From: b636 r129.
+
+```reading
+When the contract registry service returns the request to retrieve a contract, the specification service shall return the contract.
+shall [x1: service the contract registry service (constant), x4: service the specification service (constant)]
+  when [x2: request, x3: contract]
+    request(x2, contract registry.retrieve, object: x3)
+    return(e1, subject: x1, object: x2)
+  response
+    return(e2, subject: x4, object: x3)
+```
+
+## r130
+From: b636 r130.
+
+```reading
+When the contract registry service refuses the request to retrieve a contract, the specification service shall name the version of the contract and change nothing.
+shall [x1: service the contract registry service (constant), x4: service the specification service (constant)]
+  when [x2: request, x3: contract]
+    request(x2, contract registry.retrieve, object: x3)
+    refuse(e1, subject: x1, object: x2)
+  response [x5: version]
+    of(x5, x3)
+    name(e2, subject: x4, object: x5)
+    not [x6: thing]
+      change(e3, subject: x4, object: x6)
+```
+
+## r131
+From: b636 r131.
+
+```reading
+When a downstream context fetches a contract with a version, the specification service shall retrieve the contract with the version.
+shall [x4: service the specification service (constant)]
+  when [x1: downstream context, x2: contract, x3: version]
+    request(e1, specification.fetch, subject: x1, object: x2)
+    param(e1, version, x3)
+  response
+    request(e2, contract registry.retrieve, subject: x4, object: x2)
+    param(e2, version, x3)
+```

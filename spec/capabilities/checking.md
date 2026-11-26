@@ -7,7 +7,7 @@ area: specification
 specifies: service specification: check, consult, renew, inventory, translate
 language: codified-2
 retired: [g4, r4, g5, r5, g6, r6, g7, r7, g8, r8, g9, r9, g10, r10, g11, r11, g12, r12, g13, r13, g14, r14, g15, r15, g16, r16, g17, r17, g25, r25, g31, r31, g34, r34, g37, r37, g40, r40, g42, r42, g43, r43, g45, r45, g56, r56, g94, r94]
-unbuilt: []
+unbuilt: [r127, r131, r126, r128, r129, r130]
 ---
 
 # Checking
@@ -355,6 +355,24 @@ Restates: design-model-check#r13@0.29.
 
 ### [g125] A port outcome a reply trigger is on is handled
 - [r125] While a driven port holds an operation that has an operation outcome and a core line that uses `reply-trigger` handles the operation outcome, when the person validates this specification, the specification service shall complete the request.
+
+### [g127] A contract published is deposited in the contract registry at its version
+- [r127] When the person publishes a contract with a version, the specification service shall deposit the contract with the version.
+
+### [g131] A contract fetched is retrieved from the contract registry at its version
+- [r131] When a downstream context fetches a contract with a version, the specification service shall retrieve the contract with the version.
+
+### [g126] A contract obtained is retrieved from the contract registry for its bounded context and version
+- [r126] When the person obtains a contract from a bounded context with a version, the specification service shall retrieve the contract with the bounded context and the version.
+
+### [g128] A deposit the contract registry completes publishes the contract
+- [r128] When the contract registry service completes the request to deposit a contract, the specification service shall keep the contract.
+
+### [g129] A contract the contract registry returns is returned to whoever asked for it
+- [r129] When the contract registry service returns the request to retrieve a contract, the specification service shall return the contract.
+
+### [g130] A retrieval the contract registry refuses names the version and changes nothing
+- [r130] When the contract registry service refuses the request to retrieve a contract, the specification service shall name the version of the contract and change nothing.
 
 ## Dropped
 - design-model-check#r2@0.29: retired with checking#r4 by b370.

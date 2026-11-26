@@ -1524,6 +1524,7 @@ requirements = [
   "checking#r76: While a requirement does not conform to the language reference, if the person publishes a contract, then the specification service shall refuse the request and name the requirement.",
   "checking#r77: When the person publishes a contract, the specification service shall keep a contract whose status is `published` and keep every requirement and every term in the contract.",
   "checking#r83: If the person publishes a contract with a version that does not conform to the version form, then the specification service shall refuse the request and name the version and the `version not in the version form` reason.",
+  "checking#r127: When the person publishes a contract with a version, the specification service shall deposit the contract with the version.",
 ]
 [operations."specification.publish".parameters]
 version = { option = "--version", example = "1.2.0" }
@@ -1534,6 +1535,7 @@ requirements = [
   "checking#r78: When a downstream context fetches a contract, the specification service shall return the contract whose status is `published` and change nothing.",
   "checking#r79: While no contract has the `2.0.0` version, if a downstream context fetches a contract with the `2.0.0` version, then the specification service shall refuse the request and name the version.",
   "checking#r80: When a downstream context fetches a contract with the `1.2.0` version, the specification service shall return the contract that has the `1.2.0` version.",
+  "checking#r131: When a downstream context fetches a contract with a version, the specification service shall retrieve the contract with the version.",
 ]
 [operations."specification.fetch".parameters]
 version = { option = "--version", example = "1.2.0" }
@@ -1550,6 +1552,7 @@ requirements = [
   "checking#r100: While an adapter spec has a provider and the provider has the `1.2.0` version and the provider has a contract that has the `1.3.0` version, when the person obtains a contract from the provider, the specification service shall keep a contract that has the `1.2.0` version and keep the adapter spec that holds the contract.",
   "checking#r102: If the person obtains a contract from a bounded context whose health is `failing`, then the specification service shall refuse the request and name the bounded context and the `bounded context failing` reason.",
   "checking#r103: While the id of a provider conforms to the context id form and the provider is `available`, if the person obtains a contract from the provider that no adapter spec has, then the specification service shall refuse the request and name the provider and the `no adapter spec has the provider` reason.",
+  "checking#r126: When the person obtains a contract from a bounded context with a version, the specification service shall retrieve the contract with the bounded context and the version.",
 ]
 [operations."specification.obtain".parameters]
 "bounded context" = { positional = 1, example = "bounded-context/example.org/fixture/inventory" }
