@@ -38,7 +38,7 @@ def add_parsers(sub):
     a.add_argument("job", help="the job's id")
     a.add_argument("--to", dest="bounded_context", required=True, help="the bounded context's id")
     p = sub.add_parser("plays", help="map a product actor to the actor a bounded context's model calls it by")
-    p.add_argument("product_actor", metavar="product_actor", help="the product actor, as 'the developer'")
+    p.add_argument("product_actor", metavar="product actor", help="the product actor, as 'the developer'")
     p.add_argument("--in", dest="bounded_context", required=True, help="the bounded context's id")
     p.add_argument("--as", dest="actor", required=True, help="the actor of the bounded context, as 'the person'")
 

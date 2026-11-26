@@ -130,17 +130,6 @@ Feature: Product
     Then the product service refuses this request
     And the product service names this product
 
-  @g14 @r14
-  Scenario: A job whose statement's situation holds a comma is declared
-    Given the job statement `j2` holds "When a change is wanted, reviewed and agreed, the developer wants it specified, so they can build it."
-    And a job statement j2
-    And the job statement j2 conforms to the job statement form
-    And a job j1
-    When the person declares the job j1 with the job statement j2
-    Then this product holds the job j1
-    And the product service keeps the job j1
-    And the product service completes this request
-
   @g15 @r15
   Scenario: A subdomain is declared with its id, type and jobs
     Given a subdomain s1
@@ -455,15 +444,6 @@ Feature: Product
     Then the product service refuses this request
     And the product service names the bounded context b1
 
-  @g40 @r40
-  Scenario: A product actor is not mapped to an actor the domain model does not hold
-    Given an actor a1
-    And this domain model does not hold the actor a1
-    And a product actor p1
-    When the person maps the product actor p1 with this bounded context and the actor a1
-    Then the product service refuses this request
-    And the product service names the actor a1
-
   @g41 @r41
   Scenario: A product actor is not mapped in a bounded context whose id is out of the context id form
     Given an id i1
@@ -486,17 +466,6 @@ Feature: Product
     When the person declares the job j1 with the job statement j2
     Then the product service refuses this request
     And the product service names the product actor p1
-
-  @g43 @r43
-  Scenario: A job whose statement mentions another actor than the job's is refused
-    Given a job statement j2
-    And a product actor p2
-    And the job statement j2 mentions the product actor p2
-    And a job j1
-    And a product actor p1
-    When the person declares the job j1 with the product actor p1 and the job statement j2
-    Then the product service refuses this request
-    And the product service names the job statement j2
 
   @g44 @r44
   Scenario: A job whose statement's situation is one word is declared
@@ -634,3 +603,42 @@ Feature: Product
     And the requirement group r1 has the requirement r2
     When the person traces the job j1 with the item i1
     Then the product service returns the requirement r2
+
+  @g59 @r59
+  Scenario: A job the product does not hold is not assigned
+    Given a job j1
+    And this product does not hold the job j1
+    And a bounded context b1
+    When the person assigns the job j1 to the bounded context b1
+    Then the product service refuses this request
+    And the product service names the job j1
+
+  @g60 @r60
+  Scenario: A job whose statement mentions another actor of the product than the job's is refused
+    Given a product actor p1
+    And this product holds the product actor p1
+    And a product actor p2
+    And this product holds the product actor p2
+    And a job statement j2
+    And the job statement j2 mentions the product actor p2
+    And a job j1
+    When the person declares the job j1 with the product actor p1 and the job statement j2
+    Then the product service refuses this request
+    And the product service names the job statement j2
+
+  @g61 @r61
+  Scenario: A product actor of the product is not mapped to an actor the domain model does not hold
+    Given a product actor p1
+    And this product holds the product actor p1
+    And an actor a1
+    And this domain model does not hold the actor a1
+    When the person maps the product actor p1 with this bounded context and the actor a1
+    Then the product service refuses this request
+    And the product service names the actor a1
+
+  @g62 @r62
+  Scenario: A job declared without a product actor is refused
+    Given a job j1
+    And a job statement j2
+    When the person declares the job j1 with the job statement j2 and without a product actor
+    Then the product service refuses this request

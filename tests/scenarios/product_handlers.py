@@ -92,12 +92,14 @@ def given_text(step):
 
 
 def given_does(step):
-    """`the need n1 depends on the job j1`; `this product holds the product detail p1`."""
+    """`the need n1 depends on the job j1`; `this product holds the product detail p1` (or the product actor p1)."""
     if not mine(step):
         return False
     w = world(step)
     if step.term in ("hold", "holds") and w["kinds"].get(step.names[-1]) == "product detail":
         w["details"].append(step.names[-1])
+    elif step.term in ("hold", "holds") and w["kinds"].get(step.names[-1]) == "product actor" and not step.names[:-1]:
+        w["outside"].discard(step.names[-1])      # this product holds the product actor p1: held, as by default
     elif step.term == "depend on":
         w["depends"][step.names[0]] = step.names[1]
     elif step.term in ("mention", "mentions"):
@@ -149,6 +151,11 @@ def runs(step):
         said = speaker(w["statement"])
         if said and said not in w["before"]["actors"] and mentioned(w, statement or kinds["job"]) not in w["outside"]:
             w["before"]["actors"].append(said)
+        w["supplied"] = None if "product actor" in kinds or "product actor" in step.context.get("absent", []) else (
+            said or "the %s user" % mentioned(w, statement or kinds["job"]))    # a job is declared with an actor (r62)
+        if w["supplied"] and w["supplied"] not in w["before"]["actors"] and mentioned(
+                w, statement or kinds["job"]) not in w["outside"]:
+            w["before"]["actors"].append(w["supplied"])
     text = scripts("product_store").render(w["before"]) + "".join(detail(name) for name in w["details"])
     if w.get("unformed product"):
         text = text.replace("actors = ", 'jobs = ["j1"]\nactors = ', 1)
@@ -163,6 +170,7 @@ def runs(step):
     else:
         args = ["job", value(w, kinds["job"])]
         args += ["--actor", value(w, kinds["product actor"])] if "product actor" in kinds else []
+        args += ["--actor", w["supplied"]] if w.get("supplied") else []
         args += ["--statement", w["statement"]]
         args += ["--needs", value(w, kinds["need"])] if "need" in kinds else []
     step.context["product_when"] = list(step.names)

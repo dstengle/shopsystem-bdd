@@ -122,6 +122,8 @@ def rows(found, labels, head, limit):
 def check(args):
     model = Model(args.root).read()
     found, labels = solve(model)
+    lay_only = getattr(args, "lay_only", None)       # `spec check --item`: what the item's lay alone brings (b808)
+    found = [f for f in found if not (lay_only and lay_only(*f))]
     violations = [f for f in found if f[0].startswith("v")]
     warnings = [f for f in found if f[0].startswith("w_")]
     if args.json:

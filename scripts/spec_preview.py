@@ -4,7 +4,10 @@ lines and model lines are laid into the specification, as the readiness bar lays
 of the context given with `--file` read off the copy, so a capability file holds the item's lines too. `spec check
 --item` and `spec trace --item` (b797, checking r152, product r58) read the whole context so laid (`whole`): `spec/`
 and `grammar/` copied, every other entry of the context's top folder linked, so its features, backlog and product
-file are read as they are."""
+file are read as they are. Of `spec check --item`, the violations the lay alone brings left out (`lay_only`, b808,
+checking r153-r155): v_s3 of a group the item lays, whose scenarios only a batch's lay writes, and v_a5 of a
+requirement it lays, which only a batch's lay annotates in the adapter contract, as the readiness bar leaves them out;
+every other violation of the item's reported."""
 
 import shutil
 import tempfile
@@ -13,8 +16,13 @@ from pathlib import Path
 
 import backlog_items
 import backlog_lines
+import backlog_section
 import spec_catalogued
 
+# The rules whose violations of the item's own ids only a batch's lay clears (`lay_only`), each with the place of the
+# id in its row: skipped, so that the rule catalogue does not take this module for where they are implemented
+# (model_rules.skipped, b467).
+SKIPPED_RULES = {"v_s3": 0, "v_a5": 1}
 COPIED = ("spec", "grammar")      # what the lay may write: copied, never linked, so the context is never changed
 
 
@@ -49,8 +57,23 @@ def rooted(args, run):
     if not getattr(args, "item", None):
         return run(args)
     import argparse
+    left_out = lay_only(backlog_items.find(args.root, args.item))
     with laid(args.root, args.item, whole=True) as copy:
-        return run(argparse.Namespace(**{**vars(args), "root": str(copy), "item": None}))
+        return run(argparse.Namespace(**{**vars(args), "root": str(copy), "item": None, "lay_only": left_out}))
+
+
+def lay_only(item):
+    """Whether a violation `(code, args)` is one the lay of `item` alone brings: v_s3 of a group it lays, v_a5 of a
+    requirement it lays (the module's doc)."""
+    blocks = backlog_section.read(item, "the item %s" % item.name)
+    groups = {"%s#%s" % (b.capability, g.id) for b in blocks for g in b.groups}
+    lines = set(backlog_section.ids(blocks))
+    ids = dict(zip(SKIPPED_RULES, (groups, lines)))
+
+    def brought(code, found):
+        at = SKIPPED_RULES.get(code)
+        return at is not None and len(found) > at and any(str(found[at]).endswith("/" + i) for i in ids[code])
+    return brought
 
 
 def on_copy(root, copy, file):

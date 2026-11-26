@@ -428,6 +428,15 @@ Restates: design-model-check#r13@0.29.
 ### [g152] A job an item's requirement group serves is not unserved in a check for the item
 - [r152] While this bounded context holds a job and an item holds a requirement group that serves the job, when the person validates this specification with the item, the specification service shall return no job that violates `w_unserved_job`.
 
+### [g153] A check for an item reports no group of the item without a scenario
+- [r153] While an item holds a requirement group, when the person validates this specification with the item, the specification service shall return no requirement group that violates `v_s3`.
+
+### [g154] A check for an item reports no operation the item's requirements govern unannotated
+- [r154] While an item holds a requirement that governs an operation, when the person validates this specification with the item, the specification service shall return no operation that violates `v_a5`.
+
+### [g155] A check for an item fails on a rule of severity error its requirements violate
+- [r155] While an item holds a requirement that violates a rule whose severity is `error`, if the person validates this specification with the item, then the specification service shall fail the check and name the rule.
+
 ## Dropped
 - design-model-check#r2@0.29: retired with checking#r4 by b370.
 - design-model-check#r3@0.29: retired with checking#r4 by b370.

@@ -1076,7 +1076,9 @@ Synopsis: `shop spec check [--json] [--limit LIMIT] [--item b<n>]`
 - `--limit`: rows shown for each rule (the rest are counted).
 - `--item b<n>`: check the specification as it reads once the item's lines, terms, model lines and `serves:` pairs
   are laid into it, on a copy, as `shop spec parse --item` reads a line; nothing in `spec/` changes. A job the item's
-  groups serve is then no `w_unserved_job`, before any batch lays them.
+  groups serve is then no `w_unserved_job`, before any batch lays them. What only a batch's lay writes is not
+  reported: no `v_s3` of a group the item lays (its scenarios), no `v_a5` of a requirement it lays (the adapter
+  contract's annotations); every other violation of its lines is, and fails the check.
 
 ```console
 $ shop spec check
@@ -1250,12 +1252,12 @@ declared the product actor the developer
 ### `shop spec job`
 
 Declares a job to be done of the product with its id, its actors, its job statement and the jobs it needs first,
-kept in the product file in one commit; a job declared again replaces the one of its id. The job statement is checked
-for the job statement form only, `When <situation>, <actor> wants <motivation>, so they can <outcome>.`; a statement
-of another form is refused naming `--statement`, a statement whose actor the product does not hold naming the actor
-and `--actor`, a statement whose actor is not one of the job's `--actor`s naming `--statement`, an actor the product
-does not hold naming `--actor`, a need that is
-no job of the product naming `--needs`, and a need that depends on the job, directly or through the jobs it needs, so
+kept in the product file in one commit; a job declared again replaces the one of its id. The product actor is checked
+first: a job with no `--actor`, or with an actor the product does not hold, is refused naming `--actor`. The job
+statement is checked for the job statement form only, `When <situation>, <actor> wants <motivation>, so they can
+<outcome>.`; a statement of another form is refused naming `--statement`, a statement whose actor the product does
+not hold naming the actor and `--actor`, a statement whose actor is not one of the job's `--actor`s naming
+`--statement`, a need that is no job of the product naming `--needs`, and a need that depends on the job, directly or through the jobs it needs, so
 that the needs would close a cycle, naming `--needs`.\
 Synopsis: `shop spec job <id> --statement <text> [--actor <actor> ...] [--needs <job> ...]`
 
@@ -1365,7 +1367,7 @@ assigned the job j1 to the bounded context bounded-context/missingmass.io/shopsy
 ### `shop spec plays`
 
 Maps a product actor to the actor a bounded context's model calls it by, kept among the bounded context's actors in
-the product file, in one commit. A product actor the product does not hold is refused naming it, a bounded context
+the product file, in one commit. A product actor the product does not hold is refused naming it before the actor is checked, a bounded context
 whose id is not of the context id form naming the id, and, in this bounded context, an actor its domain model does
 not declare naming `--as`.\
 Synopsis: `shop spec plays <product actor> --in <bounded context> --as <actor>`
