@@ -48,7 +48,7 @@ with a `## Moved` table naming each id's new one (`spec/moves.json`).
 
 | area | kind | capabilities |
 |---|---|---|
-| specification | core | decisions, checking, consistency, records, scenarios, parsing |
+| specification | core | decisions, checking, consistency, records, scenarios, parsing, product |
 | tracking | supporting | items, drafting, context-requests, request-watch, quotes, directives, shaping-guarantees |
 | execution | supporting | batches, reviews, review-guarantees, shop |
 | measurement | generic | measurement, trials |
