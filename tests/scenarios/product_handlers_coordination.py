@@ -137,5 +137,5 @@ def then_returns(step):
 W.local("GivenDoes")(given_does)
 W.local("GivenDoesNot")(given_does)
 W.local("WhenRuns")(runs)
-W.local("ThenK_A")(then_value)
+sys.modules["vocab"].handler("ThenK_A", "job")(then_value)     # a claim `features vocab --check` sees
 W.local("ThenPrints")(then_returns)
