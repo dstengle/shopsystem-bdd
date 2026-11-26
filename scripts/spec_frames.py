@@ -29,6 +29,8 @@ FIXED = ("words of no kind after the verb read as a fixed phrase before the obje
          "naming an operation")
 # what a frame of a context with a domain model names its noun phrases by (b811)
 SLOTS = "a frame names its slots in angle brackets, each a kind, an actor or a parameter of its operation"
+# where a frame stands in its entry (b840): what follows it would be read into it
+ENDS = "a Frame: is the last thing of its entry, after its gloss, with no text but another Frame: after it"
 # the words that, right after a verb in its frame, are the verb's preposition before its object
 PREPOSITIONS = {"to", "for", "from", "on", "onto", "in", "into", "at", "with", "about", "of", "by", "over", "under",
                 "through", "after", "before", "against", "upon", "without"}
@@ -134,9 +136,16 @@ def misread(term, names, shown=False):
     sentence (b826); None when each reads or
     the entry gives no `Frame:` (v_t11). A word the frame could not read that is no one word is given no nearest
     names, and what fixed words after the verb may be in their place. A frame that takes no noun phrase (no slot in
-    angle brackets naming a kind, an actor or a parameter, spec_vocabulary_terms' `slotless`, b811) does not read."""
+    angle brackets naming a kind, an actor or a parameter, spec_vocabulary_terms' `slotless`, b811) does not read,
+    nor one that does not end its entry (spec_lexicon's `unended`) or names a slot that refers to none of them
+    (`unslotted`, b840), each named."""
+    if term.unended:
+        return 'the Frame: "%s." does not end its entry, "%s." follows it: %s' % (*term.unended[0], ENDS)
     if term.slotless:
         return 'the Frame: "%s." takes no noun phrase: %s' % (_sentence(term.slotless[0]), SLOTS)
+    if term.unslotted:
+        return 'the Frame: "%s." names the slot <%s>, which refers to no kind, no actor and no parameter: %s' % (
+            _sentence(term.unslotted[0][0]), term.unslotted[0][1], SLOTS)
     said = term.frames or (term.frame,)
     at, why = next(((i, w) for i, w in enumerate(read(term, names, f)[1] for f in said) if w), (None, None))
     if why is None:

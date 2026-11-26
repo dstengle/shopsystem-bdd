@@ -130,12 +130,14 @@ def _slot(model, e, name, kinds, strict=False):
 
 def _slotless(model, e, frame, kinds):
     """Whether a written `Frame:` takes no noun phrase: no slot in angle brackets, or none naming a kind, an actor or
-    a parameter of its operation (b811); such a frame is a v_t13 (spec_frames), never read as of `thing`."""
+    a parameter of its operation (b811); such a frame is a v_t13 (spec_frames), never read as of `thing`; of a frame
+    that takes one, each other slot that names none of them, nor `thing`, a pack's kind or an object of the model,
+    is `unslotted`, a v_t13 naming the slot (b840)."""
     return not any(name == "thing" or _slot(model, e, name, kinds, strict=True)
                    for name in re.findall(r"<([^>]+)>", frame))
 
 
-def _frames(model, e, kinds, verb):
+def _frames(model, e, kinds, verb, known=frozenset()):
     thin = e.fields.frames
     if not thin:
         if e.element.kind == "relation":
@@ -153,19 +155,21 @@ def _frames(model, e, kinds, verb):
         for t in texts:
             out.setdefault(" ".join(t.split()), frame)
     slotless = tuple(f for f in e.fields.frames if _slotless(model, e, f, kinds))
-    return tuple(out), tuple(out.values()), slotless
+    unslotted = tuple((f, name) for f in e.fields.frames if f not in slotless for name in SLOT.findall(f)
+                      if name not in known and not _slot(model, e, name, kinds, strict=True))
+    return tuple(out), tuple(out.values()), slotless, unslotted
 
 
-def _verbs(model, found, kinds):
+def _verbs(model, found, kinds, known=frozenset()):
     out = []
     for e in found:
         if not e.label.startswith("verb") or not e.element or e.element.kind not in ("relation", "operation"):
             continue
         t = e.fields
-        frames, written, slotless = _frames(model, e, kinds, spec_frames.s3(t))
+        frames, written, slotless, unslotted = _frames(model, e, kinds, spec_frames.s3(t), known)
         out.append(spec_lexicon.Term(term=e.term, category="event", text=e.text, where=e.where, label=e.label,
                                      aspect=t.aspect, forms=t.forms, frames=frames, frame=frames[0], nots=t.nots,
-                                     written=written, slotless=slotless,
+                                     written=written, slotless=slotless, unended=t.unended, unslotted=unslotted,
                                      operation=e.element.id if e.element.kind == "operation" else "",
                                      element=qualified(e.element)))
     return out
@@ -200,7 +204,8 @@ def lexicon(root):
     keys = dict(kinds)
     keys.update({name: name for name in model.actors})
     services = ("service",) if "request" in spec_packs.imports(root) else ()
-    terms += _actors(model, found, kinds, services) + _attributes(model, found, kinds) + _verbs(model, found, keys)
+    terms += _actors(model, found, kinds, services) + _attributes(model, found, kinds) + _verbs(
+        model, found, keys, {"thing", *packed, *model.objects})     # a slot of a pack's kind or an object reads
     held = {k: k for k in packed}     # a relation to an imported pack's kind a row too (b609)
     held.update(kinds)
     return spec_lexicon.Lexicon(terms, rows(model, held))
