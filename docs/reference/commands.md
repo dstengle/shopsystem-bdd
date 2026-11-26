@@ -1309,11 +1309,13 @@ when the trace requests no port operation).
 
 Prints the coupling between the areas of the domain model (`spec/model/`), writing nothing, each area a bounded
 context the disentangling of a shop will make. A coupling is of the area depended on, by another area, and holds
-each word both areas' vocabularies define (of the area of the word's second entry), each element of the area the
+each word the other area's vocabulary borrows (an entry of it meaning an element of the area's model), each element of the area the
 other's model refers to, and each requirement of a capability of the other area that uses a word only the area
 defines, and each Python file of the other area that imports one of the area's, the areas' Python files declared
 in `.shop/modules.toml` (a table `[<area>]` with `modules`, path patterns from the repository's root, `**` across
-folders; a file two tables match is the first's, a file none matches no area's).\
+folders; a file two tables match is the first's, a file none matches no area's). A word two areas' vocabularies
+each define for an element of their own is a homonym, no reliance: held apart (of the area of the word's second
+entry) and counted in no figure, so a coupling of homonyms only is listed with none.\
 Synopsis: `shop spec coupling`
 
 ```console
@@ -1322,8 +1324,8 @@ $ shop spec coupling --json
 
 Each coupling is printed as `<area> by <other area>: <n> words, <n> elements, <n> requirements, <n> imports`,
 then a line of its words, its elements (`object note`), its requirement ids and its imports
-(`src/binder_shelf.py -> src/notes_store.py`), the couplings with the most first. Under `--json` the content is
-`{"couplings": [{"area", "by", "words", "elements", "requirements", "imports"}]}`; a context with no domain model
+(`src/binder_shelf.py -> src/notes_store.py`) and its homonyms, the couplings with the most first. Under `--json` the
+content is `{"couplings": [{"area", "by", "words", "elements", "requirements", "imports", "homonyms"}]}`; a context with no domain model
 has no coupling.
 
 ### `shop spec assign`
