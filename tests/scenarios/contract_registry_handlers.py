@@ -4,7 +4,7 @@ with the adapter wired in, the shop-folder adapter, in the scenario's repository
 context's spec/index.md). A contract a Given brings in is deposited at `1.2.0` before the When (`DEPOSITED`), unless
 it is the one the When deposits; the version v1 is `9.9.9` (`VERSION`), which no contract has. The When deposits the
 contract c1 at `1.2.0`, or retrieves this bounded context's contract, published or at the version it names, and keeps
-the response: what the request gave back, or its refusal. The Thens read it back: completed (the contract kept at its
+the registry's reply, a domain_envelope Response. The Thens read it back: completed (the contract kept at its
 version and committed), returned (the bytes of the contract deposited), refused (`version not deposited`) and named
 (the version among the refusal's names). A port's request has no CLI command, so requested.py leaves it as it is and
 re-keys its Thens to ThenExitsOk, ThenPrints and ThenDoes (refuse, name), which these handlers take."""
@@ -45,7 +45,6 @@ def given_absent(step):
 def requests(step):
     """`the specification service deposits the contract c1`, `... retrieves the contract c1 [with the version v1]`."""
     import contract_registry
-    from shop_refused import Refused
     if not mine(step) or step.template != "WhenRequests":
         return False
     w, repo = world(step), step.repo
@@ -57,17 +56,13 @@ def requests(step):
         contract_registry.deposit(repo, CONTRACT % DEPOSITED, DEPOSITED)
     w["head"] = W.head(repo)
     version = VERSION if "version" in [w["kinds"].get(n) for n in step.names] else None
-    try:
-        w["response"] = (contract_registry.deposit(repo, CONTRACT % DEPOSITED, DEPOSITED) if depositing
-                         else contract_registry.retrieve(repo, None, version))
-    except Refused as err:
-        w["response"] = err
+    w["response"] = (contract_registry.deposit(repo, CONTRACT % DEPOSITED, DEPOSITED) if depositing
+                     else contract_registry.retrieve(repo, None, version))
 
 
-def _response(step, refused=False):
-    from shop_refused import Refused
+def _response(step, outcome):
     found = world(step).get("response")
-    assert isinstance(found, Refused) == refused, found
+    assert found is not None and found.outcome == outcome, found
     return found
 
 
@@ -75,7 +70,7 @@ def then_completes(step):
     """`the contract registry service completes this request`: the contract kept at its version, committed."""
     if not mine(step) or "registry" not in step.context:
         return False
-    _response(step)
+    _response(step, "done")
     import contract_registry_folder
     kept = contract_registry_folder.kept(step.repo)
     assert kept.get(DEPOSITED, (None, None))[1] == "published", kept
@@ -87,7 +82,7 @@ def then_returns(step):
     """`the contract registry service returns the contract c1`: the bytes of the contract deposited."""
     if not mine(step) or "registry" not in step.context:
         return False
-    assert _response(step) == (DEPOSITED, (CONTRACT % DEPOSITED).encode()), _response(step)
+    assert _response(step, "returned").content == (DEPOSITED, (CONTRACT % DEPOSITED).encode()), world(step)
 
 
 def then_does(step):
@@ -95,11 +90,11 @@ def then_does(step):
     import contract_registry
     if not mine(step) or "registry" not in step.context or step.term not in ("refuse", "name"):
         return False
-    refused = _response(step, refused=True)
+    error = _response(step, "refused").errors[0]
     if step.term == "refuse":
-        assert refused.reason == contract_registry.REASON, refused.reason
+        assert error["reason"] == contract_registry.REASON, error
     else:
-        assert "version:%s" % VERSION in refused.names, refused.names
+        assert "version:%s" % VERSION in error["names"], error
 
 
 W.local("GivenK")(given_instance)

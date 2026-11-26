@@ -4,7 +4,7 @@ repository its `github:` under `## Upstreams` in spec/index.md names (request_gh
 `$SHOPSYSTEM_WORK_GH` (`gh api repos/<r>/contents/...`, the raw file, byte for byte). A repository GitHub does not
 serve (missing, private or not answering) is refused naming the bounded context and `bounded context unreachable`
 (`reached`, checking r89); another gh failure reading a reached repository naming it and `bounded context failing`
-(r102); no contract kept, or none at the version, refused as contract_registry's `version not deposited`, naming the
+(r102); no contract kept, or none at the version, the reply refused as contract_registry's `version not deposited`, naming the
 version asked (`published`)."""
 import json
 import os
@@ -69,14 +69,14 @@ def reached(root, context):
 
 
 def published(root, context, version=None):
-    """(version, bytes) of the contract `context` keeps as published, or at `version`; refused when it has none."""
+    """The reply of the contract `context` keeps as published, or at `version`: returned, else refused."""
     import contract_registry_folder
     repo = reached(root, context)
     if version:
         text = _api(root, repo, "%s/%s/%s" % (KEPT, version, FILE), context)
         if text is None:
-            raise contract_registry.undeposited(version)
-        return version, text
+            return contract_registry.undeposited(version)
+        return contract_registry.returned(version, text)
     listed = _api(root, repo, KEPT, context)
     try:
         entries = json.loads(listed) if listed else []
@@ -92,5 +92,5 @@ def published(root, context, version=None):
         if status and status.group(1) == "published":
             found = (entry["name"], text)
     if found is None:
-        raise contract_registry.undeposited(None)
-    return found
+        return contract_registry.undeposited(None)
+    return contract_registry.returned(*found)

@@ -1,11 +1,13 @@
 """A contract published and fetched (b348, checking r73-r80; the contracts design's C-2), through the contract
 registry (contract_registry, b636, checking r127, r131; decision 0139): `spec publish [--version V]` deposits the
 context's contract (contract_form) at a version with `status = "published"`, the registry keeping it as the published
-one and every contract published before it superseded; a version deposited already is refused naming it, and so is
+one and every contract published before it superseded, and keeps it once the registry completes the deposit (r128:
+the command's report of the contract kept, a deposit not completed refused naming the version); a version deposited already is refused naming it, and so is
 a context with a requirement that does not conform to the language reference, naming each such requirement. With no
 version the contract is deposited at the published one's last number one more, else at `1.0.0`. `spec fetch
 [--version V]` retrieves the contract published, or the one at V, and prints it, writing nothing; a version no
-contract is deposited at is refused naming it."""
+contract is deposited at is refused naming it. Fetch returns the contract the registry returns (r129) and, when the
+registry refuses the retrieval, names the version and changes nothing (r130)."""
 import re
 
 import contract_registry
@@ -16,22 +18,12 @@ VERSION = re.compile(r"[0-9A-Za-z][0-9A-Za-z.+-]*")
 
 def _published(root):
     """The version of the contract published, None while none is."""
-    try:
-        return contract_registry.retrieve(root)[0]
-    except Refused as err:
-        if err.reason != contract_registry.REASON:
-            raise
-        return None
+    reply = contract_registry.retrieve(root)
+    return reply.content[0] if reply.outcome == "returned" else None
 
 
 def _deposited(root, version):
-    try:
-        contract_registry.retrieve(root, None, version)
-    except Refused as err:
-        if err.reason != contract_registry.REASON:
-            raise
-        return False
-    return True
+    return contract_registry.retrieve(root, None, version).outcome == "returned"
 
 
 def _next(latest):
@@ -70,23 +62,27 @@ def publish(root, version=None):
         raise Refused("these requirements do not conform to the language reference: {names}",
                       reason="requirement not in the language", names=["requirement:%s" % i for i in out])
     lines = contract_form.render(root, version).split("\n")    # context, version, then the status
-    done = contract_registry.deposit(root, "\n".join(lines[:2] + ['status = "published"'] + lines[2:]), version)
+    reply = contract_registry.deposit(root, "\n".join(lines[:2] + ['status = "published"'] + lines[2:]), version)
+    if reply.outcome != "done":     # kept only once the registry completes the deposit (r128)
+        raise Refused("the contract registry did not deposit the contract at the version {names}",
+                      reason=reply.errors[0]["reason"] if reply.errors else "contract not deposited",
+                      names=["version:%s" % version])
+    done = reply.content
     print("published %s%s" % (done["kept"], "".join("\nsuperseded %s" % p for p in done["superseded"])))
     return 0
 
 
 def fetch(root, version=None):
-    """`spec fetch`: the contract published, or the one at `version`, retrieved and printed; nothing written."""
-    try:
-        _, data = contract_registry.retrieve(root, None, version)
-    except Refused as err:
-        if err.reason != contract_registry.REASON:
-            raise
-        if version is None:
-            raise Refused("no contract is published", reason="version not published") from None
+    """`spec fetch`: the contract the registry returns, published or at `version`, printed (r129); a retrieval it
+    refuses refused naming the version (r130); nothing written."""
+    reply = contract_registry.retrieve(root, None, version)
+    if reply.outcome != "returned":
+        named = contract_registry.refused_version(reply, version)
+        if named is None:
+            raise Refused("no contract is published", reason="version not published")
         raise Refused("no contract is kept at the version {names}", reason="version not published",
-                      names=["version:%s" % version]) from None
+                      names=["version:%s" % named])
     from domain_envelope import Response
-    text = data.decode("utf-8")
+    text = reply.content[1].decode("utf-8")
     print(text, end="")
     return Response("returned", text)

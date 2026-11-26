@@ -43,7 +43,7 @@ def place(context, version):
 
 def deposit(root, contract, version):
     """The contract (its text) kept at `version` as the published one, every one published before it superseded,
-    committed; {"kept": its path, "superseded": the paths set superseded}."""
+    committed; the reply completed, {"kept": its path, "superseded": the paths set superseded}."""
     import shop_files
     contracts = kept(root)
     if version in contracts:
@@ -61,7 +61,7 @@ def deposit(root, contract, version):
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text(contract, encoding="utf-8")
     shop_files.committed(root, older + [rel], "spec publish: the contract at %s" % version, write)
-    return {"kept": rel, "superseded": older}
+    return contract_registry.completed({"kept": rel, "superseded": older})
 
 
 def _local(folder, version):
@@ -69,11 +69,11 @@ def _local(folder, version):
     if version is None:
         found = sorted((v for v, (_, status) in contracts.items() if status == "published"), key=order)
         if not found:
-            raise contract_registry.undeposited(None)
+            return contract_registry.undeposited(None)
         version = found[-1]
     elif version not in contracts:
-        raise contract_registry.undeposited(version)
-    return version, (Path(folder) / contracts[version][0]).read_bytes()
+        return contract_registry.undeposited(version)
+    return contract_registry.returned(version, (Path(folder) / contracts[version][0]).read_bytes())
 
 
 def hosted(root, context):
@@ -96,8 +96,8 @@ def hosted(root, context):
 
 
 def retrieve(root, context=None, version=None):
-    """(version, bytes) of the contract of `context` (None: the bounded context at `root`) at `version` (None: the
-    published one), read from its folder in the shop, else from its repository on GitHub."""
+    """The reply to a retrieve of the contract of `context` (None: the bounded context at `root`) at `version` (None:
+    the published one), read from its folder in the shop, else from its repository on GitHub."""
     if context is None:
         return _local(root, version)
     folder = hosted(root, context)

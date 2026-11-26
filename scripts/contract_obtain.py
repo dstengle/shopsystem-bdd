@@ -10,7 +10,7 @@ context id form (migrate init's `FORM`) is refused naming the id and `id not in 
 upstream the registry cannot reach naming the bounded context and `bounded context unreachable` (r89); a bounded
 context no adapter spec has as its provider naming the provider and `no adapter spec has the provider` (b593, r103:
 only of an available provider in the context id form, b601); an upstream with no contract deposited, or none at V,
-naming the bounded context; a contract kept already at that place is left as it is when the same, and written again
+naming the bounded context and the version (r130); a contract kept already at that place is left as it is when the same, and written again
 with the upstream's bytes, committed, when another (review f1)."""
 from pathlib import Path
 
@@ -22,20 +22,21 @@ ADAPTERS = "adapters"
 
 
 def _none(context, version):
-    at = " at the version %s" % version if version else ""
-    return Refused("the bounded context {names} has no contract%s" % at, reason="bounded context with no contract",
-                   names=["bounded context:%s" % context])
+    if not version:
+        return Refused("the bounded context {names} has no contract", reason="bounded context with no contract",
+                       names=["bounded context:%s" % context])
+    return Refused("no contract is deposited for the bounded context and the version {names}",
+                   reason="bounded context with no contract",
+                   names=["bounded context:%s" % context, "version:%s" % version])
 
 
 def retrieved(root, context, version):
-    """(version, bytes) of the contract of `context` the registry gives, at `version` or published; one it has not
-    deposited refused naming the bounded context (r82)."""
-    try:
-        return contract_registry.retrieve(root, context, version)
-    except Refused as err:
-        if err.reason != contract_registry.REASON:
-            raise
-        raise _none(context, version) from None
+    """(version, bytes) of the contract of `context` the registry returns, at `version` or published; a retrieval it
+    refuses refused naming the bounded context (r82) and the version (r130), nothing written."""
+    reply = contract_registry.retrieve(root, context, version)
+    if reply.outcome == "returned":
+        return reply.content
+    raise _none(context, contract_registry.refused_version(reply, version))
 
 
 def _reach(root, context):
