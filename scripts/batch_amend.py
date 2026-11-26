@@ -3,7 +3,7 @@ drafting r38-r40) laid again on its batch's branch `batch-<n>` and on its task's
 
 On each, in its worktree (made, and removed again, when it is not there), the item's lines as last laid
 (`batch_parked.as_laid`) are taken out against the batch's base (`batch_parked.base_of`, as a park takes them out:
-b704) and its lines as they now read laid in (`batch_start.unlay_lines`, `lay_lines`), in one commit citing the
+b704) and its lines as they now read laid in (the laying service's lift and lay, laying, b611), in one commit citing the
 item, whose `Laid:` line names the base's commit that holds the item as laid, so that a later park, review or amend
 takes out the lines the branch holds. Its new ids are renumbered past the batch branch's (the other items' lines
 laid there), the item committed on the base when they move. A line laid
@@ -26,7 +26,7 @@ import backlog_lines
 import batch_findings
 import batch_parked
 import batch_plan
-import batch_start
+import laying
 import readiness_bar
 import shop_files
 import spec_corpus_write
@@ -110,11 +110,11 @@ def relay(tree, old, new, renumber=False, root=None, base=None):
     over the worktree before it is laid (b486); the paths changed and the renumbered pairs."""
     caps = set(_lines(old)) | set(_lines(new))
     before = _unbuilt(tree, caps)
-    changed = batch_start.unlay_lines(tree, [old], COMMAND, base)
+    changed = laying.changed(laying.lift(old, tree, COMMAND, base), COMMAND)
     pairs = backlog_lines.renumber(tree, new, {}) if renumber else []
     if root is not None:
         _bar(root, tree, new)
-    changed += batch_start.lay_lines(tree, [new], command=COMMAND)
+    changed += laying.changed(laying.lay(new, tree, COMMAND), COMMAND)
     changed += _keep_built(tree, _lines(old), _lines(new), before)
     changed += _corpus(tree, _lines(old), _lines(new))
     return list(dict.fromkeys(changed)), pairs
