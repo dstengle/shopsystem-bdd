@@ -17,6 +17,7 @@ import spec_corpus_write
 import spec_held
 import spec_read
 
+PROVIDED = "provider/*/contract.toml"                       # a git pathspec of every provider contract
 READING = re.compile(r"(?ms)^(## [rU][1-9]\d*[ \t]*\n.*?```reading\n)([^\n]*)\n(.*?)\n```")
 
 
@@ -61,9 +62,12 @@ def corpus(tree):
 
 def inputs(tree):
     """The paths, relative to `tree`, of grammar 4's inputs (spec_held's) under it and `spec/universal.md`, with the
-    folder under `spec/` of each, so that a file a lay takes out is told too; the plugin's packs and grammar outside
-    `tree` no lay changes."""
+    folder under `spec/` of each, the folders spec_held reads whether or not they hold a file now and the provider
+    contracts' pathspec, so that a file a lay takes out, the last of its folder among them, is told too (b770); the
+    plugin's packs and grammar outside `tree` no lay changes."""
     top = os.path.realpath(str(tree))
+    modelled = os.path.isdir(os.path.join(top, "spec", "model"))
+    read = ["packs", "model"] + (["vocabulary"] if modelled else ["capabilities"])
     out = []
     for path in spec_held.inputs(tree) + [os.path.join(str(tree), "spec", "universal.md")]:
         rel = os.path.relpath(os.path.realpath(path), top)
@@ -73,6 +77,9 @@ def inputs(tree):
         for each in [rel] + ([folder] if folder.startswith("spec" + os.sep) else []):
             if each not in out:
                 out.append(each)
+    for each in [os.path.join("spec", name) for name in read] + [PROVIDED]:
+        if each not in out:
+            out.append(each)
     return out
 
 
