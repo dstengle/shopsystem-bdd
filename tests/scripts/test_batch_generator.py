@@ -1,10 +1,9 @@
 """The generator a tree holds writes its features (b740, batches r170): a tree with `scripts/features` and
 `scripts/features_generate.py` has them written by that program in a process of its own, a refusal of it a
 GenerateError; a tree with none by features_generate in this process."""
-import pytest
-
 import batch_generator
 import features_generate
+import pytest
 
 STAND_IN = '''import sys
 args = sys.argv[1:]
