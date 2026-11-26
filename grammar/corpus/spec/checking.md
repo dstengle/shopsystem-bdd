@@ -2042,18 +2042,18 @@ shall [x8: agent the person (constant), x9: shop "the shop the request is made i
 Retires: r144. From: b762 r149.
 
 ```reading
-While an area holds an element and another area holds a term that means the element and the term has a word, when the person reports on the shop, the specification service shall return a coupling of the area that holds the word.
+While an area holds a term that has a word and the term means an element that another area holds, when the person reports on the shop, the specification service shall return a coupling of the area and name the word.
 shall [x6: agent the person (constant), x7: shop "the shop the request is made in" (indexical), x8: service the specification service (constant)]
-  while [x1: area, x2: element, x3: area, x4: term, x5: word]
+  while [x1: area, x2: term, x3: word, x4: element, x5: area]
+    of(x3, x2)
     in(x2, x1)
-    distinct(x3, x1)
-    mean(subject: x4, object: x2)
-    in(x4, x3)
-    of(x5, x4)
+    distinct(x5, x1)
+    in(x4, x5)
+    mean(subject: x2, object: x4)
   when
     request(e1, specification.report coupling, subject: x6, on: x7)
   response [x9: coupling]
-    of(x9, x3)
-    in(x5, x9)
+    of(x9, x5)
     return(e2, subject: x8, object: x9)
+    name(e3, subject: x8, object: x3)
 ```

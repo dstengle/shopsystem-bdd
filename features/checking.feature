@@ -1297,17 +1297,17 @@ Feature: Checking
 
   @g149 @r149
   Scenario: the coupling report names the words one area borrows for another area's elements
-    Given an element e1
-    And an area a1
-    And the area a1 holds the element e1
+    Given a word w1
     And a term t1
-    And the term t1 means the element e1
-    And an area a2
-    And the area a2 holds the term t1
-    And a word w1
     And the term t1 has the word w1
+    And an area a1
+    And the area a1 holds the term t1
+    And an element e1
+    And an area a2
+    And the area a2 holds the element e1
+    And the term t1 means the element e1
     And a coupling c1
     And the area a2 has the coupling c1
     When the person reports on this shop
     Then the specification service returns the coupling c1
-    And the coupling c1 holds the word w1
+    And the specification service names the word w1
