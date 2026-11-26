@@ -99,4 +99,14 @@ object batch summary form kind of text
 object review limit
 
 object amendment kind of kept change
+
+service shop
+  operation keep(bounded context, id)  outcomes: done → the bounded context | refused: id outside the product id, id kept already
+  operation list(shop)  outcomes: returned → every bounded context
+
+object shop
+  relations: holds → bounded context (many); has → product id (one)
+
+object product id kind of text
+  relations: covers → id (many)
 ```

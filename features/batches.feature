@@ -507,15 +507,6 @@ Feature: Batches
     Then the batches service delivers the item i1
     And the batches service sets the status of the batch b1 to `merged`
 
-  @g101 @r101
-  Scenario: A ready item that no longer meets the bar is reopened
-    Given an item i1
-    And the status of the item i1 is `ready`
-    And the item i1 does not meet this readiness bar
-    And a batch b1
-    When the person opens the batch b1
-    Then the batches service reopens the item i1
-
   @g102 @r102
   Scenario: Every batch summary states its cost and timing
     Given a proposed change p1
@@ -569,16 +560,6 @@ Feature: Batches
     When the person opens the batch b1
     Then the batches service reopens the item i1
     And the batches service names the rule r2
-
-  @g107 @r107
-  Scenario: A ready item whose change would take the batch past the review limit is not allocated
-    Given an item i1
-    And the status of the item i1 is `ready`
-    And the item i1 meets this readiness bar
-    And the item i1 exceeds the review limit
-    And a batch b1
-    When the person opens the batch b1
-    Then the batches service does not allocate the item i1
 
   @g108 @r108
   Scenario: A batch opened allocates each ready item within the review limit
@@ -895,3 +876,22 @@ Feature: Batches
     When the person opens the batch b1
     Then the area a1 holds the capability c1
     And the batches service keeps the capability c1
+
+  @g130 @r130
+  Scenario: A ready item within the review limit that no longer meets the bar is reopened
+    Given an item i1
+    And the status of the item i1 is `ready`
+    And the item i1 does not meet this readiness bar
+    And the item i1 does not exceed the review limit
+    And a batch b1
+    When the person opens the batch b1
+    Then the batches service reopens the item i1
+
+  @g131 @r131
+  Scenario: A ready item whose change would take the batch past the review limit is not allocated, whether or not it meets the bar
+    Given an item i1
+    And the status of the item i1 is `ready`
+    And the item i1 exceeds the review limit
+    And a batch b1
+    When the person opens the batch b1
+    Then the batches service does not allocate the item i1

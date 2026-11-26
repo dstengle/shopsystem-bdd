@@ -6,7 +6,7 @@ group: service
 area: execution
 specifies: object batch, object task, service batches
 language: codified-2
-retired: [g69, r69, g82, r82, g88, r88, g53, r53, g59, r59, g51, r51, g103, r103, g50, r50, g54, r54, g55, r55, g57, r57, g58, r58, g65, r65, g89, r89, g93, r93, g94, r94, g97, r97]
+retired: [g69, r69, g82, r82, g88, r88, g53, r53, g59, r59, g51, r51, g103, r103, g50, r50, g54, r54, g55, r55, g57, r57, g58, r58, g65, r65, g89, r89, g93, r93, g94, r94, g97, r97, g101, r101, g107, r107]
 unbuilt: []
 ---
 
@@ -150,9 +150,6 @@ when the change is merged.
 ### [g100] Merging a batch's change delivers its items
 - [r100] While an item in a batch is `in-batch`, when the person merges the proposed change of the batch, the batches service shall deliver the item and set the status of the batch to `merged`.
 
-### [g101] A ready item that no longer meets the bar is reopened
-- [r101] While an item is `ready` and the item does not meet the readiness bar, when the person opens a batch, the batches service shall reopen the item.
-
 ### [g110] An item a ready item depends on and that is not ready is not allocated
 - [r110] While an item is not `ready` or `delivered` and a dependency on the item exists and another item whose status is `ready` has the dependency, when the person opens a batch, the batches service shall not allocate the item.
 
@@ -167,9 +164,6 @@ when the change is merged.
 
 ### [g106] A ready item whose lines laid violate a rule is reopened
 - [r106] While an item is `ready` and the item meets the readiness bar and a requirement of the item violates a rule whose severity is `error`, if the person opens a batch, then the batches service shall reopen the item and name the rule.
-
-### [g107] A ready item whose change would take the batch past the review limit is not allocated
-- [r107] While an item is `ready` and the item meets the readiness bar and the item exceeds the review limit, when the person opens a batch, the batches service shall not allocate the item.
 
 ### [g108] A batch opened allocates each ready item within the review limit
 - [r108] While an item is `ready` and the item meets the readiness bar and the item has no dependency on an item whose status is not `delivered` and the item does not exceed the review limit, when the person opens a batch, the batches service shall allocate the item, keep a batch that holds the item and keep a batch plan of the batch.
@@ -221,4 +215,10 @@ when the change is merged.
 
 ### [g129] A new capability laid with its area is kept in that area
 - [r129] While an item is `ready` and the item meets the readiness bar and the item holds a capability and the item holds an area that holds the capability, when the person opens a batch, the batches service shall keep the capability that the area holds.
+
+### [g130] A ready item within the review limit that no longer meets the bar is reopened
+- [r130] While an item is `ready` and the item does not meet the readiness bar and the item does not exceed the review limit, when the person opens a batch, the batches service shall reopen the item.
+
+### [g131] A ready item whose change would take the batch past the review limit is not allocated, whether or not it meets the bar
+- [r131] While an item is `ready` and the item exceeds the review limit, when the person opens a batch, the batches service shall not allocate the item.
 

@@ -681,22 +681,6 @@ shall [x3: agent the person (constant), x5: service the batches service (constan
     initiates(e3, subject: x5, status(x2) = `merged`)
 ```
 
-## r101
-Retires: r54. From: b578 r101.
-
-```reading
-While an item is `ready` and the item does not meet the readiness bar, when the person opens a batch, the batches service shall reopen the item.
-shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x3: agent the person (constant), x5: service the batches service (constant)]
-  while [x1: item]
-    status(x1) = `ready`
-    not
-      meet(subject: x1, object: x2)
-  when [x4: batch]
-    request(e1, batches.open, subject: x3, object: x4)
-  response
-    reopen#2(e2, subject: x5, object: x1)
-```
-
 ## r102
 Retires: r59. From: b580 r102.
 
@@ -764,23 +748,6 @@ shall [x2: readiness bar "the readiness bar of the plugin that runs the command"
   response
     reopen#2(e2, subject: x7, object: x1)
     name(e3, subject: x7, object: x4)
-```
-
-## r107
-Retires: r93. From: b578 r107.
-
-```reading
-While an item is `ready` and the item meets the readiness bar and the item exceeds the review limit, when the person opens a batch, the batches service shall not allocate the item.
-shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x3: agent the review limit (constant), x4: agent the person (constant), x6: service the batches service (constant)]
-  while [x1: item]
-    status(x1) = `ready`
-    meet(subject: x1, object: x2)
-    exceed#2(subject: x1, object: x3)
-  when [x5: batch]
-    request(e1, batches.open, subject: x4, object: x5)
-  response
-    not
-      allocate(e2, subject: x6, object: x1)
 ```
 
 ## r108
@@ -1187,4 +1154,38 @@ shall [x2: readiness bar "the readiness bar of the plugin that runs the command"
   response
     in(x3, x4)
     keep(e2, subject: x7, object: x3)
+```
+
+## r130
+Retires: r101. From: b663 r130.
+
+```reading
+While an item is `ready` and the item does not meet the readiness bar and the item does not exceed the review limit, when the person opens a batch, the batches service shall reopen the item.
+shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x3: agent the review limit (constant), x4: agent the person (constant), x6: service the batches service (constant)]
+  while [x1: item]
+    status(x1) = `ready`
+    not
+      meet(subject: x1, object: x2)
+    not
+      exceed#2(subject: x1, object: x3)
+  when [x5: batch]
+    request(e1, batches.open, subject: x4, object: x5)
+  response
+    reopen#2(e2, subject: x6, object: x1)
+```
+
+## r131
+Retires: r107. From: b663 r131.
+
+```reading
+While an item is `ready` and the item exceeds the review limit, when the person opens a batch, the batches service shall not allocate the item.
+shall [x2: agent the review limit (constant), x3: agent the person (constant), x5: service the batches service (constant)]
+  while [x1: item]
+    status(x1) = `ready`
+    exceed#2(subject: x1, object: x2)
+  when [x4: batch]
+    request(e1, batches.open, subject: x3, object: x4)
+  response
+    not
+      allocate(e2, subject: x5, object: x1)
 ```
