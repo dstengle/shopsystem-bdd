@@ -1247,6 +1247,29 @@ $ shop spec context missingmass.io/shopsystem/shopsystem-bdd --addresses specifi
 declared the bounded context missingmass.io/shopsystem/shopsystem-bdd kept by missingmass.io/shopsystem/shop
 ```
 
+### `shop spec assign`
+
+Assigns a job of the product to the one bounded context whose capabilities serve it, kept among the bounded
+context's jobs in the product file, in one commit. A job is assigned once: a job a bounded context holds already is
+refused naming the job.\
+Synopsis: `shop spec assign <job> --to <bounded context>`
+
+```console
+$ shop spec assign j1 --to missingmass.io/shopsystem/shopsystem-bdd
+assigned the job j1 to the bounded context missingmass.io/shopsystem/shopsystem-bdd
+```
+
+### `shop spec plays`
+
+Maps a product actor to the actor a bounded context's model calls it by, kept among the bounded context's actors in
+the product file, in one commit. A product actor the product does not hold is refused naming it.\
+Synopsis: `shop spec plays <product actor> --in <bounded context> --as <actor>`
+
+```console
+$ shop spec plays "the developer" --in missingmass.io/shopsystem/shopsystem-bdd --as "the person"
+mapped the product actor the developer to the person in the bounded context missingmass.io/shopsystem/shopsystem-bdd
+```
+
 ### `shop spec decisions`
 
 Writes `spec/decisions/index.md` from the decision files. Not committed.\
