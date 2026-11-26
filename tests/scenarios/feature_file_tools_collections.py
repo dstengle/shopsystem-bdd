@@ -47,6 +47,11 @@ LINES = {
           "is `urgent`."),
          [r"And the priority of the stage s3 is `high`\n", COUNTER % "stage s3", r"`work` prints the stage s2\n"],
          [r"priority of the stage s3 is `low`"])],
+    "denied": [     # b743: the no boxes deny every other value, the counter-example of every has no value of it
+        (("While no stage is `low` and no stage is `high`, when the person runs `work status`, `work` shall print "
+          "every stage whose priority is `urgent`."),
+         [r"And the stage s3 has no priority\n", COUNTER % "stage s3", r"`work` prints the stage s2\n"],
+         [r"priority of the stage s3 is"])],
     "satisfy": [
         (("While a stage has a line and every line of the stage is `accepted`, when the person runs `work status`, "
          "`work` shall print the stage."),
@@ -95,10 +100,11 @@ def kind(w, K):
     """The lines the Givens describe: a precondition that uses every or holds a count, a requirement that uses two,
     every or only with a restriction, or no-noun (b299), or has an upper bound (of a count over a row of a response's
     object: b296), a precondition of every over a not
-    (b310), every under a precondition of no-noun (b732); None for none of these."""
+    (b310), every under a precondition of no-noun (b732), of two no boxes that deny every other value (b743); None for
+    none of these."""
     facts = {(v, K(w, a), b if str(b).startswith("`") else K(w, b)) for v, a, b, pos in w["facts"] if pos}
     if {("use", "precondition", "`no-noun`"), ("use", "requirement", "`every`")} <= facts:     # b732
-        return "excluded"
+        return "denied" if ("use", "precondition", "`and-condition`") in facts else "excluded"     # b743
     if {("use", "precondition", "`every`"), ("use", "precondition", "`not-condition`")} <= facts:
         return "negated"
     if {("use", "requirement", "`count`"), ("use", "requirement", "`holds-relation`"),
@@ -181,3 +187,14 @@ def unused(text, code):
         assert members, (g, "no counter-example", s)
         said = [line for line in s.split("\n") for m in members if re.search(r"\b%s\b" % m, line) and code in line]
         assert not said, (g, code, said, s)
+
+
+def valueless(text, code):
+    """AssertionError naming the scenario when a counter-example's member (the thing a scenario's Then says is not
+    printed) is not said to have no value of the attribute, `has-no-value` (b743)."""
+    assert code == "`has-no-value`", code
+    for g, s in scenarios(text):
+        members = re.findall(r"^    (?:Then|And) `work` does not print the ([a-z]+ [a-z]\d+)$", s, re.MULTILINE)
+        assert members, (g, "no counter-example", s)
+        for m in members:
+            assert re.search(r"^    (?:Given|And) the %s has no [a-z ]+$" % m, s, re.MULTILINE), (g, m, s)

@@ -181,6 +181,15 @@ def unused(step, w):
     COL.unused((step.repo / "features" / ("%s.feature" % NAME)).read_text(), W.value(w, step.names[-1]))
 
 
+def valueless(step, w):
+    """`the counter-example c2 uses `has-no-value``: the scenario holds the lines' patterns and each counter-example's
+    member has no value of the attribute (b743)."""
+    assert result_ok(step) and w.get("lines"), step.text
+    text = (step.repo / "features" / ("%s.feature" % NAME)).read_text()
+    COL.check(w["lines"], text, "counter-example")
+    COL.valueless(text, step.nps[-1])
+
+
 def uses(step, w):
     """`the scenario s1 uses `only``: the feature written holds the Then of the construct's world."""
     assert result_ok(step)
