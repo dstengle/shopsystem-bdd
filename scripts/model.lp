@@ -373,10 +373,11 @@ label("v_t5", "a value names no attribute, or more than one").
 % pass v_t5: node("v","term"). category("v","value"). value_of("v","k","a").
 v_t5(V)       :- category(V, "value"), not has_value_of(V).
 v_t5(V)       :- value_of(V, K1, A1), value_of(V, K2, A2), (K1, A1) < (K2, A2).
-label("v_t6", "two terms are written the same").
+label("v_t6", "a term is written as another term is, or as a word the grammar spells itself").
 % fail v_t6: linearises("t1","x y"). linearises("t2","x y").
 % pass v_t6: linearises("t1","x y"). linearises("t2","x z").
 v_t6(T1, T2)  :- linearises(T1, L), linearises(T2, L), T1 < T2.
+v_t6(T, "the grammar spells it itself") :- spelled(T).     % a pack's verb no entry keeps beside its own (b847)
 label("v_t11", "a verb's entry gives no frame: the kinds of its subject and object, or that it takes no object").
 % fail v_t11: frameless("write").
 % pass v_t11: category("write","event").
@@ -393,10 +394,11 @@ label("v_t14", "a verb's entry says neither state nor action").
 % fail v_t14: aspectless("write").
 % pass v_t14: category("write","event").
 v_t14(T)      :- aspectless(T).
-label("v_t15", "two entries of one verb take, in every slot, the same kind or one kind under the other").
+label("v_t15", "two senses of one verb, two entries or an entry and a pack's it redefines, take in every slot the same kind or one kind under the other").
 % fail v_t15: senses("name"). overlapping("name").
 % pass v_t15: senses("name").
-v_t15(T)      :- overlapping(T).
+v_t15(T, "two entries")  :- overlapping(T).
+v_t15(T, P)   :- overlaps_pack(T, P).     % a verb kept beside the pack P's sense of it (b847)
 label("v_t16", "a term an imported pack defines too has no `Redefines:` naming the pack").
 % fail v_t16: unmarked("t1","cli").
 % pass v_t16: category("t1","kind").
@@ -682,7 +684,7 @@ w_example(Q, L)    :- exemplified(Q, L).
 #show v_d2/1. #show v_d4/2.
 #show v_d6/1. #show v_d7/1. #show v_d8/2. #show v_d9/2.
 #show v17/1. #show v18d/1.
-#show v_t1/3. #show v_t2/1. #show v_t3/1. #show v_t4/1. #show v_t5/1. #show v_t6/2. #show v_t11/1. #show v_t12/1. #show v_t13/2. #show v_t14/1. #show v_t15/1.
+#show v_t1/3. #show v_t2/1. #show v_t3/1. #show v_t4/1. #show v_t5/1. #show v_t6/2. #show v_t11/1. #show v_t12/1. #show v_t13/2. #show v_t14/1. #show v_t15/2.
 #show v_t16/2. #show v_t17/2. #show v_t18/2. #show v_t19/2. #show v_t20/2. #show v_t21/2. #show v_t22/2.
 #show v_m1/3. #show v_m2/2. #show v_m3/2. #show v_m4/2. #show w_m5/4. #show v_m6/4. #show v_m7/1. #show v_m9/4. #show v_pb1/1. #show v_pb2/1. #show v_pb3/2. #show v_pb4/1. #show v_m8/2. #show v_a1/2. #show v_a2/2. #show v_a3/2. #show v_a4/2. #show v_a5/2. #show v_a6/2. #show v_c1/2. #show v_c2/1. #show v_c3/1. #show v_c4/2. #show v_r1/2. #show w_r1/2.
 #show v_p0/1. #show v_p1/2. #show v_p2/1. #show v_p3/2.

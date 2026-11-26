@@ -56,9 +56,10 @@ def test_the_fixture_is_clean():
 
 
 # --- the lines against the model (v_m2-v_m7, model_domain_lines), each on a broken copy of the fixture -------------
-def _codes(tmp_path, model=None, line=None, facts=(), port=None):
+def _codes(tmp_path, model=None, line=None, facts=(), port=None, setup=None):
     """`model check`'s v_m and w_m codes on a copy of the fixture, its model's text changed by `model` (old, new) and
-    a line added as r10, `port` (`_port`'s reason and lines) laid in, and `facts` laid beside the copy's."""
+    a line added as r10, `port` (`_port`'s reason and lines) laid in, `setup` called on the copy, and `facts` laid
+    beside the copy's."""
     import shutil
 
     import model_check
@@ -74,6 +75,8 @@ def _codes(tmp_path, model=None, line=None, facts=(), port=None):
         cap.write_text(cap.read_text() + "\n### [g10] Added\n- [r10] %s\n" % line)
     if port:
         _port(root, *port)
+    if setup:
+        setup(root)
     read = model_facts.Model(root).read()
     read.facts += [(f[0], tuple(f[1:])) for f in facts]
     found, _ = model_check.solve(read)
@@ -154,3 +157,25 @@ def test_v_m7_an_operation_a_response_requests(tmp_path):
     # asks (b543): a response's request of an operation counts as a request of it
     assert _codes(tmp_path, port=(None, [])) == [("v_m7", "stock.reserve")]
     assert _codes(tmp_path / "asked", port=(None, [ASKS])) == []
+
+
+
+def _refuse(root):
+    """The context's refuse naming `notes.refuse` (`Redefines: request`), kept beside the request pack's refuse."""
+    spec = root / "spec"
+    model = spec / "model" / "notes.md"
+    model.write_text(model.read_text().replace("  operation list()", "  operation refuse(note)  outcomes: done\n"
+                                               "  operation list()", 1))
+    words = spec / "vocabulary" / "notes.md"
+    words.write_text(words.read_text() + "- **refuse** (verb, action) → operation notes.refuse. A note turned down by "
+                     "the person. Forms: refuses, refused. Redefines: request. Frame: the person refuses <note>.\n")
+    contract = spec / "adapters" / "cli.toml"
+    contract.write_text(contract.read_text() + '\n[unexposed]\noperations = ["notes.refuse"]\n')
+
+
+def test_v_m4_a_refusal_by_the_request_packs_refuse_beside_the_contexts(tmp_path):
+    # b847, finding f1: the line facts number a verb's senses as grammar 4 does (the pack's first), so the pack's
+    # refuse beside the context's still gives the line on the refusal of a reservation its on_refusal
+    own = "When the person refuses a note, the notes service shall keep the note."
+    assert ("v_m4", "stock.reserve", "no stock") in _codes(tmp_path, port=("no stock", [ASKS, own]), setup=_refuse)
+    assert _codes(tmp_path / "refused", port=("no stock", [ASKS, REFUSED, own]), setup=_refuse) == []

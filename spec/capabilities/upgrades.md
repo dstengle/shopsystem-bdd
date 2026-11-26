@@ -737,3 +737,20 @@ the tracked file `.gitignore` holds:
 ### [g46] A bounded context founded on a branch other than the base branch names the branch
 - [r46] While the branch differs from the base branch and this bounded context has no index file and this repository has no shop directory, when the person founds this bounded context with a context id, the upgrades service shall keep the context scaffold of this repository, name the branch and complete the request.
 
+### [g47] An upgrade to 0.45.0 names each term and transition the stricter rules fail and rewrites the Composition
+- [r47] While the release of this repository is after `0.34.0` and before `0.45.0` and the release of this repository is before the release of the plugin, when the person upgrades this repository, the upgrades service shall change the index file of this bounded context and return every term that violates `v_t13`, every term that violates `v_t22` and every transition that violates `v_m9`.
+
+```given
+the tracked file `.shop/plugin-version` holds "0.44.0"
+the tracked file `spec/index.md` holds:
+  ---
+  id: bounded-context/example.org/acme/shop
+  title: shop
+  language: codified-2
+  ---
+  # shop
+  ## Composition
+  ### Areas
+  - cart: the goods a shopper picks.
+```
+

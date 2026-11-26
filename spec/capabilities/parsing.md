@@ -99,3 +99,9 @@ A line parsed in the controlled language to one meaning or refused with why, its
 ### [g28] The logical form keeps the request a failure is on
 - [r28] When the person parses a requirement that uses `reply-failure` with the logical form, the language service shall return a logical form that holds a replied request.
 
+### [g30] A requirement that uses a term that redefines the request pack is read by the term
+- [r30] While a term redefines the `request` pack, when the person parses a requirement that uses the term, the language service shall return one logical form of the requirement and complete the request.
+
+### [g31] A requirement that uses a term of the request pack is read by the pack's term beside a term that redefines it
+- [r31] While a term redefines the `request` pack, when the person parses a requirement that uses a term that the pack has, the language service shall return one logical form of the requirement and complete the request.
+

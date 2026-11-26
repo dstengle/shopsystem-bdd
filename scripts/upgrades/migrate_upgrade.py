@@ -21,6 +21,7 @@ from upgrades import (
     migrate_upgrade_frames,
     migrate_upgrade_ids,
     migrate_upgrade_simplified,
+    migrate_upgrade_stricter,
     migrate_upgrade_values,
 )
 
@@ -50,7 +51,11 @@ STEPS = [("0.24.0", "work-items named by ids", "give every work-item the id w<n>
          ("0.38.0", "the domain contract",
           ("scaffold the domain model, the vocabulary and the CLI contract from the glossary, the relations and the "
            "commands the lines run, import the request pack, and name by file and id each line a session rewords in "
-           "the request's words"), migrate_upgrade_domain)]
+           "the request's words"), migrate_upgrade_domain),
+         ("0.45.0", migrate_upgrade_stricter.NAME,
+          ("write the index file's Composition in the index form, and name each term whose Frame: v_t13 refuses, each "
+           "vocabulary entry v_t22 refuses and each lifecycle transition v_m9 refuses, for a session to reword"),
+          migrate_upgrade_stricter)]
 
 
 def number(version):

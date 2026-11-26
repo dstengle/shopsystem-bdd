@@ -455,6 +455,12 @@ Restates: design-model-check#r13@0.29.
 ### [g161] A product actor of a job held here that no actor here plays is named
 - [r161] While this bounded context holds a job and the job has a product actor and no agent plays the product actor, when the person validates this specification, the specification service shall name the product actor and complete the request.
 
+### [g162] the check passes a term that redefines a verb of the request pack and tells its senses apart
+- [r162] While a term redefines the `request` pack and the term does not violate `v_t15`, when the person validates this specification, the specification service shall return no term that violates `v_t6` and complete the request.
+
+### [g163] the check fails a term that redefines a verb of the request pack and does not tell its senses apart, naming the term and the pack
+- [r163] While a term redefines the `request` pack and the term violates `v_t15`, if the person validates this specification, then the specification service shall fail the check and name the term and the pack.
+
 ## Dropped
 - design-model-check#r2@0.29: retired with checking#r4 by b370.
 - design-model-check#r3@0.29: retired with checking#r4 by b370.

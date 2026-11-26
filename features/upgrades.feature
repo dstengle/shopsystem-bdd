@@ -1154,3 +1154,51 @@ Feature: Upgrades
     And this repository has the context scaffold c2
     And the upgrades service names this branch
     And the upgrades service completes this request
+
+  @g47 @r47
+  Scenario: An upgrade to 0.45.0 names each term and transition the stricter rules fail and rewrites the Composition
+    Given the tracked file `.shop/plugin-version` holds "0.44.0"
+    And the tracked file `spec/index.md` holds:
+      """
+      ---
+      id: bounded-context/example.org/acme/shop
+      title: shop
+      language: codified-2
+      ---
+      # shop
+      ## Composition
+      ### Areas
+      - cart: the goods a shopper picks.
+      """
+    And the release of this repository is `0.34.1`
+    And the release of this plugin is `0.99.0`
+    And a term t1
+    And the term t1 violates `v_t13`
+    And a term t2
+    And the term t2 violates `v_t13`
+    And a term t3
+    And the term t3 does not violate `v_t13`
+    And a term t4
+    And the term t4 violates `v_t22`
+    And a term t5
+    And the term t5 violates `v_t22`
+    And a term t6
+    And the term t6 does not violate `v_t22`
+    And a transition t7
+    And the transition t7 violates `v_m9`
+    And a transition t8
+    And the transition t8 violates `v_m9`
+    And a transition t9
+    And the transition t9 does not violate `v_m9`
+    When the person upgrades this repository
+    Then the upgrades service changes the index file i1
+    And this bounded context has the index file i1
+    And the upgrades service returns the term t1
+    And the upgrades service returns the term t2
+    And the upgrades service does not return the term t3
+    And the upgrades service returns the term t4
+    And the upgrades service returns the term t5
+    And the upgrades service does not return the term t6
+    And the upgrades service returns the transition t7
+    And the upgrades service returns the transition t8
+    And the upgrades service does not return the transition t9

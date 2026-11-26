@@ -194,17 +194,23 @@ def overlapping(lexicon):
     """The verbs with two entries (two senses) whose frames take, in every slot, the same kind or one kind under the
     other (v_t15): no line's kinds would tell the senses apart. Frames that fill different slots do not overlap."""
     known, under, out = names(lexicon), below(lexicon), set()
-    near = lambda a, b: a == b or a in under.get(b, ()) or b in under.get(a, ())
     senses = {}
     for t in lexicon.of("event"):
         senses.setdefault(t.term, []).append(frames(t, known))
     for verb, entries in senses.items():
         for i, mine in enumerate(entries):
             for theirs in entries[i + 1:]:
-                if any(f.fixed == g.fixed and all(near(a, b) if a and b else a == b for a, b in zip(f[:3], g[:3]))
-                       for f in mine for g in theirs):
+                if overlap(mine, theirs, under):
                     out.add(verb)
     return out
+
+
+def overlap(mine, theirs, under, top=()):
+    """Whether two senses' frames take, in some frame of each, the same kind or one under the other in every slot
+    (`under`: `below`'s), a kind of `top` above every kind (the base kind `thing`, b847)."""
+    near = lambda a, b: a == b or a in top or b in top or a in under.get(b, ()) or b in under.get(a, ())
+    return any(f.fixed == g.fixed and all(near(a, b) if a and b else a == b for a, b in zip(f[:3], g[:3]))
+               for f in mine for g in theirs)
 
 
 def problems(lexicon, outer=frozenset()):
