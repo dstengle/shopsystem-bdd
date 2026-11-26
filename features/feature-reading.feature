@@ -115,7 +115,7 @@ Feature: Feature reading
     And the scenario s1 has the replacement r1
     And a requirement tag r2
     And the replacement r1 has the requirement tag r2
-    And the scenario s1 has `@deprecated`
+    And the scenario s1 has the `@deprecated` tag
     And a requirement tag r3
     And the replacement r1 has the requirement tag r3
     And a requirement tag r4
@@ -130,7 +130,7 @@ Feature: Feature reading
 
   @g10 @r10
   Scenario: A scan with no deprecated scenario says so
-    Given no scenario has `@deprecated`
+    Given no scenario has the `@deprecated` tag
     When the person scans this repository
     Then the feature reading service returns `none deprecated`
 

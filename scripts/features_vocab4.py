@@ -19,9 +19,10 @@ import spec_lf_option
 import spec_lf_ordered
 import spec_rgl_np
 import spec_rgl_steps
+import spec_steps4_code
 
 ROW = re.compile(r"^r\d+_(\w+?)_(Has|Holds|Is)$")
-ALLOWED = {"given": ("SCond", "_Given", "_HoldsBlock", "_HoldsText"), "when": ("STrig",), "then": ("SCond", "_Does")}
+ALLOWED = spec_steps4_code.READ
 
 
 class StepError(Exception):
