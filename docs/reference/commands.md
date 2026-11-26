@@ -1264,6 +1264,13 @@ Each requirement is printed as `<capability>#r<n> (<why>): <its text>`, the why 
 `governs the operation <capability>#r<n> uses` and `needed job <job>: ...`, and each adapter spec as
 `adapter spec <id> (realises the port line <capability>#r<n>)`.
 
+The trace also says the job's coordination (decision 0134), derived from its lines and the domain model, never
+declared: `saga` when it requests two operations of a driven port or more that have a `compensated by` property,
+`long-running process` when a requirement on the outcome of a port operation it requests uses an operation that
+performs a lifecycle transition, `port request` when it requests a port operation whose outcomes no requirement
+handles. It is printed as `coordination: <kind>` after the first line, and is the content's `coordination` (null
+when the trace requests no port operation).
+
 ### `shop spec assign`
 
 Assigns a job of the product to the one bounded context whose capabilities serve it, kept among the bounded
