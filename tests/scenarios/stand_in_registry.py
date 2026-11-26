@@ -11,7 +11,8 @@ shop-folder adapter does; `complete`, completed without writing anything, its co
 `contract not registered`, naming the adapter spec, nothing written. `$STAND_IN_REGISTRY_ON`, when set, names the
 one operation the reply is on, every other answered as the shop-folder adapter does. `$STAND_IN_REGISTRY_REFUSE_FOR`,
 when set, names the one adapter spec folder whose register is refused (g142, b743), every other answered as the
-shop-folder adapter does; a deregister (b743) is recorded and answered as the shop-folder adapter does. Loaded by
+shop-folder adapter does; a deregister (b743) is recorded and answered as the shop-folder adapter does, its completion, `complete` on it (g143,
+b754), recorded after with the commit the repository is then at. Loaded by
 contract_registry from its path."""
 import json
 import os
@@ -68,7 +69,11 @@ def register(root, contract, adapter_spec, provider, version):
 def deregister(root, contract, adapter_spec, provider, version):
     _record("deregister", provider, version, contract.decode("utf-8"), **{"adapter spec": str(adapter_spec),
                                                                           "provider": provider})
-    return FOLDER.deregister(root, contract, adapter_spec, provider, version)
+    done = FOLDER.deregister(root, contract, adapter_spec, provider, version)
+    if _reply("deregister") == "complete" and done.outcome == "done":
+        import shop_files
+        _record("completed", provider, version, head=shop_files.git(root, "rev-parse", "HEAD").strip())
+    return done
 
 
 def held(folder, provider, version=None):
