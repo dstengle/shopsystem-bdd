@@ -20,7 +20,7 @@ import sys
 B, T, F = (sys.modules[n] for n in ("shop_backlog_world", "shop_batches_world", "shop_world_four"))
 four, parts = F.four, F.parts
 BOTH = ("backlog", "batches")
-KEEPS = ("write", "commit", "post", "keep", "make", "rewrite", "publish")     # requested.py's
+requested = sys.modules["vocab"].vocab4.requested     # KEEPS: the spellings of keep
 SLUG = "the-queue-is-worked-in-order"
 IDENT = "design-decision/ex.com/prod/ctx/%s" % SLUG
 REL = "spec/decisions/0001-%s.md" % SLUG
@@ -171,7 +171,7 @@ def keeps(step):
     assert len(found) == 1, found
 
 
-for _verb in KEEPS + ("supersede", "supersedes"):
+for _verb in requested.KEEPS + ("supersede", "supersedes"):
     first("ThenDoes", _verb)(keeps)
 
 
@@ -183,7 +183,7 @@ def keeps_not(step):
     assert found == [], found
 
 
-for _verb in KEEPS:
+for _verb in requested.KEEPS:
     first("ThenDoesNot", _verb)(keeps_not)
 
 
