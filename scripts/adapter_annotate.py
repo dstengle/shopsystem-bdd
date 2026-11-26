@@ -50,7 +50,8 @@ def governing(root):
     import spec_language
     import spec_lexicon
     import spec_lf
-    lines = model_domain_lines.Lines(domain_model.load(root), spec_lexicon.read(root))
+    lines = model_domain_lines.Lines(domain_model.load(root), spec_lexicon.read(root),
+                                    spec_grammar4.sources(root)[0].verbs)
     vocab, out = None, {}
     for ident, text in requirement_lines(root):
         parsed = spec_language.parse(root, text)
