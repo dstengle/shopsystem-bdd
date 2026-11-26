@@ -7,9 +7,10 @@ product actor a job has (among its actors or in its job statement) naming the jo
 the bounded context; a subdomain a bounded context addresses naming the bounded context; a bounded context that holds
 a job naming the job. A job unassigned from a bounded context that does not hold it is refused naming the job; a drop
 of what the product does not hold is refused naming it (b812, product r64-r67), the reason `<what> outside the
-product`."""
+product`, and a bounded context whose id is not of the context id form naming the id (r63)."""
 from plumbing.shop_refused import Refused
 from product_layer import FORM
+from product_map import conformed
 
 
 def unassign(product, job, context):
@@ -37,8 +38,8 @@ def drop_job(product, job):
     _held(product.get("jobs", {}), job, "job")
     for other, entry in product.get("jobs", {}).items():
         if job in entry.get("needs", []):
-            raise Refused("the job %s needs %s: drop it first, or declare it again without the need; {names}" % (
-                other, job), reason="job a job needs", names=["job:%s" % other])
+            raise Refused("the job {names} needs %s: drop it first, or declare it again without the need" % job,
+                          reason="job a job needs", names=["job:%s" % other])
     for context, entry in product.get("contexts", {}).items():
         if job in entry.get("jobs", []):
             raise Refused("the bounded context {names} holds the job %s: unassign it first" % job,
@@ -81,7 +82,9 @@ def drop_subdomain(product, subdomain):
 
 
 def drop_context(product, context):
-    """The product without the bounded context `context`; refused as above."""
+    """The product without the bounded context `context`; refused as above, and naming the id when it is not of the
+    context id form (product_map's `conformed`, b812, product r63)."""
+    conformed(context, "parameter:bounded context")
     _held(product.get("contexts", {}), context, "bounded context")
     jobs = product.get("contexts", {}).get(context, {}).get("jobs", [])
     if jobs:
