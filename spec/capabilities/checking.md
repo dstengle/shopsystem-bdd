@@ -7,7 +7,7 @@ area: specification
 specifies: service specification: check, consult, renew, inventory, translate
 language: codified-2
 retired: [g4, r4, g5, r5, g6, r6, g7, r7, g8, r8, g9, r9, g10, r10, g11, r11, g12, r12, g13, r13, g14, r14, g15, r15, g16, r16, g17, r17, g25, r25, g31, r31, g34, r34, g37, r37, g40, r40, g42, r42, g43, r43, g45, r45, g56, r56, g94, r94, g91, r91, g100, r100, g144, r144]
-unbuilt: []
+unbuilt: [r153, r154, r155]
 ---
 
 # Checking
@@ -427,6 +427,15 @@ Restates: design-model-check#r13@0.29.
 
 ### [g152] A job an item's requirement group serves is not unserved in a check for the item
 - [r152] While this bounded context holds a job and an item holds a requirement group that serves the job, when the person validates this specification with the item, the specification service shall return no job that violates `w_unserved_job`.
+
+### [g153] A check for an item reports no group of the item without a scenario
+- [r153] While an item holds a requirement group, when the person validates this specification with the item, the specification service shall return no requirement group that violates `v_s3`.
+
+### [g154] A check for an item reports no operation the item's requirements govern unannotated
+- [r154] While an item holds a requirement that governs an operation, when the person validates this specification with the item, the specification service shall return no operation that violates `v_a5`.
+
+### [g155] A check for an item fails on a rule of severity error its requirements violate
+- [r155] While an item holds a requirement that violates a rule whose severity is `error`, if the person validates this specification with the item, then the specification service shall fail the check and name the rule.
 
 ## Dropped
 - design-model-check#r2@0.29: retired with checking#r4 by b370.

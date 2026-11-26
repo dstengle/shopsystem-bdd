@@ -694,7 +694,7 @@ a group has no scenario
 - Since: b123
 - Severity: error
 - Implemented in: `scripts/model.lp`, `scripts/readiness_bar.py`
-- Cited by: no line
+- Cited by: checking#r153
 - Fails on:
 
   ```prolog
@@ -1470,7 +1470,7 @@ an operation of an adapter contract does not hold a requirement that governs it:
 - Since: b368
 - Severity: error
 - Implemented in: `scripts/model.lp`
-- Cited by: no line
+- Cited by: checking#r154
 - Fails on:
 
   ```prolog

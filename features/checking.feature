@@ -1346,3 +1346,37 @@ Feature: Checking
     And the job j2 violates `w_unserved_job`
     When the person validates this specification with the item i1
     Then the specification service does not return the job j2
+
+  @g153 @r153
+  Scenario: A check for an item reports no group of the item without a scenario
+    Given a requirement group r1
+    And an item i1
+    And the item i1 holds the requirement group r1
+    And a requirement group r2
+    And the requirement group r2 violates `v_s3`
+    When the person validates this specification with the item i1
+    Then the specification service does not return the requirement group r2
+
+  @g154 @r154
+  Scenario: A check for an item reports no operation the item's requirements govern unannotated
+    Given a requirement r1
+    And an operation o1
+    And the requirement r1 governs the operation o1
+    And an item i1
+    And the item i1 holds the requirement r1
+    And an operation o2
+    And the operation o2 violates `v_a5`
+    When the person validates this specification with the item i1
+    Then the specification service does not return the operation o2
+
+  @g155 @r155
+  Scenario: A check for an item fails on a rule of severity error its requirements violate
+    Given a rule r2
+    And the severity of the rule r2 is `error`
+    And a requirement r1
+    And the requirement r1 violates the rule r2
+    And an item i1
+    And the item i1 holds the requirement r1
+    When the person validates this specification with the item i1
+    Then the specification service fails this check
+    And the specification service names the rule r2

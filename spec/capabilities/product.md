@@ -6,8 +6,8 @@ group: service
 area: specification
 specifies: service product
 language: codified-2
-retired: [g18, r18]
-unbuilt: []
+retired: [g18, r18, g14, r14, g43, r43, g40, r40]
+unbuilt: [r59, r62, r60, r61]
 ---
 
 # Product
@@ -54,13 +54,6 @@ The product a bounded context belongs to: its id and purpose, its actors and the
 
 ### [g13] No job is declared in a product not of the product form
 - [r13] While this product does not conform to the product form, if the person declares a job with an id and a product actor and a job statement, then the product service shall refuse the request and name this product.
-
-### [g14] A job whose statement's situation holds a comma is declared
-- [r14] When the person declares a job with a job statement that conforms to the job statement form, the product service shall keep the job in the product and complete the request.
-
-```given
-the job statement `j2` holds "When a change is wanted, reviewed and agreed, the developer wants it specified, so they can build it."
-```
 
 ### [g15] A subdomain is declared with its id, type and jobs
 - [r15] When the person declares a subdomain with an id and a subdomain type and a job, the product service shall keep the subdomain in the product and complete the request.
@@ -137,18 +130,12 @@ the job statement `j2` holds "When a change is wanted, reviewed and agreed, the 
 ### [g42] A job whose statement mentions an actor the product does not hold is refused
 - [r42] If the person declares a job with a job statement that mentions a product actor that is not in the product, then the product service shall refuse the request and name the product actor.
 
-### [g43] A job whose statement mentions another actor than the job's is refused
-- [r43] If the person declares a job with a product actor and a job statement that mentions a different product actor, then the product service shall refuse the request and name the job statement.
-
 ### [g44] A job whose statement's situation is one word is declared
 - [r44] When the person declares a job with a product actor and a job statement that conforms to the job statement form, the product service shall keep the job in the product and complete the request.
 
 ```given
 the job statement `j2` holds "When x, the developer wants y, so they can z."
 ```
-
-### [g40] A product actor is not mapped to an actor the domain model does not hold
-- [r40] If the person maps a product actor with this bounded context and an actor that the domain model does not hold, then the product service shall refuse the request and name the actor.
 
 ### [g41] A product actor is not mapped in a bounded context whose id is out of the context id form
 - [r41] If the person maps a product actor with a bounded context whose id does not conform to the context id form and an actor, then the product service shall refuse the request and name the id.
@@ -194,4 +181,16 @@ the job statement `j2` holds "When x, the developer wants y, so they can z."
 
 ### [g58] A job's trace for an item holds the requirements of the item's groups that serve it
 - [r58] While an item holds a requirement group and the requirement group serves a job and the requirement group has a requirement, when the person traces the job with the item, the product service shall return the requirement.
+
+### [g59] A job the product does not hold is not assigned
+- [r59] If the person assigns a job that is not in the product to a bounded context, then the product service shall refuse the request and name the job.
+
+### [g62] A job declared without a product actor is refused
+- [r62] If the person declares a job with a job statement and without a product actor, then the product service shall refuse the request and name the product actor.
+
+### [g60] A job whose statement mentions another actor of the product than the job's is refused
+- [r60] If the person declares a job with a product actor that is in the product and a job statement that mentions a different product actor that is in the product, then the product service shall refuse the request and name the job statement.
+
+### [g61] A product actor of the product is not mapped to an actor the domain model does not hold
+- [r61] If the person maps a product actor that is in the product with this bounded context and an actor that the domain model does not hold, then the product service shall refuse the request and name the actor.
 

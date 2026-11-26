@@ -2108,3 +2108,56 @@ shall [x1: bounded context "the bounded context the request is made in" (indexic
       violate(subject: x8, object: x9)
       return(e2, subject: x7, object: x8)
 ```
+
+## r153
+From: b808 r153.
+
+```reading
+While an item holds a requirement group, when the person validates this specification with the item, the specification service shall return no requirement group that violates `v_s3`.
+shall [x3: agent the person (constant), x4: specification "the specification of this bounded context" (indexical), x5: service the specification service (constant), x7: rule `v_s3` (parameter)]
+  while [x1: item, x2: requirement group]
+    in(x2, x1)
+  when
+    request(e1, specification.check, subject: x3, object: x4)
+    param(e1, item, x1)
+  response
+    not [x6: requirement group]
+      violate(subject: x6, object: x7)
+      return(e2, subject: x5, object: x6)
+```
+
+## r154
+From: b808 r154.
+
+```reading
+While an item holds a requirement that governs an operation, when the person validates this specification with the item, the specification service shall return no operation that violates `v_a5`.
+shall [x4: agent the person (constant), x5: specification "the specification of this bounded context" (indexical), x6: service the specification service (constant), x8: rule `v_a5` (parameter)]
+  while [x1: item, x2: requirement, x3: operation]
+    govern(subject: x2, object: x3)
+    in(x2, x1)
+  when
+    request(e1, specification.check, subject: x4, object: x5)
+    param(e1, item, x1)
+  response
+    not [x7: operation]
+      violate(subject: x7, object: x8)
+      return(e2, subject: x6, object: x7)
+```
+
+## r155
+From: b808 r155.
+
+```reading
+While an item holds a requirement that violates a rule whose severity is `error`, if the person validates this specification with the item, then the specification service shall fail the check and name the rule.
+shall [x4: agent the person (constant), x5: specification "the specification of this bounded context" (indexical), x6: service the specification service (constant), x7: check "the check the trigger makes" (indexical)]
+  while [x1: item, x2: requirement, x3: rule]
+    severity(x3) = `error`
+    violate(subject: x2, object: x3)
+    in(x2, x1)
+  if
+    request(e1, specification.check, subject: x4, object: x5)
+    param(e1, item, x1)
+  response
+    fail(e2, subject: x6, object: x7)
+    name(e3, subject: x6, object: x3)
+```
