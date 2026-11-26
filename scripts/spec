@@ -107,7 +107,7 @@ def main(argv=None):
     g = sub.add_parser("fetch", help="print the contract kept as published, or the one kept at a version, writing nothing")
     g.add_argument("--version", help="the version of the contract (the published one by default)")
     o = sub.add_parser("obtain", help="keep an upstream's published contract, or the one at a version, in each adapter spec of the provider")
-    o.add_argument("context", metavar="BOUNDED_CONTEXT", help="the upstream's bounded-context id under ## Upstreams")
+    o.add_argument("context", metavar="bounded context", help="the upstream's bounded-context id under ## Upstreams")
     o.add_argument("--version", help="the version of the contract (the published one by default)")
     args = prepare(ap).parse_args(argv)
     if args.cmd == "parse" and (args.line is None) == (args.file is None):

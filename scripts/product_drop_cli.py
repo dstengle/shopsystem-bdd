@@ -40,11 +40,11 @@ def add_parsers(sub):
     what.add_parser("job", help="drop a job no job needs, no bounded context holds and no subdomain serves") \
         .add_argument("job", help="the job's id")
     what.add_parser("actor", help="drop a product actor no job has and no bounded context maps") \
-        .add_argument("product_actor", metavar="product_actor", help="the product actor, as 'the developer'")
+        .add_argument("product_actor", metavar="product actor", help="the product actor, as 'the developer'")
     what.add_parser("subdomain", help="drop a subdomain no bounded context addresses") \
         .add_argument("subdomain", help="the subdomain's id")
     what.add_parser("context", help="drop a bounded context that holds no job") \
-        .add_argument("bounded_context", metavar="bounded_context", help="the bounded context's id")
+        .add_argument("bounded_context", metavar="bounded context", help="the bounded context's id")
 
 
 COMMANDS = {"unassign": cmd_unassign, "drop": cmd_drop}
