@@ -44,6 +44,13 @@ def test_a_refused_submit_of_no_item_asks_to_look_at_the_failure():
     assert batch_next.report(b, "look at failure", [], None).endswith("then shop work batch review batch-1")
 
 
+def test_a_batch_of_parked_items_asks_for_its_abandonment():
+    b = batch("building", "pending")
+    assert batch_next.pick(b, [], [], parked=True) == ("abandon batch", [], None)
+    assert batch_next.pick(b, [], []) == ("stop", [], None)
+    assert batch_next.report(b, "abandon batch", [], None) == "shop work batch abandon batch-1"
+
+
 def test_two_task_branches_that_conflict_ask_for_the_later_task_before_a_kept_failure():
     b = batch("building", "done", "done")
     clash = (b.tasks[1], b.tasks[0], ["src/shared.txt"])
