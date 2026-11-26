@@ -202,7 +202,7 @@ def cmd_vocab(args):
 
 def main():
     parser = argparse.ArgumentParser(
-        prog="features", description=__doc__, epilog=CONTRACT,
+        prog="shop features", description=__doc__, epilog=CONTRACT,
         formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--dir", default="features")
     sub = parser.add_subparsers(dest="command", required=True)

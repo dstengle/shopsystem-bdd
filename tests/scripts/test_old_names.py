@@ -28,7 +28,7 @@ def test_an_old_name_prints_the_notice_then_runs_as_before(command):
     old, shop = run(str(SCRIPTS / command), "--help"), run(str(SCRIPTS / "shop"), command, "--help")
     assert old.stderr == notice(command) + shop.stderr, old.stderr
     assert (old.stdout, old.returncode) == (shop.stdout, shop.returncode)
-    assert old.returncode == 0 and old.stdout.startswith(f"usage: {command}")
+    assert old.returncode == 0 and old.stdout.startswith(f"usage: shop {command}")
 
 
 @pytest.mark.parametrize("command", COMMANDS)
@@ -53,7 +53,7 @@ def test_the_mark_of_shop_is_taken_out_so_a_command_the_run_starts_prints_the_no
 
 def test_model_prints_its_own_notice_and_not_specs():
     done = run(str(SCRIPTS / "model"), "--help")
-    assert done.returncode == 0 and done.stdout.startswith("usage: spec")
+    assert done.returncode == 0 and done.stdout.startswith("usage: shop spec")
     assert done.stderr == "model: renamed `spec`; `model` goes in the next release\n", done.stderr
 
 

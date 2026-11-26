@@ -24,7 +24,7 @@ motion first, take [the tour](tour.md).
 [adapter contract](#adapter-contract) · [capability](#capability) · [requirement line](#requirement-line) ·
 [construct catalogue and rule catalogue](#construct-catalogue-and-rule-catalogue) · [group](#group) ·
 [given block](#given-block) · [universal condition](#universal-condition) ·
-[scenario and feature file](#scenario-and-feature-file) ·
+[scenario and feature file](#scenario-and-feature-file) · [product, job and trace](#product-job-and-trace) ·
 [item](#item) · [backlog](#backlog) · [readiness bar](#readiness-bar) · [batch](#batch) ·
 [pull request review and finding](#pull-request-review-and-finding) · [request](#request) · [record](#record) ·
 [decision](#decision) · [quote](#quote) · [measurement and defect](#measurement-and-defect)
@@ -332,6 +332,48 @@ Scenario: An idea shaped becomes shaped
 The scenario is the acceptance test. A developer binds its steps with pytest-bdd; when the test passes, the line
 is built. Read more: [The generated feature](reference/capability-file.md#the-generated-feature-beside-its-lines)
 and [Getting started](getting-started.md).
+
+## The product
+
+### Product, job and trace
+
+A product is what a shop's bounded contexts are built for: who it serves (its actors), the jobs those actors want
+done, and which bounded context does each job. A requirement group says which jobs it serves, and a job's trace is
+every requirement that does the job.
+
+- **Lives in:** `.shop/product/product.toml`, the product file of the shop; a group's `serves:` line in its capability
+  file.
+- **Written by:** `shop spec product`, `shop spec actor`, `shop spec job`, `shop spec subdomain`, `shop spec context`,
+  `shop spec assign` and `shop spec plays` the product file, one commit each, and `shop spec unassign` and
+  `shop spec drop` take a declaration back; `shop work line <b> --serves <cap>#g<n> <job>` a group's job, on an item,
+  which a batch lays as the group's `serves:` line. The trace is never written: `shop spec trace <job>` derives it.
+
+A **job** has an id, its actors and a job statement of one form, `When <situation>, <actor> wants <motivation>, so
+they can <outcome>.`, and may need other jobs first. A **subdomain** is a part of the product's domain (`core`,
+`supporting` or `generic`) that serves jobs; a **bounded context** of the product's domain map addresses subdomains,
+is named by its id in the one context id form, `bounded-context/<domain>/<path>`, and holds the jobs assigned to it.
+A product actor **plays** an actor of a bounded context's model ("the developer" is "the person" here). A run in a
+copy of the example context:
+
+<!-- docs: context docs/examples/notes-cli -->
+```console
+$ shop spec job keep-notes --actor "the writer" --statement "When a thought comes up, the writer wants to note it down, so they can find it later."
+declared the job keep-notes
+$ shop work line b1 --serves notes#g1 keep-notes
+b1 "The notes serve keeping notes": notes#g1 serves keep-notes
+$ shop spec trace keep-notes
+the trace of the job keep-notes:
+  notes#r1 (served by notes#g1): When the person adds a note with a title and a tag, the notes service shall keep the note under the tag.
+```
+
+The trace above is read once a batch has laid b1; before that, `shop spec trace keep-notes --item b1` reads it with
+the item's pairs laid in, as `shop spec check --item b1` checks it. The trace follows the requests its lines make to
+the lines they reach, the adapter specs that realise its port lines and the jobs it needs, and says the job's
+coordination when it requests a driven port's operations. `shop spec check` warns of a job no group serves, a
+capability that serves no job and a product actor that triggers no line of its job's trace.
+Read more: [the product commands](reference/commands.md#shop-spec-product),
+[the `serves:` line](reference/capability-file.md#behaviour-groups-of-lines) and
+[Getting started](getting-started.md#8-say-what-the-product-is-for).
 
 ## The work
 
