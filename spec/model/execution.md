@@ -50,6 +50,7 @@ object batch brief kind of file
   relations: holds → batch summary form (many)
 
 object review folder kind of file
+  relations: holds → findings file (one)
 
 object pr-reviewer kind of dispatch
 
@@ -112,9 +113,11 @@ object shop
 object product id kind of text
   relations: covers → id (many)
 
-object batch step
-  attributes: instruction: build task | finish task | submit batch | review change | fix finding | park item | stop
-  relations: holds → task | batch brief | review folder | review finding (many)
-
 actor the driver kind of agent
+
+object batch step
+  attributes: instruction: prepare task | build task | finish task | submit batch | review change | fix finding | park item | stop
+  relations: holds → task | batch brief | review folder | findings file | review finding (many)
+
+object findings file kind of file
 ```
