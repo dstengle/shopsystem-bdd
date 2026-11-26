@@ -176,3 +176,19 @@ Relied on by: batches#r179
 - [r41] While an item retires a model line that restates an element and the item retires a term that means the element, when the batches service lays the item in a workspace, the laying service shall keep an area that does not hold the term.
 Relied on by: batches#r179
 
+### [g42] A lift of an item that holds no capability of a port area importing tracking keeps the area
+- [r42] While the kind of the `registry` area is `port` and an item holds no capability that the `registry` area holds and the `registry` area imports the `tracking` area, when the batches service lifts the item from a workspace, the laying service shall keep the `registry` area.
+Relied on by: batches#r182, batches#r185
+
+### [g43] A lift of an item whose model line restates an operation keeps the operation in the domain model
+- [r43] While an item holds a model line that restates an operation and the domain model holds the model line, when the batches service lifts the item from a workspace, the laying service shall keep a domain model that holds the operation.
+Relied on by: batches#r182, batches#r185
+
+### [g44] A lift of an item restating an element keeps another item's member line of the element
+- [r44] While an item holds a model line that holds a member line and another item holds a model line that restates an element and the element does not hold the member line, when the batches service lifts the item from a workspace, the laying service shall keep the member line in the domain model and keep a domain model that does not hold the model line.
+Relied on by: batches#r182, batches#r185
+
+### [g45] A lift of another item keeps a port area holding a capability of an item and importing a supporting area
+- [r45] While the kind of an area is `port` and the area holds a capability that an item holds and the area imports an area whose kind is `supporting`, when the batches service lifts another item from a workspace, the laying service shall keep the area.
+Relied on by: batches#r182, batches#r185
+

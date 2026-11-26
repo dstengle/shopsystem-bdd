@@ -547,3 +547,62 @@ Feature: Laying
     When the batches service lays the item i1 in the workspace w1
     Then the laying service keeps the area a1
     And the area a1 does not hold the term t1
+
+  @g42 @r42
+  Scenario: A lift of an item that holds no capability of a port area importing tracking keeps the area
+    Given the kind of `registry` is `port`
+    And an item i1
+    And the item i1 holds no capability in the `registry` area
+    And the `registry` area imports `tracking`
+    And a workspace w1
+    When the batches service lifts the item i1 from the workspace w1
+    Then the laying service keeps `registry`
+
+  @g43 @r43
+  Scenario: A lift of an item whose model line restates an operation keeps the operation in the domain model
+    Given a model line m1
+    And an operation o1
+    And the model line m1 restates the operation o1
+    And an item i1
+    And the item i1 holds the model line m1
+    And this domain model holds the model line m1
+    And a workspace w1
+    When the batches service lifts the item i1 from the workspace w1
+    Then the laying service keeps the domain model d1
+    And the domain model d1 holds the operation o1
+
+  @g44 @r44
+  Scenario: A lift of an item restating an element keeps another item's member line of the element
+    Given a member line m2
+    And a model line m1
+    And the model line m1 holds the member line m2
+    And an item i1
+    And the item i1 holds the model line m1
+    And a model line m3
+    And an element e1
+    And the model line m3 restates the element e1
+    And an item i2
+    And the item i2 holds the model line m3
+    And the element e1 does not hold the member line m2
+    And a workspace w1
+    When the batches service lifts the item i2 from the workspace w1
+    Then this domain model holds the member line m2
+    And the laying service keeps the member line m2
+    And the laying service keeps the domain model d1
+    And the domain model d1 does not hold the model line m3
+
+  @g45 @r45
+  Scenario: A lift of another item keeps a port area holding a capability of an item and importing a supporting area
+    Given an area a1
+    And the kind of the area a1 is `port`
+    And a capability c1
+    And an item i1
+    And the item i1 holds the capability c1
+    And the area a1 holds the capability c1
+    And an area a2
+    And the kind of the area a2 is `supporting`
+    And the area a1 imports the area a2
+    And an item i2
+    And a workspace w1
+    When the batches service lifts the item i2 from the workspace w1
+    Then the laying service keeps the area a2
