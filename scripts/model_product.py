@@ -105,9 +105,8 @@ class ProductReading:
             if found is None:
                 continue
             reqs, specs = found
-            local = product_trace.texts(ctx)
-            for rid, (_, text, _) in reqs.items():
-                if local.get(rid) != text:      # a provider's requirement an adapter spec's uses: reaches (b637)
+            for rid in reqs:
+                if not product_trace.local(rid):    # a provider's requirement an adapter spec's uses: reaches (b637)
                     continue
                 cap, _, n = rid.partition("#")
                 self.fact("job_reaches", job, "%s#%s" % (caps.get(cap, cap), n))

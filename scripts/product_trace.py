@@ -8,7 +8,8 @@ each requirement and adapter spec once with why it is in the trace. A job no gro
 An adapter spec in the trace is followed into its providers (b637, product r35; decision 0138): for each port
 operation a port line in the trace governs, each provider operation its `uses:` names, the requirements the held
 contract lists under it (adapter_uses' `governed`), each with the provider, its version and the operation
-(`provided`)."""
+(`governed`), keyed by its provider and its id (`key`, b738), so that it is never taken for a line of this context
+(`local`)."""
 from pathlib import Path
 
 import adapter_annotate
@@ -79,9 +80,9 @@ def adapter_specs(root):
     return out
 
 
-def provided(root, specs, held):
-    """[(requirement id, text, why)] of the requirements each held contract of an adapter spec in the trace lists
-    under a provider operation it uses for a port operation a port line in the trace (`held`) governs."""
+def governed(root, specs, held):
+    """[(provider id, requirement id, text, why)] of the requirements each held contract of an adapter spec in the
+    trace lists under a provider operation it uses for a port operation a port line in the trace (`held`) governs."""
     specs = [(ident, folder) for ident, ids, folder in specs if held & set(ids)]
     if not specs:
         return []
@@ -92,9 +93,25 @@ def provided(root, specs, held):
                 continue
             for req, provider, version, used in adapter_uses.governed(folder, port):
                 rid, _, text = str(req).partition(":")
-                out.append((rid.strip(), text.strip(), "governs the operation %s of %s@%s, which %s uses for %s"
-                            % (used, provider, version, ident, port)))
+                out.append((provider, rid.strip(), text.strip(), "governs the operation %s of %s@%s, which %s uses "
+                            "for %s" % (used, provider, version, ident, port)))
     return out
+
+
+def provided(root, specs, held):
+    """[(requirement id, text, why)] of `governed`'s requirements, each by its provider's own id."""
+    return [(rid, text, why) for _, rid, text, why in governed(root, specs, held)]
+
+
+def key(provider, rid):
+    """A provider's requirement keyed by its provider (b738): `<provider id less bounded-context/>:<id>`, so that
+    an id equal to a requirement of this context, or of another provider, is neither dropped nor folded into it."""
+    return "%s:%s" % (str(provider).strip().removeprefix("bounded-context/"), rid)
+
+
+def local(rid):
+    """Whether a trace's requirement id is this context's own, not a provider's `key`."""
+    return ":" not in rid
 
 
 def own(root, ctx, job):
@@ -109,7 +126,7 @@ def own(root, ctx, job):
              for rid, by in reached(ctx, [rid for rid, _, _ in lines]).items() if rid in said]
     held, found = {rid for rid, _, _ in reqs}, adapter_specs(root)
     specs = [(ident, "realises the port line %s" % rid) for ident, ids, _ in found for rid in ids if rid in held]
-    reqs += [r for r in provided(root, found, held) if r[0] not in held]
+    reqs += [(key(provider, rid), text, why) for provider, rid, text, why in governed(root, found, held)]
     first = {}
     for ident, why in specs:
         first.setdefault(ident, (ident, why))
@@ -147,7 +164,7 @@ def trace(root, job):
         raise Refused("{names} %s is served by no requirement group" % job,
                       reason="job that no requirement group serves", names=["parameter:job"])
     reqs, specs = found
-    return {"job": job, "coordination": product_coordination.coordination(root, ctx, list(reqs)),
+    return {"job": job, "coordination": product_coordination.coordination(root, ctx, [r for r in reqs if local(r)]),
             "requirements": [{"id": i, "text": t, "why": w} for i, t, w in reqs.values()],
             "adapter specs": [{"id": i, "why": w} for i, w in specs.values()]}
 
