@@ -207,12 +207,14 @@ contract:
     at is refused, naming it (contract_publish).
   - obtain <bounded context> [--version <version>] keeps the upstream's
     contract kept as published (or the one at the version), read off its
-    GitHub repository (its `github:` under ## Upstreams), as
-    adapters/<name>/provider/<upstream's id path>/<version>/contract.toml
-    in each adapter spec whose providers: name it (at the version it pins
-    the provider at, when it pins one), in one commit, keeping no
-    context request; an upstream with no contract, or that no adapter spec
-    has as its provider, is refused, naming it (contract_obtain).
+    GitHub repository (its `github:` under ## Upstreams), registered with
+    the contract registry for each adapter spec whose providers: name it
+    (at the version it pins the provider at, when it pins one), which the
+    shop-folder adapter keeps as adapters/<name>/provider/<upstream's id
+    path>/<version>/contract.toml, a commit each, keeping no context
+    request; an upstream with no contract, or that no adapter spec has as
+    its provider, is refused, naming it, and a registration the registry
+    refuses names the adapter spec (contract_obtain).
   - restates [--json] [<capability>] exits 0 when every 0.29 id (of the
     capability, or of every one) is restated by a group, dropped, or moved
     (a move into a codified capability must be restated there; one into an

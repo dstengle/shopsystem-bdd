@@ -13,8 +13,8 @@ import re
 
 import adapter_provider
 import adapter_uses
-import contract_registry
 import contract_publish
+import contract_registry
 import spec_read
 from model_parse import as_list, frontmatter
 
