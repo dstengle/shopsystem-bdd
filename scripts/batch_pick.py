@@ -22,7 +22,7 @@ import readiness_bar
 from batch_git import delivery
 
 SIZE = 4
-Pick = namedtuple("Pick", "picked returned left_out renumbered", defaults=({},))
+Pick = namedtuple("Pick", "picked returned left_out renumbered superseded", defaults=({}, ()))     # superseded: batch_start's (b741)
 
 
 def batch_size(root):
