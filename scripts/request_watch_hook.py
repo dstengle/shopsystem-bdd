@@ -2,7 +2,7 @@
 the other side, so that a session starts the watch a session that ended had left. A sent request (request_side's: this
 repository asked another context) waits on the other side while it is `awaiting-upstream`, a received one (this
 repository is its upstream, another context asked) while it is `awaiting-asker`. The hook prints one line for each
-such request and a line telling the session to start `work watch --forward` with the Monitor tool; with none it prints
+such request and a line telling the session to start `shop work watch --forward` with the Monitor tool; with none it prints
 nothing. It reads only the records under .shop/requests/, never GitHub, and writes nothing. Whatever goes wrong, it
 prints nothing and exits 0: a hook never fails a session's start (as conversation_hook). hooks/hooks.json runs it as
 `request_hook watch`, which imports this module and not `work`, whose grammar modules need site packages."""
@@ -13,7 +13,7 @@ import request_side
 import shop_files
 from request_text import field
 
-START = ("A request waits on the other side: start `work watch --forward` with the Monitor tool, and run `work sync` "
+START = ("A request waits on the other side: start `shop work watch --forward` with the Monitor tool, and run `shop work sync` "
          "when it wakes.")
 
 

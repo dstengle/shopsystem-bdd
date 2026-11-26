@@ -132,7 +132,7 @@ def amend(args):
 def review(args):
     import batch_review
     url = batch_review.review(args.root, args.batch)
-    print("next: work batch brief %s, the pr-reviewer on it, then work batch reviewed %s" % (args.batch, args.batch))
+    print("next: shop work batch brief %s, the pr-reviewer on it, then shop work batch reviewed %s" % (args.batch, args.batch))
     print(url)
     return 0
 

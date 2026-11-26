@@ -108,7 +108,7 @@ def test_the_bar_refuses_a_line_of_a_codified_1_capability_until_the_item_recodi
     write_item(backlog_repo, "b1", status="shaped")
     assert work(backlog_repo, "line", "b1", "--into", "thing", FOUR).returncode == 0
     reasons, _ = readiness_bar.well_formed(backlog_repo, backlog_items.find(backlog_repo, "b1"))
-    assert reasons == ["thing: spec/capabilities/thing.md says `language: codified-1`: run `migrate upgrade`"], reasons
+    assert reasons == ["thing: spec/capabilities/thing.md says `language: codified-1`: run `shop migrate upgrade`"], reasons
     assert work(backlog_repo, "line", "b1", "--recodify", "thing").returncode == 0
     reasons, _ = readiness_bar.well_formed(backlog_repo, backlog_items.find(backlog_repo, "b1"))
     assert reasons == [], reasons
@@ -121,6 +121,6 @@ def test_a_request_line_to_an_upstream_with_a_codified_1_capability_is_refused_n
     try:
         request_lines.check(backlog_repo, [FOUR])
     except backlog_items.Refused as err:
-        assert "spec/capabilities/thing.md is not codified: run `migrate upgrade`" in str(err), str(err)
+        assert "spec/capabilities/thing.md is not codified: run `shop migrate upgrade`" in str(err), str(err)
     else:
         raise AssertionError("an upstream with a codified-1 capability was read")

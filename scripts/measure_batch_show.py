@@ -74,7 +74,7 @@ def resolve(root, word):
     folder = Path(root) / measure_write.DIRECTORY
     found = sorted(p for p in folder.glob("*-%s.md" % word) if re.fullmatch(r"\d{4}-\d{2}-\d{2}-%s\.md" % word, p.name))
     if not found:
-        raise Refused("no measurement of %s in %s/; run measure batch %s" % (word, measure_write.DIRECTORY.as_posix(),
+        raise Refused("no measurement of %s in %s/; run shop measure batch %s" % (word, measure_write.DIRECTORY.as_posix(),
                                                                             word))
     return found[-1]
 
@@ -113,7 +113,7 @@ def compare(a_name, a, b_name, b):
     for name, figures in ((a_name, a), (b_name, b)):
         missing = [key for key in COMPARED if key not in figures]
         if missing:
-            raise Refused("%s's measurement has no %s; measure it again with measure batch %s --replace" % (
+            raise Refused("%s's measurement has no %s; measure it again with shop measure batch %s --replace" % (
                 name, ", ".join(missing), name))
     second = {name: (shown, value) for name, shown, value in _rows(b)}
     rows = [(name, cell(shown), cell(second.get(name, (None, None))[0]), ratio(value, second.get(name, (None, None))[1]))

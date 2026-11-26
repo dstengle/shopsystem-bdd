@@ -76,7 +76,7 @@ def _resolve(root, items, oid):
         except Refused as refused:
             why = str(refused)
         if why:
-            said.append("%s not resolved (%s); run work resolve" % (item.request, why))
+            said.append("%s not resolved (%s); run shop work resolve" % (item.request, why))
     return said
 
 

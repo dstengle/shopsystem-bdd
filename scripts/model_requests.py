@@ -21,7 +21,7 @@ class RequestReading:
             where = self.rel(path)
             wrong = self.request_form(data, body, path)
             if wrong:
-                self.problems.append(f"{where}: not the form `work request` writes: {wrong}")
+                self.problems.append(f"{where}: not the form `shop work request` writes: {wrong}")
                 continue
             self.check_id(data["id"], "request", where)
             self.node(data["id"], "request")

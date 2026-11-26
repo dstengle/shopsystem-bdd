@@ -148,7 +148,7 @@ def test_resume_gives_the_worktree_for_each_open_finding(fixing):
     assert git(tree, "rev-parse", "HEAD").strip() == tip
     assert git(tree, "symbolic-ref", "--short", "HEAD").strip() == "batch-1-b1"
     assert ('f1 Important b1 "Abandon" src/b1.txt:1: %s: fix in %s on batch-1-b1 with Item: b1 and Finding: f1; '
-            'then work batch review batch-1' % (TITLE, tree)) in done.stdout.splitlines()
+            'then shop work batch review batch-1' % (TITLE, tree)) in done.stdout.splitlines()
     assert batch_plan.task(batch_plan.find(fixing, "batch-1"), "t1").status == "done"
     assert state(fixing) == before
 
@@ -157,7 +157,7 @@ def test_review_prints_the_next_step(fixing):
     fix(fixing)
     out = ok(work(fixing, "batch", "review", "batch-1")).stdout.strip().splitlines()
     assert out[-1] == URL
-    assert out[-2] == "next: work batch brief batch-1, the pr-reviewer on it, then work batch reviewed batch-1"
+    assert out[-2] == "next: shop work batch brief batch-1, the pr-reviewer on it, then shop work batch reviewed batch-1"
 
 
 TWO_FIX_NOW = FIX_NOW_B1 + """

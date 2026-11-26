@@ -23,8 +23,8 @@ RGL_URL = "https://github.com/GrammaticalFramework/gf-rgl/archive/refs/tags/%s.t
 RGL_SHA256 = "c361a3302d5c04cbb570fa07c2cf757be974cd798f1066fdca6933f4d4cd0791"
 # English only (Setup.sh's modules of one language): src/<directory>/<module>Eng.gf
 RGL_MODULES = ("english/AllEng", "english/SymbolEng", "english/CompatibilityEng", "api/TryEng", "api/SymbolicEng")
-PARSE = "requirements cannot be parsed: `work request` and `model check` refuse"
-LOGIC = "requirements cannot be logic-checked: `model logic` refuses"
+PARSE = "requirements cannot be parsed: `shop work request` and `shop spec check` refuse"
+LOGIC = "requirements cannot be logic-checked: `shop spec logic` refuses"
 WITHOUT = {"gf": PARSE, "pgf": PARSE, "clingo": LOGIC, "gf-rgl": "the grammar over GF's RGL cannot be compiled"}
 BY_HAND = "build GF 3.12 by hand and set $SHOPSYSTEM_GF to its gf"
 RGL_BY_HAND = "set $SHOPSYSTEM_GF_RGL_SRC to a gf-rgl %s source tree" % RGL_RELEASE

@@ -57,7 +57,7 @@ def read_map():
     try:
         import coverage
     except ImportError:
-        raise Refused("coverage is missing from %s: tools install" % sys.executable)
+        raise Refused("coverage is missing from %s: shop tools install" % sys.executable)
     if not os.path.isfile(MAP):
         raise Refused("no map: make one with tools map")
     data = coverage.CoverageData(basename=os.path.abspath(MAP))

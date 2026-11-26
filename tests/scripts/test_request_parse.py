@@ -85,13 +85,13 @@ def test_work_outcome_accepted_exits_1_on_a_line_that_does_not_parse_and_writes_
 def test_an_upstream_whose_index_is_not_codified_is_refused_naming_migrate_upgrade(legacy):
     with pytest.raises(shop_files.Refused) as refused:
         request_lines.check(legacy, [LEGACY])
-    assert "spec/index.md is not codified: run `migrate upgrade`" in str(refused.value)
+    assert "spec/index.md is not codified: run `shop migrate upgrade`" in str(refused.value)
 
 
 def test_a_codified_1_index_is_refused_naming_migrate_upgrade(tmp_path):
     with pytest.raises(shop_files.Refused) as refused:
         request_lines.check(make(tmp_path, GLOSSARY.read_text()), [GOOD])
-    assert "spec/index.md is not codified: run `migrate upgrade`" in str(refused.value)
+    assert "spec/index.md is not codified: run `shop migrate upgrade`" in str(refused.value)
 
 
 def test_an_upstream_with_an_uncodified_capability_is_refused_naming_it(codified):
@@ -99,7 +99,7 @@ def test_an_upstream_with_an_uncodified_capability_is_refused_naming_it(codified
     (codified / "spec/capabilities/old.md").write_text(UNCODIFIED)
     with pytest.raises(shop_files.Refused) as refused:
         request_lines.check(codified, [GOOD])
-    assert "spec/capabilities/old.md is not codified: run `migrate upgrade`" in str(refused.value)
+    assert "spec/capabilities/old.md is not codified: run `shop migrate upgrade`" in str(refused.value)
 
 
 def test_no_grammar_tools_refuses_naming_tools_install(codified, monkeypatch):

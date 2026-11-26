@@ -79,7 +79,7 @@ def _load(root):
     """(vocab, the PGF, the step grammar's sha)."""
     import pgf
     if not tools_grammar.rgl_path():
-        raise spec_gf.GrammarError("gf-rgl is missing: run `python3 scripts/tools install`")
+        raise spec_gf.GrammarError("gf-rgl is missing: run `python3 scripts/shop tools install`")
     vocab, grammar4, context = spec_grammar4._context(root)
     hit = _by_context.get(context)
     if hit is not None and hit[0] is vocab:

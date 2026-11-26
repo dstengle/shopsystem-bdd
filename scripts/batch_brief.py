@@ -39,9 +39,9 @@ from shop_files import Refused
 
 COMMAND = "work batch brief"
 SIZE = 1000
-CHECKS = ("python3 {scripts}/tools size --limit 300", "python3 {scripts}/tools check --base {forked_from}",
-          "python3 {scripts}/features generate --check", "python3 {scripts}/features bindings --unbound",
-          "python3 {scripts}/model decisions --check")
+CHECKS = ("python3 {scripts}/shop tools size --limit 300", "python3 {scripts}/shop tools check --base {forked_from}",
+          "python3 {scripts}/shop features generate --check", "python3 {scripts}/shop features bindings --unbound",
+          "python3 {scripts}/shop spec decisions --check")
 TAIL = 40
 
 
@@ -100,7 +100,7 @@ def head_of(brief_path, command=COMMAND):
     for line in Path(brief_path).read_text(encoding="utf-8").splitlines():
         if line.startswith("Head: "):
             return line[len("Head: "):].strip()
-    raise Refused("%s: %s has no Head: line; run work batch brief again" % (command, brief_path))
+    raise Refused("%s: %s has no Head: line; run shop work batch brief again" % (command, brief_path))
 
 
 def _indented(text):
@@ -195,7 +195,7 @@ def published(root, name, command=COMMAND):
             command, batch.name, batch.status, command))
     head = git(root, "rev-parse", batch.branch).stdout.strip()
     if remote_head(root, remote(root, batch.base), batch.branch) != head:
-        raise Refused("%s: %s is not at the remote's head of it; run work batch review %s, which pushes it" % (
+        raise Refused("%s: %s is not at the remote's head of it; run shop work batch review %s, which pushes it" % (
             command, batch.branch, batch.name))
     return batch, head
 

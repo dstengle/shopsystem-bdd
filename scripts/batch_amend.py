@@ -164,7 +164,7 @@ def _checked(root, name):
     task = next(t for t in batch.tasks if t.item == item.name)
     rel = backlog_items.rel_of(item.name)
     if git(root, "status", "--porcelain", "--", rel).stdout.strip():
-        raise Refused("%s: %s has uncommitted changes; commit them with work line first" % (COMMAND, rel))
+        raise Refused("%s: %s has uncommitted changes; commit them with shop work line first" % (COMMAND, rel))
     tree = tree_of(root, batch, task)
     loose = uncommitted(tree) if is_tree(tree, task.branch) else []
     if loose:

@@ -125,7 +125,7 @@ def test_check_exits_1_after_a_hand_edit_and_0_when_every_file_matches(repo):
 def test_naming_an_uncodified_capability_exits_2_and_writes_nothing(repo):
     done = features(repo, "generate", "work-queue", "legacy")
     assert done.returncode == 2
-    assert "spec/capabilities/legacy.md is not codified: run `migrate upgrade`" in done.stderr
+    assert "spec/capabilities/legacy.md is not codified: run `shop migrate upgrade`" in done.stderr
     assert not (repo / "features").exists() or not list((repo / "features").iterdir())
     assert features(repo, "generate", "--check", "legacy").returncode == 2
 
@@ -134,7 +134,7 @@ def test_check_with_no_names_refuses_an_uncodified_service_capability(repo):
     assert features(repo, "generate", "work-queue", "supervision").returncode == 0
     done = features(repo, "generate", "--check")
     assert done.returncode == 2, done.stdout + done.stderr
-    assert "spec/capabilities/legacy.md is not codified: run `migrate upgrade`" in done.stderr
+    assert "spec/capabilities/legacy.md is not codified: run `shop migrate upgrade`" in done.stderr
 
 
 def test_an_every_object_gives_two_of_its_kind(repo):
@@ -150,9 +150,9 @@ def test_a_codified1_capability_is_refused_naming_migrate_upgrade(repo):
     cap.write_text(cap.read_text().replace("language: codified-2", "language: codified-1"))
     done = features(repo, "generate", "work-queue")
     assert done.returncode == 2, done.stdout + done.stderr
-    assert "spec/capabilities/work-queue.md says `language: codified-1`: run `migrate upgrade`" in done.stderr
+    assert "spec/capabilities/work-queue.md says `language: codified-1`: run `shop migrate upgrade`" in done.stderr
     preview = features(repo, "generate", "--preview", str(cap))
-    assert preview.returncode == 1 and "run `migrate upgrade`" in preview.stderr
+    assert preview.returncode == 1 and "run `shop migrate upgrade`" in preview.stderr
 
 
 def test_an_if_group_states_the_restriction_it_excludes(repo):

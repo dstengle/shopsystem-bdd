@@ -173,7 +173,7 @@ def target_exists(root, target):
 def _live(root, name, command):
     found = find(root, name)
     if found.status != "live":
-        raise Refused("%s is %s, not live; work %s reviews a live directive" % (name, found.status, command))
+        raise Refused("%s is %s, not live; shop work %s reviews a live directive" % (name, found.status, command))
     return found
 
 

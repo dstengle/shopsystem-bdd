@@ -27,7 +27,7 @@ def _batch(root, name):
         raise Refused("%s: %s is built from %s; run it on %s, not %s" % (
             COMMAND, batch.name, batch.base, batch.base, branch or "a detached HEAD"))
     if batch.status != "in-review":
-        raise Refused("%s: %s is %s; %s takes a batch that is in-review, after work batch brief and pr-reviewer" % (
+        raise Refused("%s: %s is %s; %s takes a batch that is in-review, after shop work batch brief and pr-reviewer" % (
             COMMAND, batch.name, batch.status, COMMAND))
     return batch
 
@@ -53,14 +53,14 @@ def reviewed(root, name):
         where = batch_findings.scratch(root, batch.name, k)
         path = where / "findings.md"
         if not path.is_file():
-            raise Refused("%s: %s has no findings file %s; run work batch brief %s, then the pr-reviewer agent on "
+            raise Refused("%s: %s has no findings file %s; run shop work batch brief %s, then the pr-reviewer agent on "
                           "its brief %s, and save its reply there" % (COMMAND, batch.name, path, batch.name, where / "brief.md"))
         head = git(root, "rev-parse", batch.branch).stdout.strip()
         if not (where / "brief.md").is_file():
-            raise Refused("%s: %s has no brief %s; run work batch brief %s, then the pr-reviewer agent on it" % (
+            raise Refused("%s: %s has no brief %s; run shop work batch brief %s, then the pr-reviewer agent on it" % (
                 COMMAND, batch.name, where / "brief.md", batch.name))
         if batch_brief.head_of(where / "brief.md", COMMAND) != head:
-            raise Refused("%s: %s: the batch branch moved since the brief; run work batch brief %s again" % (
+            raise Refused("%s: %s: the batch branch moved since the brief; run shop work batch brief %s again" % (
                 COMMAND, batch.name, batch.name))
         items = {t.item: backlog_items.find(root, t.item) for t in batch.tasks}
         in_batch = {n for n, i in items.items() if i.status == "in-batch"}
