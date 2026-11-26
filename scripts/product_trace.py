@@ -4,7 +4,8 @@ job by its name or its id: `serving`), then every line a request of a line in th
 request its key covers (spec_entail_chain's `covers`), followed again up to spec_entail_chain's DEPTH hops
 (`reached`); its adapter specs each adapter spec nested at `adapters/<name>/` whose `realises:` names a port line in
 the trace (`realising`); and the traces of the jobs it needs (the product file's needs, product_store), joined,
-each requirement and adapter spec once with why it is in the trace. A job no group serves is refused naming it.
+each requirement and adapter spec once with why it is in the trace. A job no group serves is refused naming it, and
+naming each open item one of whose groups serves it (`holders`, b814), so that the person traces it with that item.
 An adapter spec in the trace is followed into its providers (b637, product r35; decision 0138): for each port
 operation a port line in the trace governs, each provider operation its `uses:` names, the requirements the held
 contract lists under it (adapter_uses' `governed`), each with the provider, its version and the operation
@@ -157,12 +158,18 @@ def joined(root, ctx, job, jobs):
 
 def trace(root, job):
     """{"job", "requirements": [{"id", "text", "why"}], "adapter specs": [{"id", "why"}]} of `job` with the traces
-    of the jobs it needs joined, each id once; refused naming the job when no requirement group serves it."""
+    of the jobs it needs joined, each id once; refused naming the job when no requirement group serves it, and each open item whose groups
+    serve it (`holders`)."""
     ctx = spec_context.load(root)
     found = joined(root, ctx, job, product_store.read(root)["jobs"])
     if found is None:
-        raise Refused("{names} %s is served by no requirement group" % job,
-                      reason="job that no requirement group serves", names=["parameter:job"])
+        held = holders(root, job)
+        said = "{names} %s is served by no requirement group" % job
+        if held:    # b814: each open item whose groups serve it, so that the person traces it with the item
+            said = "job %s is served by no requirement group; the item %s holds one that serves it: trace it " \
+                   "with --item %s" % (job, ", ".join(held), held[0])
+        raise Refused(said, reason="job that no requirement group serves",
+                      names=["parameter:job"] + ["item:%s" % i for i in held])
     reqs, specs = found
     return {"job": job, "coordination": product_coordination.coordination(root, ctx, [r for r in reqs if local(r)]),
             "requirements": [{"id": i, "text": t, "why": w} for i, t, w in reqs.values()],
@@ -173,3 +180,20 @@ def needs(jobs, job):
     """The jobs the product file says `job` needs, by its id or its name."""
     found = jobs.get(job) or next((j for i, j in jobs.items() if name_of(i) == name_of(job)), None)
     return list(found.get("needs", [])) if found else []
+
+
+def holders(root, job):
+    """The `b<n>` of each open item (not delivered, refused or withdrawn) whose `## Requirements` dedicates a group
+    to `job` by its name or its id (backlog_section's `serves:` pairs); an item that does not read is passed over."""
+    from backlog_items import items
+    from backlog_retract import GONE
+    from backlog_section import read
+    out = []
+    for item in items(root) if (Path(root) / ".shop" / "backlog").is_dir() else ():
+        try:
+            blocks = read(item, "the item %s" % item.name)
+        except Refused:
+            continue
+        if item.status not in GONE and any(name_of(j) == name_of(job) for b in blocks for _, j in b.serves):
+            out.append(item.name)
+    return out
