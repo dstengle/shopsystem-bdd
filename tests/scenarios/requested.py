@@ -220,7 +220,7 @@ def legacy(call, context, node, known):
         call.template = "WhenHappens"
         call.term = call.event = EVENTS[call.term]
         return call
-    if t == "WhenRequests":
+    if t == "WhenRequests" and call.term in contract().operations:     # a driven port's operation has no command
         commands, options, without = command(call.term, call.params + _things(call))
         chosen = next((c for c in commands if known(("WhenRuns", c))), commands[-1])
         chosen = PLAIN.get((origin(node), chosen), chosen)
