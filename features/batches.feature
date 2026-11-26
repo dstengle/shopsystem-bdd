@@ -1214,23 +1214,6 @@ Feature: Batches
     And the batches service does not return the task t5
     And the batches service returns the batch brief b2
 
-  @g160 @r160
-  Scenario: A ready item whose port outcome no line handles is reopened at the batch's opening
-    Given an item i1
-    And the status of the item i1 is `ready`
-    And a port line p1
-    And an operation o1
-    And the port line p1 governs the operation o1
-    And the item i1 holds the port line p1
-    And an operation outcome o2
-    And the operation o1 has the operation outcome o2
-    And no core line handles the operation outcome o2
-    And no port line excludes the operation outcome o2
-    And a batch b1
-    When the person opens the batch b1
-    Then the batches service reopens the item i1
-    And the batches service names the operation outcome o2
-
   @g161 @r161
   Scenario: A batch whose item's scenario breaks with no fix is polled for the item's task
     Given a batch b1
@@ -1319,3 +1302,40 @@ Feature: Batches
     When the driver polls the batch b1
     Then the batches service returns the batch step b2
     And the instruction of the batch step b2 is `abandon batch`
+
+  @g166 @r166
+  Scenario: A ready item whose operation's outcome the base leaves unhandled is opened in the batch
+    Given an item i1
+    And the status of the item i1 is `ready`
+    And the item i1 meets this readiness bar
+    And a port line p1
+    And an operation o1
+    And the port line p1 governs the operation o1
+    And the item i1 holds the port line p1
+    And a port line p2
+    And the port line p2 governs the operation o1
+    And the item i1 does not hold the port line p2
+    And an operation outcome o2
+    And the operation o1 has the operation outcome o2
+    And no core line handles the operation outcome o2
+    And no port line excludes the operation outcome o2
+    And a batch b1
+    When the person opens the batch b1
+    Then the batches service sets the status of the item i1 to `in-batch`
+
+  @g167 @r167
+  Scenario: work batch start counts only the outcome violations an item adds, as the readiness bar does
+    Given an item i1
+    And the status of the item i1 is `ready`
+    And a port line p1
+    And an operation o1
+    And the port line p1 governs the operation o1
+    And the item i1 holds the port line p1
+    And an operation outcome o2
+    And the operation o1 has the operation outcome o2
+    And no core line handles the operation outcome o2
+    And no port line excludes the operation outcome o2
+    And a batch b1
+    When the person opens the batch b1
+    Then the batches service reopens the item i1
+    And the batches service names the operation outcome o2

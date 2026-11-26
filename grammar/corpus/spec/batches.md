@@ -1602,28 +1602,6 @@ shall [x10: agent the driver (constant), x11: service the batches service (const
     return(e4, subject: x11, object: x14)
 ```
 
-## r160
-From: b721 r160.
-
-```reading
-While an item is `ready` and the item holds a port line that governs an operation and the operation has an operation outcome and no core line handles the operation outcome and no port line excludes the operation outcome, if the person opens a batch, then the batches service shall reopen the item and name the operation outcome.
-shall [x7: agent the person (constant), x9: service the batches service (constant)]
-  while [x1: item, x2: port line, x3: operation, x4: operation outcome]
-    status(x1) = `ready`
-    govern(subject: x2, object: x3)
-    in(x2, x1)
-    of(x4, x3)
-    not [x5: core line]
-      handle(subject: x5, object: x4)
-    not [x6: port line]
-      exclude(subject: x6, object: x4)
-  if [x8: batch]
-    request(e1, batches.open, subject: x7, object: x8)
-  response
-    reopen#2(e2, subject: x9, object: x1)
-    name(e3, subject: x9, object: x4)
-```
-
 ## r161
 Retires: r149. From: b713 r161.
 
@@ -1743,4 +1721,56 @@ shall [x3: agent the driver (constant), x4: service the batches service (constan
   response [x5: batch step]
     instruction(x5) = `abandon batch`
     return(e2, subject: x4, object: x5)
+```
+
+## r166
+From: b725 r166.
+
+```reading
+While an item is `ready` and the item meets the readiness bar and the item holds a port line that governs an operation and another port line that governs the operation is not in the item and the operation has an operation outcome and no core line handles the operation outcome and no port line excludes the operation outcome, when the person opens a batch, the batches service shall set the status of the item to `in-batch`.
+shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x9: agent the person (constant), x11: service the batches service (constant)]
+  while [x1: item, x3: port line, x4: operation, x5: port line, x6: operation outcome]
+    status(x1) = `ready`
+    meet(subject: x1, object: x2)
+    govern(subject: x3, object: x4)
+    in(x3, x1)
+    distinct(x5, x3)
+    govern(subject: x5, object: x4)
+    not
+      in(x5, x1)
+    of(x6, x4)
+    not [x7: core line]
+      handle(subject: x7, object: x6)
+    not [x8: port line]
+      exclude(subject: x8, object: x6)
+  when [x10: batch]
+    request(e1, batches.open, subject: x9, object: x10)
+  response
+    initiates(e2, subject: x11, status(x1) = `in-batch`)
+```
+
+## r167
+Retires: r160. From: b725 r167.
+
+```reading
+While an item is `ready` and the item holds a port line that governs an operation and every port line that governs the operation is in the item and the operation has an operation outcome and no core line handles the operation outcome and no port line excludes the operation outcome, if the person opens a batch, then the batches service shall reopen the item and name the operation outcome.
+shall [x8: agent the person (constant), x10: service the batches service (constant)]
+  while [x1: item, x2: port line, x3: operation, x5: operation outcome]
+    status(x1) = `ready`
+    govern(subject: x2, object: x3)
+    in(x2, x1)
+    every [x4: port line]
+      govern(subject: x4, object: x3)
+      scope
+        in(x4, x1)
+    of(x5, x3)
+    not [x6: core line]
+      handle(subject: x6, object: x5)
+    not [x7: port line]
+      exclude(subject: x7, object: x5)
+  if [x9: batch]
+    request(e1, batches.open, subject: x8, object: x9)
+  response
+    reopen#2(e2, subject: x10, object: x1)
+    name(e3, subject: x10, object: x5)
 ```
