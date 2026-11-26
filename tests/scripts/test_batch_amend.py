@@ -69,3 +69,19 @@ def test_a_failed_amend_puts_back_the_bases_commit_with_the_branches(started):  
     assert [git(started, "rev-parse", b).strip() for b in ("batch-1", "batch-1-b1")] == heads
     assert "undone" in git(started, "log", "-1", "--format=%s")
     assert not git(started, "status", "--porcelain").strip()
+
+
+def test_an_amend_takes_the_item_out_against_the_batchs_base(started, monkeypatch):  # noqa: F811
+    """b704 f1: the amend's take-out is given the batch's base, as park's and review's are, so an import, a table or
+    a model line the base held is put back as it held it."""
+    import batch_amend
+    import batch_parked
+    import batch_start
+    resumed(started)
+    assert work(started, "line", "b1", "--into", "work-queue", "--group", "Abandon again", THIRD).returncode == 0
+    bases, unlay = [], batch_start.unlay_lines
+    monkeypatch.setattr(batch_start, "unlay_lines",
+                        lambda tree, items, command, base=None: bases.append(base) or unlay(tree, items, command, base))
+    batch_amend.amend(started, "b1")
+    base = batch_parked.base_of(started, batch_plan.find(started, "batch-1"))
+    assert base and bases == [base, base], (bases, base)

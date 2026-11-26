@@ -16,9 +16,9 @@ REQUIREMENTS = ("### stock-port\n\nnarrator: the notes service\ngroup: service\n
                 "service shall not refuse the request.")
 
 
-def _repo(tmp_path):
+def _repo(tmp_path, stock=STOCK):
     spec = tmp_path / "spec"
-    for rel, text in (("index.md", INDEX), ("model/notes.md", NOTES), ("model/stock.md", STOCK),
+    for rel, text in (("index.md", INDEX), ("model/notes.md", NOTES), ("model/stock.md", stock),
                       ("vocabulary/notes.md", WORDS)):
         (spec / rel).parent.mkdir(parents=True, exist_ok=True)
         (spec / rel).write_text(text)
@@ -60,3 +60,15 @@ def test_an_import_another_line_of_the_port_says_is_kept_without_a_base(tmp_path
     other.unlink()
     backlog_port.unlay(tmp_path, blocks, [])
     assert stock.read_text() == STOCK
+
+
+def test_an_import_the_port_held_at_the_base_survives_the_unlay(tmp_path):
+    """b704 f1: a port area whose model file held `imports: [notes]` at the base keeps it once the item that says a
+    note is taken out against that base, though no line left in the area says a note."""
+    blocks = _repo(tmp_path, STOCK.replace("imports: []", "imports: [notes]"))
+    stock = tmp_path / "spec" / "model" / "stock.md"
+    base = subprocess.run(["git", "-C", str(tmp_path), "rev-parse", "HEAD"], capture_output=True, text=True,
+                          check=True).stdout.strip()
+    backlog_port.lay(tmp_path, blocks, [])
+    backlog_port.unlay(tmp_path, blocks, [], base)
+    assert "imports: [notes]\n" in stock.read_text(), stock.read_text()

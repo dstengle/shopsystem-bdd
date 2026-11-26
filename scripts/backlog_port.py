@@ -4,10 +4,11 @@ lines (backlog_model_area's skeleton writes the kind), importing each area whose
 of the port or its model lines of the port say, and imported in turn by the model file of each area a capability
 block of the item is in whose lines say a word of the port's layer, so the lay raises no v_m1 (`lay`); taken out
 again by the unlay, per item (b704): each import the item's lay would add, computed again from its blocks, taken out
-unless the model file at the batch's base held it or a line left in the area (another item's, the spec's) or its
-model fence still says a word of the imported layer, never reset to the base, so a park keeps the imports another
-item laid on the same port and an amend (no base) takes out those its lines no longer need; and the model file the
-lay made removed when nothing else is left in it (`unlay`). A word is said when
+unless the model file at the batch's base held it or a line left in the area (another item's, the spec's) or a line
+of its model fence the base did not hold (another item's) still says a word of the imported layer, never reset to
+the base, so a park keeps the imports another item laid on the same port and an amend (given the batch's base too)
+takes out those its lines no longer need and keeps those the base held; and the model file the lay made removed when
+nothing else is left in it (`unlay`). A word is said when
 it, one of its forms or its plural stands whole in the text, as backlog_area_move_lay reads a moved word's users."""
 import re
 from pathlib import Path
