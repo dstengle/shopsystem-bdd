@@ -19,7 +19,7 @@ plugin's tools: the session works out what to run.
 
 A skill is the set of instructions Claude follows for one kind of work. The links show exactly what Claude is told.
 
-Take the first row. You say you'd like `shop work show` to print an item's status. Claude makes an item (a piece of work
+Take the third row. You say you'd like `shop work show` to print an item's status. Claude makes an item (a piece of work
 in the backlog) and writes what you asked for as a requirement line, one sentence the plugin can parse:
 
 ```requirement
@@ -72,8 +72,11 @@ newer (see below). Those are yours.
 A bounded context is built for a product: the people it serves and the jobs they want done. You say that in your own
 words, once, and whenever it changes. Claude keeps it in the shop's product file, `.shop/product/product.toml`, and
 from then on can tell you which requirements do each job. This section walks it through on the notes tool, as
-[`docs/examples/notes-cli/`](examples/notes-cli/README.md) keeps it: that folder holds the product file and the
-capability these steps end with, and every output below is pasted from a real run on a copy of it.
+[`docs/examples/notes-cli/`](examples/notes-cli/README.md) keeps it. That folder is where these steps **end**: its
+product file and the `serves:` lines of its capability are what they write. To replay them from their start, copy the
+folder into a git repository of its own, take out `.shop/product/`, every `serves:` line and the group g5 of
+`spec/capabilities/notes.md`, run `shop spec annotate` and `shop features generate`, and commit. Every output below is
+pasted from a real run on such a copy (plugin 0.44.0, 2026-11-26).
 
 ### What you say: who it's for and what they want done
 
@@ -173,6 +176,8 @@ And a note that's already removed can't be removed again.
 ```console
 $ shop work idea "The notes serve the writer's jobs"
 b1 "The notes serve the writer's jobs" idea
+$ shop work shape b1 --note "Dedicate each group of notes to the job it does, and refuse removing a removed note."
+b1 "The notes serve the writer's jobs" shaped
 $ shop work line b1 --serves notes#g1 keep-notes
 b1 "The notes serve the writer's jobs": notes#g1 serves keep-notes
 $ shop work line b1 --serves notes#g2 keep-notes
@@ -186,21 +191,21 @@ b1 "The notes serve the writer's jobs": notes#r5 If the person removes a note wh
 b1 "The notes serve the writer's jobs": notes#g5 serves clear-notes
 ```
 
-`--serves <job>` comes **after** the line's text. Written before it, it takes the line for one more group and the
-command is refused, blaming the job:
+`shop work ready` takes a shaped item, never an idea, so the idea is shaped first: `shop work shape` gives it its
+shaping note, the sentence that says what the item is to do. Without `--note` it is refused, naming the option
+(`has no shaping note; give it one with the --note option`).
+
+`--serves <job>` goes with the line it dedicates: after the line's text, as here, or before it. A job the product does
+not hold is refused, so a typo in a job's id can't slip through:
 
 <!-- docs: context docs/examples/notes-cli -->
 ```console
-$ shop work line b1 --into notes --group "A removed note is not removed again" --serves clear-notes 'If the person removes a note whose status is `removed`, then the notes service shall refuse the request.'
-work line: --serves: 'clear-notes' is not a requirement group <capability>#g<n>
+$ shop work line b1 --serves notes#g1 write-notes
+work line: --serves: the product holds no job write-notes
 ```
 
-A job the product does not hold is refused too, so a typo in a job's id can't slip through (`--serves: the product
-holds no job ...`).
-
-An item whose only lines are `--serves` pairs is not ready on its own yet: `shop work ready` refuses it with "it has
-no requirement line: give it one with `shop work line`". The pairs go out with the next line you ask for, as r5 does
-here.
+An item whose only lines are `--serves` pairs is ready too: the pairs alone would pass the readiness bar. Here the
+item also holds r5, the behaviour you added.
 
 ### What you see: the trace, before the batch
 
@@ -235,6 +240,7 @@ $ shop work ready b1
 b1 "The notes serve the writer's jobs" ready
 $ shop work batch start
 batch-1 building: t1 b1 "The notes serve the writer's jobs"
+batch brief: .../.shop/worktrees/batch-1-driver/brief.md
 ```
 
 The batch writes each pair as its group's `serves:` line in the capability file, and r5 with its scenario:

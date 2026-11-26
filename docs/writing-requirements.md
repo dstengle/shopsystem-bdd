@@ -153,7 +153,7 @@ A few things do a lot of work:
   While an item is `idea`, when the person shapes the item, the backlog service shall set the status of the item to `shaped`.
   ```
 - **`This:`** names the request's own thing. The vocabulary's `bounded context` has one, so "this bounded context"
-  means the one the request is made in ([R11](../grammar/language.md#r11-this-k-and-an-unbound-the-k-whose-entry-has-this-are-the-runs-own-k)).
+  means the one the request is made in ([R11](../grammar/language.md#r11-this-k-and-an-unbound-the-k-whose-entry-has-this-are-the-requests-own-k)).
 
 ### Packs
 
