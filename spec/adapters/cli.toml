@@ -588,7 +588,7 @@ requirements = [
 
 [operations."drafting.draft"]
 command = "work line"
-cli-only = { options = ["--group", "--in", "--into", "--model", "--narrator", "--no-line", "--term"] }
+cli-only = { options = ["--group", "--in", "--into", "--model", "--narrator", "--no-line", "--port", "--term"] }
 requirements = [
   "drafting#r1: When the person drafts an item with a relation row, the drafting service shall keep the relation row in the item.",
   "drafting#r2: If the person drafts an item with a relation row that does not conform to the relation-row form, then the drafting service shall refuse the request and name the relation row.",

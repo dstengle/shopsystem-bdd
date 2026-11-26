@@ -178,8 +178,8 @@ class _Reader:
             self.fence.append(line.rstrip())
 
     def new(self, m):
-        """`narrator:`, `group:` and `purpose:`, then `area:` when the person named one (b645), in that order, first in
-        the block of a capability the item makes."""
+        """`narrator:`, `group:` and `purpose:`, then `area:` when the person named one (b645) and `kind:` when that
+        area is a driven port (b701), in that order, first in the block of a capability the item makes."""
         blocks = self.blocks
         have = (blocks[-1].new or ()) if blocks else ()
         if not blocks or blocks[-1]._replace(new=None) != Block(blocks[-1].capability, [], []) \
