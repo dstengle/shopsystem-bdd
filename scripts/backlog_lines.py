@@ -166,7 +166,7 @@ def add_term(root, name, capability, bullets):
     block_of(blocks, capability).terms.extend(bullets)
     item.sections[SECTION] = render(blocks)
     import backlog_term_rules
-    backlog_term_rules.refuse(root, item, bullets)      # a term that breaks a lexicon rule (b810, drafting r99)
+    backlog_term_rules.refuse(root, item, bullets)      # a term that breaks a lexicon rule (b810, b826, drafting r101)
     said = "a term" if len(bullets) == 1 else "%d terms" % len(bullets)
     commit(root, item, "work line: %s %s of %s" % (label(item), said, capability))
     return item

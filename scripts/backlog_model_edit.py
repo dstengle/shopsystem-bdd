@@ -194,7 +194,7 @@ def reword_term(root, name, term, entry, into=None):
     new = backlog_model._entries([entry])[0] if kind == "model" else one_line(entry, "term")
     _replace_term(item, blocks, term, new, root, into)
     import backlog_term_rules
-    backlog_term_rules.refuse(root, item, [new])        # a term that breaks a lexicon rule (b810, drafting r100)
+    backlog_term_rules.refuse(root, item, [new])        # a term that breaks a lexicon rule (b810, b826, drafting r102)
     commit(root, item, "work line: %s rewords the term %s" % (label(item), term))
     return item
 
