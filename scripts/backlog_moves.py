@@ -130,12 +130,19 @@ def answer(root, name, text):
 def ready(root, name):
     """`shaped` -> `ready` (items#r1, r2): refused with every reason the bar gives, so nothing is committed (D8); a
     `ready` item checked again, kept as it is when it passes (items#r35) and refused with the reasons when it does not
-    (items#r36); any other item refused, naming it (items#r37). The item and the bar's warnings."""
+    (items#r36); any other item refused, naming it (items#r37). The bar checks a copy of the item with its ids
+    renumbered past its capabilities', as the pick does, so ids a merged batch took do not refuse it; the item keeps
+    its own ids (items#r66, r67, b648). The item and the bar's warnings."""
+    import copy
+
+    import backlog_lines
     import readiness_bar
     warnings = []
 
     def check(item):
-        reasons, warns = readiness_bar.check(root, item)
+        renumbered = copy.deepcopy(item)
+        backlog_lines.renumber(root, renumbered, {})
+        reasons, warns = readiness_bar.check(root, renumbered)
         if reasons:
             raise Refused("work ready: %s is not passing:\n%s" % (label(item), "\n".join("  " + r for r in reasons)))
         warnings.extend(warns)
