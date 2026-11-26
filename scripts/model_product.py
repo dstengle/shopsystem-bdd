@@ -1,6 +1,6 @@
 """The product check's facts in `spec`'s facts (`ProductReading`, b643, checking r114-r123; decisions 0140-0144): what
-model.lp's v_job_elsewhere, v_need_cycle, w_unheld_job, w_untriggered_actor, w_unaddressed_sub, w_unreached_sub,
-w_unserved_job and w_unserved_cap read, off the shop's product file (product_store's `.shop/product/product.toml`) and
+model.lp's v_job_elsewhere, v_need_cycle, w_unheld_job, w_untriggered_actor, w_unplayed_actor (b849), w_unaddressed_sub,
+w_unreached_sub, w_unserved_job and w_unserved_cap read, off the shop's product file (product_store's `.shop/product/product.toml`) and
 the trace of each job this bounded context serves or holds (product_trace's `joined`, derived as `spec trace` derives
 it). A job is named by its name (`name_of`), a bounded context by its id less `bounded-context/`.
 

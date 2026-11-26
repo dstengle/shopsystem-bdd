@@ -2196,6 +2196,32 @@ a product actor of a job held here whose actor here triggers no line of the job'
   triggers_as("p","q").
   ```
 
+## w_unplayed_actor
+
+a product actor of a job held here that no actor of this bounded context plays
+
+- Purpose: Each product actor of a job a bounded context holds is played by an actor of it, so a mapping is never silently forgotten.
+- Since: b849
+- Severity: warning
+- Implemented in: `scripts/model.lp`
+- Cited by: no line
+- Fails on:
+
+  ```prolog
+  here("b").
+  held_by("j","b").
+  pjob_actor("j","p").
+  ```
+
+- Passes on:
+
+  ```prolog
+  here("b").
+  held_by("j","b").
+  pjob_actor("j","p").
+  plays("p","the person").
+  ```
+
 ## w_unaddressed_sub
 
 a subdomain that no bounded context addresses
