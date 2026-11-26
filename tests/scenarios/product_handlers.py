@@ -4,8 +4,9 @@ written into the product file (product_store's `render`) and committed, and `spe
 run with the values the instances stand for (`value`): a product actor p1 is `the p1 user`, held by the product unless
 a Given says it is not; a need n1 is the job `n1`, held unless a Given says not, needing the job j1 when it depends on
 it (so the product holds j1 too); a job statement j2 is of the job statement form unless a Given says it does not
-conform; an id i1 is `example.org/i1` of a product and `i1` of a job, a job known by its id when the When gives one.
-A job the When declares with no statement is given one of the form, so that only what the line says is wrong. A
+conform, its text the given block's when it holds one (b674, r14); an id i1 is `example.org/i1` of a product and `i1`
+of a job, a job known by its id when the When gives one. A job the When declares with no statement is given one of
+the form, so that only what the line says is wrong. A
 product detail p1 is a table `[p1]` the product form does not name, written after the rendered product (b673, r8-r10);
 a product that does not conform to the product form has `jobs = ["j1"]` (r11-r13). The Thens read what the run
 printed, its exit (a refusal no traceback), and the product file and commit it kept; "this product" is named by the
@@ -29,7 +30,7 @@ def mine(step):
 
 def world(step):
     return step.context.setdefault("product", {"kinds": {}, "outside": set(), "unformed": set(), "depends": {},
-                                               "details": []})
+                                               "details": [], "texts": {}})
 
 
 def detail(name):
@@ -49,6 +50,8 @@ def value(w, name, of=None):
     kind = w["kinds"].get(name)
     if kind == "product actor":
         return "the %s user" % name
+    if kind == "job statement" and name in w["texts"]:
+        return w["texts"][name]
     if kind == "job statement":
         return (UNFORMED if name in w["unformed"] else FORMED) % name
     if kind == "id":
@@ -62,6 +65,13 @@ def given_instance(step):
     if not mine(step):
         return False
     world(step)["kinds"][step.names[0]] = step.kind
+
+
+def given_text(step):
+    """`the job statement `j2` holds "When ..."`: the group's given block, j2's text in place of FORMED (r14)."""
+    if not mine(step):
+        return False
+    world(step)["texts"][step.names[0].strip("`")] = step.quoted[0][1:-1]
 
 
 def given_does(step):
@@ -201,6 +211,7 @@ def completes(step):
 
 
 W.local("GivenK")(given_instance)
+sys.modules["vocab"].handler("GivenCode", "job statement")(given_text)     # a claim `features vocab --check` sees
 W.local("GivenDoes")(given_does)
 W.local("GivenDoesNot")(given_not)
 W.local("WhenRuns")(runs)
