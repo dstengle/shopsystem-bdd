@@ -110,8 +110,8 @@ Read more: [The response](reference/adapters.md#the-response).
 The vocabulary is the list of words a context's lines may use, each naming one element of the model; a pack is a
 ready-made set of words you import.
 
-- **Lives in:** `spec/vocabulary/<area>.md` and `shared.md`. Packs are in the plugin's `grammar/packs/` (`request`,
-  `spec`, `time`).
+- **Lives in:** `spec/vocabulary/<area>.md` and `shared.md`. Packs are in the plugin's `grammar/packs/` (`base`,
+  `request`, `spec`, `time`, and `cli`, deprecated since 0.38.0 for `request`).
 - **Written by:** `shop work line --term`, on an item, laid into `spec/vocabulary/` by a batch.
 
 Each entry says its part of speech and, after the arrow, the element it names:
@@ -124,7 +124,20 @@ Each entry says its part of speech and, after the arrow, the element it names:
 
 A verb that names an operation is how a line says a request: "the person shapes the item" asks the backlog service
 for `shape`. Every context imports the `request` pack, the words of a request and its response: *request*,
-*service*, *refuse*, *name*, *return*, *keep*, *complete*. `shop spec lexicon` prints every word a context has, and
+*service*, *refuse*, *name*, *return*, *keep*, *complete*. A context `shop migrate init` founds imports the `base`
+pack too, `imports: [base, request]` in `spec/index.md`: the kinds most contexts name and none owns, *text*, *file*,
+*version*, *repository* and *bounded context*. An older context adopts it with `shop work line <item> --import base`.
+A word of your own spelled as one of them collides with the pack's: here a notes context whose model has an
+`object text`,
+
+```console
+$ shop spec lexicon --check
+v_t16  text  spec/vocabulary/notes-cli.md: the pack base defines text too; mark the entry Redefines: base
+10 terms, 1 problems
+```
+
+and with `Redefines: base.` on the entry it passes, `shop spec lexicon` listing it as `text  [redefines base]`.
+`shop spec lexicon` prints every word a context has, and
 where each came from. Here's the small example context of [getting started](getting-started.md):
 
 ```console

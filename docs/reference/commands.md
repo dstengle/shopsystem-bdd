@@ -77,7 +77,9 @@ the item up. The rest of this page goes command by command.
   `shop features generate` and `shop features vocab` take it after. `shop features` takes `--dir` for its feature files,
   `shop tools` takes `--python` for the project's interpreter.
 - **Commits.** A `shop work` command that changes a file commits it, alone, with a message that starts with the command
-  (`work shape: b250 ... idea -> shaped`), then pushes the branch to its remote. A refused push prints
+  (`work shape: b250 ... idea -> shaped`), then pushes the branch to its remote. The product commands of `shop spec`
+  (`product`, `actor`, `job`, `subdomain`, `context`, `assign`, `plays`, `unassign` and `drop`) do the same with the
+  product file (`spec job: keep-notes`). A refused push prints
   `not pushed: <remote>: <reason>` and keeps the commit.
 - **`--json`.** Every command takes it and prints the response envelope, one JSON object: `outcome` (`done`,
   `returned`, `refused`, `passed`, `failed` or `broken`), `content` (what the operation returns), `errors` (each a
@@ -120,7 +122,7 @@ b250 "work show prints the status of an item" shaped
 Writes a requirement line into an item's `## Requirements`, under the capability it goes into, and commits it. It
 takes an item that is `idea`, `shaped` or `in-batch`; an in-batch item's changed lines reach its batch with
 [`shop work batch amend`](#shop-work-batch-amend).\
-Synopsis: `shop work line [--into INTO] [--group GROUP | --in IN_GROUP] [--retires CAP#rN] [--retirement-list FILE] [--no-line] [--reword CAP#rN] [--remove CAP#rN|CAP] [--term TERM] [--recodify CAP] [--relation RELATION] [--model MODEL] [--given GROUP BLOCK] [--universal UNIVERSAL] [--capability CAPABILITY] [--narrator NARRATOR] [--area AREA] [--port] [--expose TABLES] [--withhold SERVICE.OPERATION] [--pack NAME] [--move-model HEADER] [--move-term TERM] [--import PACK] [--remove-model MODEL] [--reword-model HEADER] [--remove-term TERM] [--reword-term TERM] [--remove-universal U<n>] [--replace-universal U<n>] [--remove-upstream ID] [--replace-upstream ID] [--remove-given CAP#g<n>] [--replace-given CAP#g<n>] [--reinstate-model HEADER] [--reinstate-term TERM] [--remove-import PACK] [--retire-model HEADER] [--retire-term TERM] [--serves CAP#gN JOB [CAP#gN JOB ...]] [--relied-on-by CAP#rN[,...]] [--upstream UPSTREAM] name [text]`
+Synopsis: `shop work line [--into INTO] [--group GROUP | --in IN_GROUP] [--retires CAP#rN] [--retirement-list FILE] [--no-line] [--reword CAP#rN] [--remove CAP#rN|CAP] [--term TERM] [--recodify CAP] [--relation RELATION] [--model MODEL] [--given GROUP BLOCK] [--universal UNIVERSAL] [--capability CAPABILITY] [--narrator NARRATOR] [--area AREA] [--port] [--expose TABLES] [--withhold SERVICE.OPERATION] [--pack NAME] [--move-model HEADER] [--move-term TERM] [--import PACK] [--remove-model MODEL] [--reword-model HEADER] [--remove-term TERM] [--reword-term TERM] [--remove-universal U<n>] [--replace-universal U<n>] [--remove-upstream ID] [--replace-upstream ID] [--remove-given CAP#g<n>] [--replace-given CAP#g<n>] [--reinstate-model HEADER] [--reinstate-term TERM] [--remove-import PACK] [--retire-model HEADER] [--retire-term TERM] [--serves CAP#gN JOB [CAP#gN JOB ...]] [--relied-on-by CAP#rN[,...]] [--upstream UPSTREAM] [--json] name [text]`
 
 - `--into <capability>`: the codified capability the line goes into.
 - `--group "<title>"`: open a new group with this title (default: the item's title). `--in g<n>` joins one of the
@@ -1279,7 +1281,7 @@ statement is checked for the job statement form only, `When <situation>, <actor>
 not hold naming the actor and `--actor`, a statement whose actor is not one of the job's `--actor`s naming
 `--statement`, a need that is no job of the product naming `--needs`, and a need that depends on the job, directly or through the jobs it needs, so
 that the needs would close a cycle, naming `--needs`.\
-Synopsis: `shop spec job <id> --statement <text> [--actor <actor> ...] [--needs <job> ...]`
+Synopsis: `shop spec job <id> --actor <actor> [--actor ...] --statement <text> [--needs <job> ...]`
 
 ```console
 $ shop spec job j1 --actor "the developer" --statement "When a change is wanted, the developer wants it specified, so they can build it."
