@@ -931,3 +931,86 @@ Feature: Batches
     When the person opens the batch b1
     Then the batches service keeps the area a1
     And the area a1 does not hold the term t1
+
+  @g135 @r135
+  Scenario: A batch awaiting its merge tells the driver to stop
+    Given a batch b1
+    And the status of the batch b1 is `awaiting-merge`
+    When the driver polls the batch b1
+    Then the batches service returns the batch step b2
+    And the instruction of the batch step b2 is `stop`
+
+  @g136 @r136
+  Scenario: A batch in review asks the driver to review its change with the review folder
+    Given a batch b1
+    And the status of the batch b1 is `in-review`
+    And a review folder r1
+    And the batch b1 has the review folder r1
+    When the driver polls the batch b1
+    Then the batches service returns the batch step b2
+    And the instruction of the batch step b2 is `review change`
+    And the batches service returns the review folder r1
+
+  @g137 @r137
+  Scenario: A batch with a finding to fix now asks the driver to fix the finding
+    Given a batch b1
+    And the status of the batch b1 is `building`
+    And a review r1
+    And the batch b1 has the review r1
+    And a review finding r2
+    And the triage of the review finding r2 is `fix now`
+    And the review r1 holds the review finding r2
+    When the driver polls the batch b1
+    Then the batches service returns the batch step b2
+    And the instruction of the batch step b2 is `fix finding`
+    And the batches service returns the review finding r2
+
+  @g138 @r138
+  Scenario: A batch with a failed task asks the driver to park the task's item
+    Given a batch b1
+    And the status of the batch b1 is `building`
+    And a task t1
+    And the batch b1 has the task t1
+    And the status of the task t1 is `failed`
+    When the driver polls the batch b1
+    Then the batches service returns the batch step b2
+    And the instruction of the batch step b2 is `park item`
+    And the batches service returns the task t1
+
+  @g139 @r139
+  Scenario: A batch with a pending task asks the driver to build the task with its brief
+    Given a batch b1
+    And the status of the batch b1 is `building`
+    And a task t1
+    And the batch b1 has the task t1
+    And the status of the task t1 is `pending`
+    And a batch brief b2
+    And the batch b1 has the batch brief b2
+    When the driver polls the batch b1
+    Then the batches service returns the batch step b3
+    And the instruction of the batch step b3 is `build task`
+    And the batches service returns the task t1
+    And the batches service returns the batch brief b2
+
+  @g140 @r140
+  Scenario: A batch with a running task asks the driver to finish the task
+    Given a batch b1
+    And the status of the batch b1 is `building`
+    And a task t1
+    And the batch b1 has the task t1
+    And the status of the task t1 is `running`
+    When the driver polls the batch b1
+    Then the batches service returns the batch step b2
+    And the instruction of the batch step b2 is `finish task`
+    And the batches service returns the task t1
+
+  @g141 @r141
+  Scenario: A batch whose every task is done asks the driver to submit it
+    Given a batch b1
+    And the status of the batch b1 is `building`
+    And a task t1
+    And the batch b1 has the task t1
+    And the status of the task t1 is `done`
+    When the driver polls the batch b1
+    Then the batches service returns the batch step b2
+    And the instruction of the batch step b2 is `submit batch`

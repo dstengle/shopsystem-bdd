@@ -1702,3 +1702,17 @@ requirements = [
 [operations."drafting.retire term".parameters]
 item = { positional = 1 }
 term = { option = "--retire-term" }
+
+[operations."batches.poll"]
+command = "work batch next"
+requirements = [
+  "batches#r135: While a batch is `awaiting-merge`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `stop`.",
+  "batches#r136: While a batch is `in-review`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `review change` and a review folder of the batch.",
+  "batches#r137: While a batch is `building` and a review of the batch holds a review finding whose triage is `fix now`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `fix finding` and the review finding.",
+  "batches#r138: While a batch is `building` and a task of the batch is `failed`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `park item` and the task.",
+  "batches#r139: While a batch is `building` and a task of the batch is `pending`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `build task`, the task and the batch brief of the batch.",
+  "batches#r140: While a batch is `building` and a task of the batch is `running`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `finish task` and the task.",
+  "batches#r141: While a batch is `building` and every task of the batch is `done`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `submit batch`.",
+]
+[operations."batches.poll".parameters]
+batch = { positional = 1, example = "batch-1" }

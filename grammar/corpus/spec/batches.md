@@ -1242,3 +1242,129 @@ shall [x2: readiness bar "the readiness bar of the plugin that runs the command"
       in(x3, x7)
     keep(e2, subject: x6, object: x7)
 ```
+
+## r135
+From: b683 r135.
+
+```reading
+While a batch is `awaiting-merge`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `stop`.
+shall [x2: agent the driver (constant), x3: service the batches service (constant)]
+  while [x1: batch]
+    status(x1) = `awaiting-merge`
+  when
+    request(e1, batches.poll, subject: x2, object: x1)
+  response [x4: batch step]
+    instruction(x4) = `stop`
+    return(e2, subject: x3, object: x4)
+```
+
+## r136
+From: b683 r136.
+
+```reading
+While a batch is `in-review`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `review change` and a review folder of the batch.
+shall [x2: agent the driver (constant), x3: service the batches service (constant)]
+  while [x1: batch]
+    status(x1) = `in-review`
+  when
+    request(e1, batches.poll, subject: x2, object: x1)
+  response [x4: batch step, x5: review folder]
+    instruction(x4) = `review change`
+    return(e2, subject: x3, object: x4)
+    of(x5, x1)
+    return(e3, subject: x3, object: x5)
+```
+
+## r137
+From: b683 r137.
+
+```reading
+While a batch is `building` and a review of the batch holds a review finding whose triage is `fix now`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `fix finding` and the review finding.
+shall [x4: agent the driver (constant), x5: service the batches service (constant)]
+  while [x1: batch, x2: review, x3: review finding]
+    status(x1) = `building`
+    of(x2, x1)
+    triage(x3) = `fix now`
+    in(x3, x2)
+  when
+    request(e1, batches.poll, subject: x4, object: x1)
+  response [x6: batch step]
+    instruction(x6) = `fix finding`
+    return(e2, subject: x5, object: x6)
+    return(e3, subject: x5, object: x3)
+```
+
+## r138
+From: b683 r138.
+
+```reading
+While a batch is `building` and a task of the batch is `failed`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `park item` and the task.
+shall [x3: agent the driver (constant), x4: service the batches service (constant)]
+  while [x1: batch, x2: task]
+    status(x1) = `building`
+    of(x2, x1)
+    status(x2) = `failed`
+  when
+    request(e1, batches.poll, subject: x3, object: x1)
+  response [x5: batch step]
+    instruction(x5) = `park item`
+    return(e2, subject: x4, object: x5)
+    return(e3, subject: x4, object: x2)
+```
+
+## r139
+From: b683 r139.
+
+```reading
+While a batch is `building` and a task of the batch is `pending`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `build task`, the task and the batch brief of the batch.
+shall [x3: agent the driver (constant), x4: service the batches service (constant)]
+  while [x1: batch, x2: task]
+    status(x1) = `building`
+    of(x2, x1)
+    status(x2) = `pending`
+  when
+    request(e1, batches.poll, subject: x3, object: x1)
+  response [x5: batch step, x6: batch brief]
+    instruction(x5) = `build task`
+    return(e2, subject: x4, object: x5)
+    return(e3, subject: x4, object: x2)
+    of(x6, x1)
+    return(e4, subject: x4, object: x6)
+```
+
+## r140
+From: b683 r140.
+
+```reading
+While a batch is `building` and a task of the batch is `running`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `finish task` and the task.
+shall [x3: agent the driver (constant), x4: service the batches service (constant)]
+  while [x1: batch, x2: task]
+    status(x1) = `building`
+    of(x2, x1)
+    status(x2) = `running`
+  when
+    request(e1, batches.poll, subject: x3, object: x1)
+  response [x5: batch step]
+    instruction(x5) = `finish task`
+    return(e2, subject: x4, object: x5)
+    return(e3, subject: x4, object: x2)
+```
+
+## r141
+From: b683 r141.
+
+```reading
+While a batch is `building` and every task of the batch is `done`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `submit batch`.
+shall [x3: agent the driver (constant), x4: service the batches service (constant)]
+  while [x1: batch]
+    status(x1) = `building`
+    every [x2: task]
+      of(x2, x1)
+      scope
+        status(x2) = `done`
+  when
+    request(e1, batches.poll, subject: x3, object: x1)
+  response [x5: batch step]
+    instruction(x5) = `submit batch`
+    return(e2, subject: x4, object: x5)
+```

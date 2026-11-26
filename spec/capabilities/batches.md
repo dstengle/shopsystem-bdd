@@ -231,3 +231,24 @@ when the change is merged.
 ### [g134] A batch opened takes each retired term out of its area
 - [r134] While an item is `ready` and the item meets the readiness bar and the item retires a term, when the person opens a batch, the batches service shall keep an area that does not hold the term.
 
+### [g139] A batch with a pending task asks the driver to build the task with its brief
+- [r139] While a batch is `building` and a task of the batch is `pending`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `build task`, the task and the batch brief of the batch.
+
+### [g140] A batch with a running task asks the driver to finish the task
+- [r140] While a batch is `building` and a task of the batch is `running`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `finish task` and the task.
+
+### [g141] A batch whose every task is done asks the driver to submit it
+- [r141] While a batch is `building` and every task of the batch is `done`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `submit batch`.
+
+### [g135] A batch awaiting its merge tells the driver to stop
+- [r135] While a batch is `awaiting-merge`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `stop`.
+
+### [g136] A batch in review asks the driver to review its change with the review folder
+- [r136] While a batch is `in-review`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `review change` and a review folder of the batch.
+
+### [g137] A batch with a finding to fix now asks the driver to fix the finding
+- [r137] While a batch is `building` and a review of the batch holds a review finding whose triage is `fix now`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `fix finding` and the review finding.
+
+### [g138] A batch with a failed task asks the driver to park the task's item
+- [r138] While a batch is `building` and a task of the batch is `failed`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `park item` and the task.
+
