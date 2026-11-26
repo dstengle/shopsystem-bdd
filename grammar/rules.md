@@ -1058,10 +1058,11 @@ a value names no attribute, or more than one
 
 ## v_t6
 
-two terms are written the same
+a term is written as another term is, or as a word the grammar spells itself
 
-- Purpose: Distinct terms read differently, so a line's words always identify which term is meant.
+- Purpose: Distinct terms read differently, and no term is spelled as a word the grammar spells itself, so a line's words always identify which term is meant.
 - Since: b123
+- Changed: b847
 - Severity: error
 - Implemented in: `scripts/model.lp`, `scripts/backlog_lines.py`, `scripts/spec_lexicon_problems.py`
 - Cited by: checking#r162, drafting#r94, drafting#r112
@@ -1168,12 +1169,13 @@ a verb's entry says neither state nor action
 
 ## v_t15
 
-two entries of one verb take, in every slot, the same kind or one kind under the other
+two senses of one verb, two entries or an entry and a pack's it redefines, take in every slot the same kind or one kind under the other
 
-- Purpose: A verb's senses are told apart by the kinds they take, so a line using the verb has one reading.
+- Purpose: A verb's senses, two of its own or its own beside a pack's it redefines, are told apart by the kinds they take, so a line using the verb has one reading.
 - Since: b131
+- Changed: b847
 - Severity: error
-- Implemented in: `scripts/model.lp`, `scripts/spec_frames.py`
+- Implemented in: `scripts/model.lp`, `scripts/spec_frames.py`, `scripts/spec_packs.py`
 - Cited by: checking#r162, checking#r163
 - Fails on:
 

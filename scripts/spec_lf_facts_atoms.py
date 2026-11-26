@@ -65,7 +65,7 @@ class Terms:
         """(event, doer, object) of an event atom."""
         _, verb, sense, roles = atom.args
         subject, kinds, fixed = self.slots(roles)
-        e = spec_lf_facts_request.outcome(self, verb) or WORDS.get((verb,) + fixed[:1]) or self.ids.event(verb, sense)
+        e = spec_lf_facts_request.outcome(self, verb, sense) or WORDS.get((verb,) + fixed[:1]) or self.ids.event(verb, sense)
         return e, self.term(subject), self.obj(kinds)
 
     # --- an atom of the pre-state ---------------------------------------------------------------------------------

@@ -65,6 +65,7 @@ class SpecReading:
         words, known, kinds = Counter(t.term for t in terms), spec_frames.names(lexicon, spec_rgl_vocab.outer(self.root)), lexicon.kind_names()
         overlapping = spec_frames.overlapping(lexicon)
         unmarked = spec_packs.unmarked(self.root, lexicon)     # v_t16, and v_t17 of an import of no pack
+        beside = {(t.where, t.term): p for t, p, _ in spec_packs.overlapping(self.root, lexicon)}     # v_t15, b847
         for name in spec_packs.missing(self.root):
             self.fact("misimported", self.context, name)
         for n, t in enumerate(terms, 1):
@@ -84,6 +85,10 @@ class SpecReading:
                 self.fact("frameless", ident)
             if t.category == "event" and not t.aspect:
                 self.fact("aspectless", ident)
+            if lexicon.spelled(t):      # v_t6: a word the grammar spells itself (b847)
+                self.fact("spelled", ident)
+            if (t.where, t.term) in beside:
+                self.fact("overlaps_pack", ident, beside[(t.where, t.term)])
             if t.category == "event" and sum(u.category == "event" for u in terms if u.term == t.term) > 1:
                 # two senses of one verb, a noun of its word beside them another term (`<word> event`, b475)
                 self.fact("senses", ident)

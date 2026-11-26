@@ -64,7 +64,7 @@ def reply(walk, part):
     ref, verb, sense, roles = found[0].args[0], found[0].args[2], found[0].args[3], found[0].args[4]
     events = [a for a in part.body if getattr(a, "pred", None) == "event"
               and any(len(r) == 2 and r[1] == ref for r in a.args[3][1:])]
-    kind = outcome(walk, events[0].args[1]) if len(events) == 1 else None
+    kind = outcome(walk, events[0].args[1], events[0].args[2]) if len(events) == 1 else None
     if kind not in ENDS:
         raise ValueError("no translation of a reply that is no outcome of the request")
     kinds = [r[1] for r in roles if len(r) == 2]
@@ -166,9 +166,12 @@ def _slug(name):
     return re.sub(r"[^a-z0-9]+", "_", name.lower()).strip("_") or "x"
 
 
-def outcome(walk, verb):
-    """The check's event of a verb of the request pack in a context that imports it, else None."""
-    return OUTCOMES.get(verb) if walk.ids.request else None
+def outcome(walk, verb, sense=None):
+    """The check's event of a verb of the request pack in a context that imports it, else None: of the pack's sense,
+    not of a sense of the context's that names an operation beside it (b847)."""
+    if not walk.ids.request or (sense is not None and operated(walk, walk.ids.event(verb, sense))):
+        return None
+    return OUTCOMES.get(verb)
 
 
 def act(walk, atom, body, pos):

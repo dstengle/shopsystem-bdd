@@ -21,6 +21,9 @@ LETTER = {"actor": "a", "kind": "k", "attribute": "t", "value": "v", "relation":
 # verbs the core grammar spells itself; an event with one of these names would make two trees of one line: the CLI
 # pack's of a context importing `cli` (bootstrap, until the old reading is deleted), else the request pack's
 CORE_VERBS = {"run", "print", "hold", "exit", "become", "set", "be"}
+# the request pack's own verbs (grammar/packs/request.md), each of which a context's verb naming its own operation may
+# redefine, its sense kept beside the pack's (b847); the others of REQUEST_VERBS the base grammar spells
+PACK_VERBS = {"refuse", "name", "return", "notify", "complete", "fail", "keep", "change", "conform", "start"}
 REQUEST_VERBS = {"refuse", "name", "return", "notify", "complete", "fail", "keep", "change", "conform", "start",
                  "hold", "become", "set", "be"}
 
@@ -181,11 +184,24 @@ def _bullets(text, heading):
     return out
 
 
+def beside(term):
+    """Whether a context's entry keeps the request pack's sense of its verb beside its own (b847): a verb of the
+    request pack's (`PACK_VERBS`) whose entry says `Redefines: request`, which grammar 4 reads as a second sense of
+    the verb (spec_rgl_vocab) and the grammar does not spell itself (v_t6)."""
+    packs = [n.strip() for n in _field(term.text, "Redefines").split(",")]
+    return term.category == "event" and term.term in PACK_VERBS and "request" in packs
+
+
 @dataclass
 class Lexicon:
     terms: list = field(default_factory=list)
     rows: list = field(default_factory=list)       # spec_relations.Row of the `## Relations` tables
     imports: tuple = ()                            # the packs `spec/index.md` imports (`core_verbs`)
+
+    def spelled(self, term):
+        """Whether the grammar spells a verb's word itself (v_t6): a word of `core_verbs`, not one whose entry keeps
+        the request pack's sense beside its own (`beside`, b847)."""
+        return term.category == "event" and term.term in self.core_verbs() and not beside(term)
 
     def core_verbs(self):
         """The verbs the grammar spells itself (v_t6): the request pack's in a context importing `request`."""
