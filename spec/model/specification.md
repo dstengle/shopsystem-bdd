@@ -451,14 +451,14 @@ object assumed description kind of artifact
   relations: has → provider (one); holds → requirement id | term (many)
 
 service product
-  operation declare(product, id, purpose)  outcomes: done → the product | refused: product not in the product form
-  operation declare actor(product actor)  outcomes: done → the product actor | refused: product not in the product form
+  operation declare(product, id, purpose)  outcomes: done → the product | refused: product not in the product form, id not in the product id form, id other than the product's id
+  operation declare actor(product actor)  outcomes: done → the product actor | refused: product not in the product form, product with no id, product actor not in the product actor form
   operation declare job(job, id, product actor, job statement, need)
     outcomes: done → the job | refused: job statement not in the job statement form, product actor outside the product, need outside the product, need that depends on the job, product not in the product form, job statement mentioning another product actor
-  operation declare subdomain(subdomain, id, subdomain type, job)  outcomes: done → the subdomain | refused: subdomain type not in the subdomain type form, job outside the product
+  operation declare subdomain(subdomain, id, subdomain type, job)  outcomes: done → the subdomain | refused: subdomain type not in the subdomain type form, job outside the product, id not in the subdomain id form
   operation declare context(bounded context, id, subdomain, shop)  outcomes: done → the bounded context | refused: id outside the product, subdomain outside the product, id not in the context id form
   operation assign(job, bounded context)  outcomes: done → the job | refused: job assigned already, id not in the context id form, bounded context outside the product, job outside the product
-  operation map(product actor, bounded context, actor)  outcomes: done → the product actor | refused: product actor outside the product, id not in the context id form, actor outside the domain model
+  operation map(product actor, bounded context, actor)  outcomes: done → the product actor | refused: product actor outside the product, id not in the context id form, actor outside the domain model, bounded context outside the product
   operation trace(job, item)  outcomes: returned | refused: job that no requirement group serves
   operation unassign(job, bounded context)  outcomes: done → the job | refused: job not assigned to the bounded context
   operation drop job(job)  outcomes: done → the job | refused: job a job needs, job a bounded context holds, job a subdomain serves, job outside the product
@@ -503,4 +503,10 @@ object homonym kind of text
   relations: has → word (one)
 
 object fixed phrase kind of text
+
+object product id form kind of artifact
+
+object product actor form kind of artifact
+
+object subdomain id form kind of artifact
 ```

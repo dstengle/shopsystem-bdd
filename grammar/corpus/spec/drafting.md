@@ -1525,12 +1525,12 @@ shall [x1: agent the person (constant), x4: service the drafting service (consta
     return(e3, subject: x4, object: x3)
 ```
 
-## r99
-From: b810 r99.
+## r101
+Retires: r99. From: b826 r101.
 
 ```reading
-While a term violates `v_t4`, `v_t7`, `v_t11` or `v_t19`, if the person writes the term into an item, then the drafting service shall refuse the request and name the term and every rule that the term violates.
-shall [x2: rule `v_t4` (parameter), x3: rule `v_t7` (parameter), x4: rule `v_t11` (parameter), x5: rule `v_t19` (parameter), x6: agent the person (constant), x8: service the drafting service (constant), x9: request "the request the trigger makes" (indexical)]
+While a term violates `v_t4`, `v_t7`, `v_t11`, `v_t13`, `v_t14` or `v_t19`, if the person writes the term into an item, then the drafting service shall refuse the request and name the term and every rule that the term violates.
+shall [x2: rule `v_t4` (parameter), x3: rule `v_t7` (parameter), x4: rule `v_t11` (parameter), x5: rule `v_t13` (parameter), x6: rule `v_t14` (parameter), x7: rule `v_t19` (parameter), x8: agent the person (constant), x10: service the drafting service (constant), x11: request "the request the trigger makes" (indexical)]
   while [x1: term]
     or
       case
@@ -1541,23 +1541,27 @@ shall [x2: rule `v_t4` (parameter), x3: rule `v_t7` (parameter), x4: rule `v_t11
         violate(subject: x1, object: x4)
       case
         violate(subject: x1, object: x5)
-  if [x7: item]
-    request(e1, drafting.write, subject: x6, object: x1, into: x7)
+      case
+        violate(subject: x1, object: x6)
+      case
+        violate(subject: x1, object: x7)
+  if [x9: item]
+    request(e1, drafting.write, subject: x8, object: x1, into: x9)
   response
-    refuse(e2, subject: x8, object: x9)
-    name(e3, subject: x8, object: x1)
-    every [x10: rule]
-      violate(subject: x1, object: x10)
+    refuse(e2, subject: x10, object: x11)
+    name(e3, subject: x10, object: x1)
+    every [x12: rule]
+      violate(subject: x1, object: x12)
       scope
-        name(e4, subject: x8, object: x10)
+        name(e4, subject: x10, object: x12)
 ```
 
-## r100
-From: b810 r100.
+## r102
+Retires: r100. From: b826 r102.
 
 ```reading
-While a term violates `v_t4`, `v_t7`, `v_t11` or `v_t19`, if the person rewords the term in an item, then the drafting service shall refuse the request and name the term and every rule that the term violates.
-shall [x2: rule `v_t4` (parameter), x3: rule `v_t7` (parameter), x4: rule `v_t11` (parameter), x5: rule `v_t19` (parameter), x6: agent the person (constant), x8: service the drafting service (constant), x9: request "the request the trigger makes" (indexical)]
+While a term violates `v_t4`, `v_t7`, `v_t11`, `v_t13`, `v_t14` or `v_t19`, if the person rewords the term in an item, then the drafting service shall refuse the request and name the term and every rule that the term violates.
+shall [x2: rule `v_t4` (parameter), x3: rule `v_t7` (parameter), x4: rule `v_t11` (parameter), x5: rule `v_t13` (parameter), x6: rule `v_t14` (parameter), x7: rule `v_t19` (parameter), x8: agent the person (constant), x10: service the drafting service (constant), x11: request "the request the trigger makes" (indexical)]
   while [x1: term]
     or
       case
@@ -1568,13 +1572,17 @@ shall [x2: rule `v_t4` (parameter), x3: rule `v_t7` (parameter), x4: rule `v_t11
         violate(subject: x1, object: x4)
       case
         violate(subject: x1, object: x5)
-  if [x7: item]
-    request(e1, drafting.reword term, subject: x6, object: x1, in: x7)
+      case
+        violate(subject: x1, object: x6)
+      case
+        violate(subject: x1, object: x7)
+  if [x9: item]
+    request(e1, drafting.reword term, subject: x8, object: x1, in: x9)
   response
-    refuse(e2, subject: x8, object: x9)
-    name(e3, subject: x8, object: x1)
-    every [x10: rule]
-      violate(subject: x1, object: x10)
+    refuse(e2, subject: x10, object: x11)
+    name(e3, subject: x10, object: x1)
+    every [x12: rule]
+      violate(subject: x1, object: x12)
       scope
-        name(e4, subject: x8, object: x10)
+        name(e4, subject: x10, object: x12)
 ```

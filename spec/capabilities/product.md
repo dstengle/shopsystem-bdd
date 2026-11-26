@@ -7,7 +7,7 @@ area: specification
 specifies: service product
 language: codified-2
 retired: [g18, r18, g14, r14, g43, r43, g40, r40]
-unbuilt: []
+unbuilt: [r69, r74, r70, r71, r72, r73]
 ---
 
 # Product
@@ -211,4 +211,22 @@ the job statement `j2` holds "When x, the developer wants y, so they can z."
 
 ### [g68] A job only an item's groups serve is traced with the item
 - [r68] While an item holds a requirement group that serves a job and no capability has a requirement group that serves the job, if the person traces the job without an item, then the product service shall refuse the request and name the item.
+
+### [g69] A product actor is not mapped in a bounded context the product does not hold
+- [r69] If the person maps a product actor that is in the product with a bounded context that is not in the product and an actor, then the product service shall refuse the request and name the bounded context.
+
+### [g74] A product actor is not declared before the product has an id
+- [r74] While this product has no id, if the person declares a product actor, then the product service shall refuse the request and name this product.
+
+### [g70] A product declared again with another id is refused
+- [r70] While this product has an id, if the person declares a product with an id that this product does not have, then the product service shall refuse the request and name the id.
+
+### [g71] A product whose id is out of the product id form is refused
+- [r71] If the person declares a product with an id that does not conform to the product id form, then the product service shall refuse the request and name the id.
+
+### [g72] A product actor out of the product actor form is refused
+- [r72] If the person declares a product actor that does not conform to the product actor form, then the product service shall refuse the request and name the product actor.
+
+### [g73] A subdomain whose id is out of the subdomain id form is refused
+- [r73] If the person declares a subdomain with an id that does not conform to the subdomain id form, then the product service shall refuse the request and name the id.
 

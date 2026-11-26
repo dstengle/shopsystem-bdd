@@ -6,8 +6,8 @@ group: service
 area: tracking
 specifies: service drafting
 language: codified-2
-retired: []
-unbuilt: []
+retired: [g99, r99, g100, r100]
+unbuilt: [r101, r102]
 ---
 
 # Drafting
@@ -331,9 +331,9 @@ capabilities, retirements, rewordings and chores.
 ### [g98] A requirement drafted into an item is returned with its id
 - [r98] When the person drafts an item with a requirement, the drafting service shall return the requirement id of the requirement and the requirement.
 
-### [g99] A term that breaks a lexicon rule is refused naming each rule
-- [r99] While a term violates `v_t4`, `v_t7`, `v_t11` or `v_t19`, if the person writes the term into an item, then the drafting service shall refuse the request and name the term and every rule that the term violates.
+### [g101] work line --term refuses a verb with no aspect, no Frame: or a Frame: that does not read
+- [r101] While a term violates `v_t4`, `v_t7`, `v_t11`, `v_t13`, `v_t14` or `v_t19`, if the person writes the term into an item, then the drafting service shall refuse the request and name the term and every rule that the term violates.
 
-### [g100] Rewording a term into one that breaks a lexicon rule is refused naming each rule
-- [r100] While a term violates `v_t4`, `v_t7`, `v_t11` or `v_t19`, if the person rewords the term in an item, then the drafting service shall refuse the request and name the term and every rule that the term violates.
+### [g102] Rewording a term into one that breaks a lexicon rule is refused naming each rule
+- [r102] While a term violates `v_t4`, `v_t7`, `v_t11`, `v_t13`, `v_t14` or `v_t19`, if the person rewords the term in an item, then the drafting service shall refuse the request and name the term and every rule that the term violates.
 

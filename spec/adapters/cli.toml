@@ -575,7 +575,7 @@ command = "work line"
 requirements = [
   "drafting#r25: While an item holds a capability that does not exist, when the person writes a term into the item, the drafting service shall keep the term in the item.",
   "drafting#r94: While a term violates `v_t6`, when the person writes the term into an item, the drafting service shall keep the term in the item, name `v_t6` and complete the request.",
-  "drafting#r99: While a term violates `v_t4`, `v_t7`, `v_t11` or `v_t19`, if the person writes the term into an item, then the drafting service shall refuse the request and name the term and every rule that the term violates.",
+  "drafting#r101: While a term violates `v_t4`, `v_t7`, `v_t11`, `v_t13`, `v_t14` or `v_t19`, if the person writes the term into an item, then the drafting service shall refuse the request and name the term and every rule that the term violates.",
 ]
 [operations."drafting.write".parameters]
 item = { positional = 1 }
@@ -1502,6 +1502,8 @@ requirements = [
   "product#r1: When the person declares a product with an id and a purpose, the product service shall keep the product and complete the request.",
   "product#r8: While this product holds a product detail, when the person declares a product with an id and a purpose, the product service shall keep the product detail in the product and complete the request.",
   "product#r11: While this product does not conform to the product form, if the person declares a product with an id and a purpose, then the product service shall refuse the request and name this product.",
+  "product#r70: While this product has an id, if the person declares a product with an id that this product does not have, then the product service shall refuse the request and name the id.",
+  "product#r71: If the person declares a product with an id that does not conform to the product id form, then the product service shall refuse the request and name the id.",
 ]
 [operations."product.declare".parameters]
 id = { positional = 1, example = "missingmass.io/shopsystem" }
@@ -1513,6 +1515,8 @@ requirements = [
   "product#r2: When the person declares a product actor, the product service shall keep the product actor in the product and complete the request.",
   "product#r9: While this product holds a product detail, when the person declares a product actor, the product service shall keep the product detail in the product and complete the request.",
   "product#r12: While this product does not conform to the product form, if the person declares a product actor, then the product service shall refuse the request and name this product.",
+  "product#r72: If the person declares a product actor that does not conform to the product actor form, then the product service shall refuse the request and name the product actor.",
+  "product#r74: While this product has no id, if the person declares a product actor, then the product service shall refuse the request and name this product.",
 ]
 [operations."product.declare actor".parameters]
 "product actor" = { positional = 1, example = "the developer" }
@@ -1544,6 +1548,7 @@ requirements = [
   "product#r15: When the person declares a subdomain with an id and a subdomain type and a job, the product service shall keep the subdomain in the product and complete the request.",
   "product#r16: If the person declares a subdomain with a subdomain type that does not conform to the subdomain type form, then the product service shall refuse the request and name the subdomain type.",
   "product#r17: If the person declares a subdomain with a job that is not in the product, then the product service shall refuse the request and name the job.",
+  "product#r73: If the person declares a subdomain with an id that does not conform to the subdomain id form, then the product service shall refuse the request and name the id.",
 ]
 [operations."product.declare subdomain".parameters]
 id = { positional = 1, example = "specification" }
@@ -1584,6 +1589,7 @@ requirements = [
   "product#r25: If the person maps a product actor that is not in the product, then the product service shall refuse the request and name the product actor.",
   "product#r41: If the person maps a product actor with a bounded context whose id does not conform to the context id form and an actor, then the product service shall refuse the request and name the id.",
   "product#r61: If the person maps a product actor that is in the product with this bounded context and an actor that the domain model does not hold, then the product service shall refuse the request and name the actor.",
+  "product#r69: If the person maps a product actor that is in the product with a bounded context that is not in the product and an actor, then the product service shall refuse the request and name the bounded context.",
 ]
 [operations."product.map".parameters]
 "product actor" = { positional = 1, example = "the developer" }
@@ -1889,7 +1895,7 @@ requirements = [
   "drafting#r49: When the person rewords a term in an item, the drafting service shall keep a different term in the item.",
   "drafting#r50: If the person rewords a term in an item that does not hold the term, then the drafting service shall refuse the request and name the term.",
   "drafting#r95: When the person rewords a term in an item with a capability, the drafting service shall keep a different term in the item.",
-  "drafting#r100: While a term violates `v_t4`, `v_t7`, `v_t11` or `v_t19`, if the person rewords the term in an item, then the drafting service shall refuse the request and name the term and every rule that the term violates.",
+  "drafting#r102: While a term violates `v_t4`, `v_t7`, `v_t11`, `v_t13`, `v_t14` or `v_t19`, if the person rewords the term in an item, then the drafting service shall refuse the request and name the term and every rule that the term violates.",
 ]
 [operations."drafting.reword term".parameters]
 item = { positional = 1 }

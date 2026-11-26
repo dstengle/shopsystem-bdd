@@ -1014,7 +1014,7 @@ a term of a typed glossary does not name its part of speech
 - Changed: b123
 - Severity: error
 - Implemented in: `scripts/model.lp`, `scripts/backlog_term_rules.py`, `scripts/spec_frames.py`, `scripts/spec_lexicon_problems.py`, `scripts/spec_relations.py`
-- Cited by: drafting#r99, drafting#r100
+- Cited by: drafting#r101, drafting#r102
 - Fails on:
 
   ```prolog
@@ -1088,7 +1088,7 @@ a verb's entry gives no frame: the kinds of its subject and object, or that it t
 - Changed: b123
 - Severity: error
 - Implemented in: `scripts/model.lp`, `scripts/backlog_term_rules.py`, `scripts/spec_frames.py`, `scripts/upgrades/migrate_upgrade_frames.py`
-- Cited by: drafting#r99, drafting#r100
+- Cited by: drafting#r101, drafting#r102
 - Fails on:
 
   ```prolog
@@ -1132,7 +1132,7 @@ a verb's Frame: does not read as its subject, the verb and the kinds it takes
 - Changed: b123
 - Severity: error
 - Implemented in: `scripts/model.lp`, `scripts/spec_frames.py`, `scripts/upgrades/migrate_upgrade_frames.py`
-- Cited by: checking#r151
+- Cited by: checking#r151, drafting#r101, drafting#r102
 - Fails on:
 
   ```prolog
@@ -1153,7 +1153,7 @@ a verb's entry says neither state nor action
 - Since: b131
 - Severity: error
 - Implemented in: `scripts/model.lp`, `scripts/spec_frames.py`
-- Cited by: no line
+- Cited by: drafting#r101, drafting#r102
 - Fails on:
 
   ```prolog
@@ -1280,7 +1280,7 @@ a vocabulary entry names an element the domain model does not declare
 - Since: 0.38.0
 - Severity: error
 - Implemented in: `scripts/model.lp`, `scripts/backlog_term_rules.py`, `scripts/model_domain.py`, `scripts/spec_vocabulary.py`
-- Cited by: drafting#r99, drafting#r100
+- Cited by: drafting#r101, drafting#r102
 - Fails on:
 
   ```prolog
@@ -2387,7 +2387,7 @@ a term's gloss is more than one sentence
 - Since: b123
 - Severity: error
 - Implemented in: `scripts/backlog_term_rules.py`, `scripts/spec_lexicon_problems.py`
-- Cited by: drafting#r99, drafting#r100
+- Cited by: drafting#r101, drafting#r102
 - Fails on:
 
   ```markdown
