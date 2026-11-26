@@ -7,7 +7,7 @@ area: tracking
 specifies: service drafting
 language: codified-2
 retired: []
-unbuilt: []
+unbuilt: [r98, r99, r100]
 ---
 
 # Drafting
@@ -327,4 +327,13 @@ capabilities, retirements, rewordings and chores.
 
 ### [g97] A requirement group dedicated to a job the product holds, given by the job's id, is kept
 - [r97] While this product holds a job and the job has an id, when the person dedicates a requirement group to the job with an item, the drafting service shall keep the item that holds the requirement group that serves the job.
+
+### [g98] A requirement drafted into an item is returned with its id
+- [r98] When the person drafts an item with a requirement, the drafting service shall return the requirement id of the requirement and the requirement.
+
+### [g99] A term that breaks a lexicon rule is refused naming each rule
+- [r99] While a term violates `v_t4`, `v_t7`, `v_t11` or `v_t19`, if the person writes the term into an item, then the drafting service shall refuse the request and name the term and every rule that the term violates.
+
+### [g100] Rewording a term into one that breaks a lexicon rule is refused naming each rule
+- [r100] While a term violates `v_t4`, `v_t7`, `v_t11` or `v_t19`, if the person rewords the term in an item, then the drafting service shall refuse the request and name the term and every rule that the term violates.
 

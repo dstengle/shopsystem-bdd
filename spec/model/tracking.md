@@ -140,7 +140,7 @@ service drafting
   operation reword(requirement)  outcomes: done | refused: requirement of a capability
   operation remove(requirement)  outcomes: done | refused: requirement of a capability
   operation assign(chore, item)  outcomes: done | refused: requirement in the item
-  operation write(term, item)  outcomes: done
+  operation write(term, item)  outcomes: done | refused: term violating a rule
   operation declare(model line, item)  outcomes: done
   operation apply(retirement list, item)  outcomes: done | refused: requirement id of no requirement
   operation expose(operation table, item)  outcomes: done | refused: operation table of no operation
@@ -149,7 +149,7 @@ service drafting
   operation remove model line(model line, item)  outcomes: done | refused: model line not in the item
   operation reword model line(model line, item)  outcomes: done | refused: model line not in the item
   operation remove term(term, item)  outcomes: done | refused: term not in the item
-  operation reword term(term, item, capability)  outcomes: done | refused: term not in the item
+  operation reword term(term, item, capability)  outcomes: done | refused: term not in the item, term violating a rule
   operation write into pack(term, pack, item)  outcomes: done | refused: term in the pack
   operation take out(item, universal condition, upstream entry, given block)  outcomes: done | refused: universal condition not in the item, upstream entry not in the item, given block not in the item
   operation replace(item, universal condition, upstream entry, given block)  outcomes: done | refused: universal condition not in the item, upstream entry not in the item, given block not in the item

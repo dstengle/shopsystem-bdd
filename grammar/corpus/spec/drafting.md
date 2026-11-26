@@ -1509,3 +1509,72 @@ shall [x1: product "the product this bounded context belongs to" (indexical), x4
     in(x5, x6)
     keep(e2, subject: x7, object: x6)
 ```
+
+## r98
+From: b815 r98.
+
+```reading
+When the person drafts an item with a requirement, the drafting service shall return the requirement id of the requirement and the requirement.
+shall [x1: agent the person (constant), x4: service the drafting service (constant)]
+  when [x2: item, x3: requirement]
+    request(e1, drafting.draft, subject: x1, object: x2)
+    param(e1, requirement, x3)
+  response [x5: requirement id]
+    of(x5, x3)
+    return(e2, subject: x4, object: x5)
+    return(e3, subject: x4, object: x3)
+```
+
+## r99
+From: b810 r99.
+
+```reading
+While a term violates `v_t4`, `v_t7`, `v_t11` or `v_t19`, if the person writes the term into an item, then the drafting service shall refuse the request and name the term and every rule that the term violates.
+shall [x2: rule `v_t4` (parameter), x3: rule `v_t7` (parameter), x4: rule `v_t11` (parameter), x5: rule `v_t19` (parameter), x6: agent the person (constant), x8: service the drafting service (constant), x9: request "the request the trigger makes" (indexical)]
+  while [x1: term]
+    or
+      case
+        violate(subject: x1, object: x2)
+      case
+        violate(subject: x1, object: x3)
+      case
+        violate(subject: x1, object: x4)
+      case
+        violate(subject: x1, object: x5)
+  if [x7: item]
+    request(e1, drafting.write, subject: x6, object: x1, into: x7)
+  response
+    refuse(e2, subject: x8, object: x9)
+    name(e3, subject: x8, object: x1)
+    every [x10: rule]
+      violate(subject: x1, object: x10)
+      scope
+        name(e4, subject: x8, object: x10)
+```
+
+## r100
+From: b810 r100.
+
+```reading
+While a term violates `v_t4`, `v_t7`, `v_t11` or `v_t19`, if the person rewords the term in an item, then the drafting service shall refuse the request and name the term and every rule that the term violates.
+shall [x2: rule `v_t4` (parameter), x3: rule `v_t7` (parameter), x4: rule `v_t11` (parameter), x5: rule `v_t19` (parameter), x6: agent the person (constant), x8: service the drafting service (constant), x9: request "the request the trigger makes" (indexical)]
+  while [x1: term]
+    or
+      case
+        violate(subject: x1, object: x2)
+      case
+        violate(subject: x1, object: x3)
+      case
+        violate(subject: x1, object: x4)
+      case
+        violate(subject: x1, object: x5)
+  if [x7: item]
+    request(e1, drafting.reword term, subject: x6, object: x1, in: x7)
+  response
+    refuse(e2, subject: x8, object: x9)
+    name(e3, subject: x8, object: x1)
+    every [x10: rule]
+      violate(subject: x1, object: x10)
+      scope
+        name(e4, subject: x8, object: x10)
+```

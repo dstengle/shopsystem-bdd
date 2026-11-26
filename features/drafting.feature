@@ -960,3 +960,157 @@ Feature: Drafting
     Then the requirement group r1 serves the job j1
     And the item i2 holds the requirement group r1
     And the drafting service keeps the item i2
+
+  @g98 @r98
+  Scenario: A requirement drafted into an item is returned with its id
+    Given an item i1
+    And a requirement r1
+    And a requirement id r2
+    And the requirement r1 has the requirement id r2
+    When the person drafts the item i1 with the requirement r1
+    Then the drafting service returns the requirement id r2
+    And the drafting service returns the requirement r1
+
+  @g99 @r99
+  Scenario: A term that breaks a lexicon rule is refused naming each rule (case 1)
+    Given a term t1
+    And the term t1 violates `v_t4`
+    And an item i1
+    And a rule r1
+    And the term t1 violates the rule r1
+    And a rule r2
+    And the term t1 violates the rule r2
+    And a rule r3
+    And the term t1 does not violate the rule r3
+    When the person writes the term t1 into the item i1
+    Then the drafting service refuses this request
+    And the drafting service names the term t1
+    And the drafting service names the rule r1
+    And the drafting service names the rule r2
+    And the drafting service does not name the rule r3
+
+  @g99 @r99
+  Scenario: A term that breaks a lexicon rule is refused naming each rule (case 2)
+    Given a term t1
+    And the term t1 violates `v_t7`
+    And an item i1
+    And a rule r1
+    And the term t1 violates the rule r1
+    And a rule r2
+    And the term t1 violates the rule r2
+    And a rule r3
+    And the term t1 does not violate the rule r3
+    When the person writes the term t1 into the item i1
+    Then the drafting service refuses this request
+    And the drafting service names the term t1
+    And the drafting service names the rule r1
+    And the drafting service names the rule r2
+    And the drafting service does not name the rule r3
+
+  @g99 @r99
+  Scenario: A term that breaks a lexicon rule is refused naming each rule (case 3)
+    Given a term t1
+    And the term t1 violates `v_t11`
+    And an item i1
+    And a rule r1
+    And the term t1 violates the rule r1
+    And a rule r2
+    And the term t1 violates the rule r2
+    And a rule r3
+    And the term t1 does not violate the rule r3
+    When the person writes the term t1 into the item i1
+    Then the drafting service refuses this request
+    And the drafting service names the term t1
+    And the drafting service names the rule r1
+    And the drafting service names the rule r2
+    And the drafting service does not name the rule r3
+
+  @g99 @r99
+  Scenario: A term that breaks a lexicon rule is refused naming each rule (case 4)
+    Given a term t1
+    And the term t1 violates `v_t19`
+    And an item i1
+    And a rule r1
+    And the term t1 violates the rule r1
+    And a rule r2
+    And the term t1 violates the rule r2
+    And a rule r3
+    And the term t1 does not violate the rule r3
+    When the person writes the term t1 into the item i1
+    Then the drafting service refuses this request
+    And the drafting service names the term t1
+    And the drafting service names the rule r1
+    And the drafting service names the rule r2
+    And the drafting service does not name the rule r3
+
+  @g100 @r100
+  Scenario: Rewording a term into one that breaks a lexicon rule is refused naming each rule (case 1)
+    Given a term t1
+    And the term t1 violates `v_t4`
+    And an item i1
+    And a rule r1
+    And the term t1 violates the rule r1
+    And a rule r2
+    And the term t1 violates the rule r2
+    And a rule r3
+    And the term t1 does not violate the rule r3
+    When the person rewords the term t1 in the item i1
+    Then the drafting service refuses this request
+    And the drafting service names the term t1
+    And the drafting service names the rule r1
+    And the drafting service names the rule r2
+    And the drafting service does not name the rule r3
+
+  @g100 @r100
+  Scenario: Rewording a term into one that breaks a lexicon rule is refused naming each rule (case 2)
+    Given a term t1
+    And the term t1 violates `v_t7`
+    And an item i1
+    And a rule r1
+    And the term t1 violates the rule r1
+    And a rule r2
+    And the term t1 violates the rule r2
+    And a rule r3
+    And the term t1 does not violate the rule r3
+    When the person rewords the term t1 in the item i1
+    Then the drafting service refuses this request
+    And the drafting service names the term t1
+    And the drafting service names the rule r1
+    And the drafting service names the rule r2
+    And the drafting service does not name the rule r3
+
+  @g100 @r100
+  Scenario: Rewording a term into one that breaks a lexicon rule is refused naming each rule (case 3)
+    Given a term t1
+    And the term t1 violates `v_t11`
+    And an item i1
+    And a rule r1
+    And the term t1 violates the rule r1
+    And a rule r2
+    And the term t1 violates the rule r2
+    And a rule r3
+    And the term t1 does not violate the rule r3
+    When the person rewords the term t1 in the item i1
+    Then the drafting service refuses this request
+    And the drafting service names the term t1
+    And the drafting service names the rule r1
+    And the drafting service names the rule r2
+    And the drafting service does not name the rule r3
+
+  @g100 @r100
+  Scenario: Rewording a term into one that breaks a lexicon rule is refused naming each rule (case 4)
+    Given a term t1
+    And the term t1 violates `v_t19`
+    And an item i1
+    And a rule r1
+    And the term t1 violates the rule r1
+    And a rule r2
+    And the term t1 violates the rule r2
+    And a rule r3
+    And the term t1 does not violate the rule r3
+    When the person rewords the term t1 in the item i1
+    Then the drafting service refuses this request
+    And the drafting service names the term t1
+    And the drafting service names the rule r1
+    And the drafting service names the rule r2
+    And the drafting service does not name the rule r3
