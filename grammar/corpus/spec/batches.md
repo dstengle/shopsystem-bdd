@@ -1725,3 +1725,22 @@ shall [x2: readiness bar "the readiness bar of the plugin that runs the command"
     of(x12, x5)
     keep(e2, subject: x10, object: x12)
 ```
+
+## r165
+From: b722 r165.
+
+```reading
+While a batch is `building` and the status of every item in the batch is `needs-input`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `abandon batch`.
+shall [x3: agent the driver (constant), x4: service the batches service (constant)]
+  while [x1: batch]
+    status(x1) = `building`
+    every [x2: item]
+      in(x2, x1)
+      scope
+        status(x2) = `needs-input`
+  when
+    request(e1, batches.poll, subject: x3, object: x1)
+  response [x5: batch step]
+    instruction(x5) = `abandon batch`
+    return(e2, subject: x4, object: x5)
+```

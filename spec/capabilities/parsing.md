@@ -7,7 +7,7 @@ area: specification
 specifies: service language: parse
 language: codified-2
 retired: [g4, r4]
-unbuilt: []
+unbuilt: [r25, r26]
 ---
 
 # Parsing
@@ -83,4 +83,10 @@ A line parsed in the controlled language to one meaning or refused with why, its
 
 ### [g24] The logical form reads a response's request with its parameters
 - [r24] When the person parses a requirement that uses `response-request` with the logical form, the language service shall return a logical form that uses `request-params`.
+
+### [g25] A trigger on a reply to a request about its object is parsed
+- [r25] When the person parses a requirement that uses `reply-trigger`, the language service shall complete the request.
+
+### [g26] The logical form keeps the request a reply is on
+- [r26] When the person parses a requirement that uses `reply-trigger` with the logical form, the language service shall return a logical form that holds a replied request.
 

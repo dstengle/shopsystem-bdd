@@ -104,6 +104,7 @@ object pack kind of file
 
 object logical form kind of text
   relations: holds → value in use (many)
+  relations: holds → replied request (many)
 
 object verb kind of term
 
@@ -476,4 +477,6 @@ object subdomain
 object subdomain type kind of text
 
 object subdomain type form kind of artifact
+
+object replied request kind of text
 ```
