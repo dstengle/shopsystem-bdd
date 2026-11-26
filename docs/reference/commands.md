@@ -1185,6 +1185,43 @@ $ shop spec obtain bounded-context/example.org/fixture/inventory
 obtained adapters/stock-inventory/provider/example.org/fixture/inventory/1.2.0/contract.toml
 ```
 
+### `shop spec product`
+
+Declares the product this bounded context belongs to, its id and its purpose, kept in the product file
+`.shop/product/product.toml` of the shop with its actors and jobs, in one commit. Declared again, the id and the
+purpose are replaced and the actors and jobs kept.\
+Synopsis: `shop spec product <id> --purpose <text>`
+
+```console
+$ shop spec product missingmass.io/shopsystem --purpose "Specify, build and run bounded contexts."
+declared the product missingmass.io/shopsystem
+```
+
+### `shop spec actor`
+
+Declares an actor of the product, one it serves, kept among the product's actors in the product file, in one commit.\
+Synopsis: `shop spec actor <actor>`
+
+```console
+$ shop spec actor "the developer"
+declared the product actor the developer
+```
+
+### `shop spec job`
+
+Declares a job to be done of the product with its id, its actors, its job statement and the jobs it needs first,
+kept in the product file in one commit; a job declared again replaces the one of its id. The job statement is checked
+for the job statement form only, `When <situation>, <actor> wants <motivation>, so they can <outcome>.`; a statement
+of another form is refused naming `--statement`, an actor the product does not hold naming `--actor`, a need that is
+no job of the product naming `--needs`, and a need that depends on the job, directly or through the jobs it needs, so
+that the needs would close a cycle, naming `--needs`.\
+Synopsis: `shop spec job <id> --statement <text> [--actor <actor> ...] [--needs <job> ...]`
+
+```console
+$ shop spec job j1 --actor "the developer" --statement "When a change is wanted, the developer wants it specified, so they can build it."
+declared the job j1
+```
+
 ### `shop spec decisions`
 
 Writes `spec/decisions/index.md` from the decision files. Not committed.\

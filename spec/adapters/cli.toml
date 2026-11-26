@@ -1566,3 +1566,35 @@ requirements = [
   "shop#r4: When the person lists the shop, the shop service shall return every bounded context that is in the shop.",
   "shop#r5: While no bounded context is in the shop, when the person lists the shop, the shop service shall return this bounded context.",
 ]
+
+[operations."product.declare"]
+command = "spec product"
+requirements = [
+  "product#r1: When the person declares a product with an id and a purpose, the product service shall keep the product and complete the request.",
+]
+[operations."product.declare".parameters]
+id = { positional = 1, example = "missingmass.io/shopsystem" }
+purpose = { option = "--purpose", example = "Specify, build and run bounded contexts." }
+
+[operations."product.declare actor"]
+command = "spec actor"
+requirements = [
+  "product#r2: When the person declares a product actor, the product service shall keep the product actor in the product and complete the request.",
+]
+[operations."product.declare actor".parameters]
+"product actor" = { positional = 1, example = "the developer" }
+
+[operations."product.declare job"]
+command = "spec job"
+requirements = [
+  "product#r3: When the person declares a job with an id and a product actor and a job statement, the product service shall keep the job in the product and complete the request.",
+  "product#r4: If the person declares a job with a job statement that does not conform to the job statement form, then the product service shall refuse the request and name the job statement.",
+  "product#r5: If the person declares a job with a product actor that is not in the product, then the product service shall refuse the request and name the product actor.",
+  "product#r6: If the person declares a job with a need that is not in the product, then the product service shall refuse the request and name the need.",
+  "product#r7: If the person declares a job with a need that depends on the job, then the product service shall refuse the request and name the need.",
+]
+[operations."product.declare job".parameters]
+id = { positional = 1, example = "j1" }
+"product actor" = { option = "--actor", repeat = true, example = "the developer" }
+"job statement" = { option = "--statement", example = "When a change is wanted, the developer wants it specified, so they can build it." }
+need = { option = "--needs", repeat = true, example = "j2" }

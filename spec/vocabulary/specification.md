@@ -297,3 +297,14 @@ area: specification
 - **rename** (verb, state) → relation adapter spec.renames. An adapter spec gives a term of a provider's contract another word in the adapter spec, as `product` becomes `stocked product`. Forms: renames, renamed. Frame: <adapter spec> renames <term>.
 - **clash** (verb, state) → relation term.clashes with. A term of a provider's contract is spelled as another term that the adapter spec reads and names another element. Forms: clashes, clashed. Frame: <term> clashes with <term>.
 - **serve** (verb, state) → relation requirement group.serves. A requirement group names a job of the product as one its capability coordinates, so that the job is traced through the group. Forms: serves, served. Frame: <requirement group> serves <job>.
+- **the product service** (proper noun) → service product.
+- **product** (noun) → object product. What the bounded contexts of one product id are built for, with its purpose, its actors and its jobs to be done. Plural: products. This: the product this bounded context belongs to.
+- **product actor** (noun) → object product actor. One who is served by the product, as `the developer`, whom each bounded context calls by a term of its own. Plural: product actors.
+- **job statement** (noun) → object job statement. What a job is for, as one sentence of the job statement form. Plural: job statements.
+- **the job statement form** (proper noun) → object job statement form. `When <situation>, <actor> wants <motivation>, so they can <outcome>.`, checked for its form only.
+- **need** (noun) → object need. A job that a job needs done first, named by its id. Plural: needs.
+- **declare** (verb, action) → operation product.declare. The person says the id and the purpose of the product. Forms: declares, declared. Frame: <actor> declares <product>.
+- **declare** (verb, action) → operation product.declare actor. The person names one who the product serves. Forms: declares, declared. Frame: <actor> declares <product actor>.
+- **declare** (verb, action) → operation product.declare job. The person writes a job to be done of the product with its id, its actors, its job statement and the jobs it needs. Forms: declares, declared. Frame: <actor> declares <job>.
+- **need** (verb, state) → relation job.needs. A job is carried through another job first. Forms: needs, needed. Frame: <job> needs <job>.
+- **depend on** (verb, state) → relation job.depends on. A job needs another job, directly or through the jobs it needs. Forms: depends on, depended on. Frame: <job> depends on <job>.

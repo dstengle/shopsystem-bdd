@@ -118,6 +118,7 @@ object recipient
 object preposition
 
 object job
+  relations: has → id (one); has → job statement (one); has → product actor (many); needs → job (many); depends on → job (many)
 
 object index entry kind of text
 
@@ -433,4 +434,21 @@ object context purpose kind of text
 
 object assumed description kind of artifact
   relations: has → provider (one); holds → requirement id | term (many)
+
+service product
+  operation declare(product, id, purpose)  outcomes: done → the product
+  operation declare actor(product actor)  outcomes: done → the product actor
+  operation declare job(job, id, product actor, job statement, need)
+    outcomes: done → the job | refused: job statement not in the job statement form, product actor outside the product, need outside the product, need that depends on the job
+
+object product
+  relations: has → id (one); has → purpose (one); holds → product actor (many); holds → job (many)
+
+object product actor kind of text
+
+object job statement kind of text
+
+object job statement form kind of artifact
+
+object need kind of job
 ```
