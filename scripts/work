@@ -22,12 +22,12 @@ import batch_cli
 import conversation_cli
 import decision_write
 import delivery_settings
-import shop_contexts
 import observation_write
 import record_write
 import request_cli
 import request_moves
 import request_view
+import shop_contexts
 import shop_files
 from adapter_cli_respond import prepare, respond
 
