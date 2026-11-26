@@ -484,15 +484,15 @@ Feature: Upgrades
     And the work-item file w3 does not mention the requirement r3
     And a feature f1
     And a scenario s1
-    And the scenario s1 has `@deprecated`
+    And the scenario s1 has the `@deprecated` tag
     And the feature f1 holds the scenario s1
     And a feature f2
     And a scenario s2
-    And the scenario s2 has `@deprecated`
+    And the scenario s2 has the `@deprecated` tag
     And the feature f2 holds the scenario s2
     And a feature f3
     And a scenario s3
-    And the scenario s3 has `@deprecated`
+    And the scenario s3 has the `@deprecated` tag
     And the feature f3 does not hold the scenario s3
     When the person upgrades this repository
     Then the upgrades service changes the work-item file w1

@@ -757,7 +757,7 @@ Feature: Checking
     Given a provider p1
     And an adapter spec a1
     And the adapter spec a1 has the provider p1
-    And the provider p1 has `1.2.0`
+    And the provider p1 has the `1.2.0` version
     And a contract c1
     And the contract c1 has `1.3.0`
     And the provider p1 has the contract c1

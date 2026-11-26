@@ -1133,8 +1133,8 @@ Feature: Batches
     And the item i1 has the task t1
     And the status of the task t1 is `running`
     And the kind of `registry` is `port`
-    And the item i1 holds no capability in `registry`
-    And `registry` imports `tracking`
+    And the item i1 holds no capability in the `registry` area
+    And the `registry` area imports `tracking`
     When the person amends the item i1
     Then the batches service keeps `registry`
 
