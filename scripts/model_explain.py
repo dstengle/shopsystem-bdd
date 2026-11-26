@@ -16,6 +16,7 @@ from pathlib import Path
 import clingo
 import spec_context
 import spec_entail
+import spec_grammar4
 import spec_lf_core
 import spec_packs
 from spec_entail_rules import FIXED, Premises, parse, q
@@ -60,6 +61,12 @@ class Explain:
         self.P = Premises(self.reqs, self.dom)
         self.pack = refuse_pack(root)
         self.fixed = {c: dict(f["role"])[y] for r, f in self.reqs.items() for y, c in self.P.fixed(r).items()}
+        # a verb's words before its second slot, as grammar 4's frame reads them ("lodge" "on", b742)
+        self.oblique = {}
+        for verb in spec_grammar4.sources(root)[0].verbs:
+            for _, slots in verb.frames:
+                if len(slots) > 1:
+                    self.oblique.setdefault(verb.term.term, " ".join(slots[1][0]))
 
     def parts(self, ident):
         return sorted(r for r in self.reqs if spec_lf_core.split(r) == ident)
@@ -76,14 +83,32 @@ class Explain:
             for y, c in self.words.of(L, "named"):
                 if y == x:
                     return c.string
+        if x.type == clingo.SymbolType.Function and x.name == "pair":     # its parts in this world's words (b742)
+            return " ".join(self.term(L, a) for a in x.arguments)
         return self.words.term(L, x)
+
+    def request(self, L, e, x, rest):
+        """`rest` of a response's request (`req(O,Ps)`) with its object, and the recipient after the verb's word
+        before it, as this world names them (b742)."""
+        verb = self.words.v.events.get(e.arguments[0].name, e.arguments[0].name)
+        obj = x.arguments[0] if x.type == clingo.SymbolType.Function and x.name == "pair" else x
+        raw = "%s %s " % (verb, self.words.term(L, obj))
+        if not (rest + " ").startswith(raw):
+            return rest
+        mine = self.term(L, obj)
+        if obj.type == clingo.SymbolType.Function and obj.name == "pair":
+            mine = " ".join(w for w in (self.term(L, obj.arguments[0]), self.oblique.get(verb, ""),
+                                        self.term(L, obj.arguments[1])) if w)
+        return ("%s %s %s" % (verb, mine, rest[len(raw):])).rstrip()
 
     def says(self, L, p, e, d, x):
         """`<doer> shall [not] <event> <object>` in the lexicon's words."""
         who = self.term(L, d)
         rest = self.words.does(L, e, d, x)[len(self.words.term(L, d)) + len(" to "):]
         raw = self.words.term(L, x)
-        if rest.endswith(" " + raw):     # the object as this world names it
+        if e.type == clingo.SymbolType.Function and e.name == "req":
+            rest = self.request(L, e, x, rest)
+        elif rest.endswith(" " + raw):     # the object as this world names it
             rest = rest[:-len(raw)] + self.term(L, x)
         return "%s shall %s%s" % (who, "" if p == "pos" else "not ", rest)
 

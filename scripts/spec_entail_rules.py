@@ -36,19 +36,32 @@ def q(s):
     return '"%s"' % s.replace("\\", "\\\\").replace('"', '\\"')
 
 
-PAIR = re.compile(r"pair\((\w+),(\w+)\)")
+def _split(x):
+    """The two parts of a pair `pair(a,b)`, each a symbol or a pair itself (a request's object with its recipient and
+    a thing parameter, b742), split at the comma outside parentheses; else None."""
+    if not (x.startswith("pair(") and x.endswith(")")):
+        return None
+    inner, depth = x[5:-1], 0
+    for at, c in enumerate(inner):
+        depth += (c == "(") - (c == ")")
+        if c == "," and depth == 0:
+            a, b = inner[:at], inner[at + 1:]
+            ok = all(re.fullmatch(r"\w+", p) or _split(p) for p in (a, b))
+            return (a, b) if ok else None
+    return None
 
 
 def _pair(x, term):
-    """An object with its recipient (`pair(a,b)`, b314) as the compound of its parts' terms, else None (b420: never
-    one quoted string, which two lines' pairs of other kinds would share)."""
-    found = PAIR.fullmatch(x)
-    return "pair(%s,%s)" % (term(found.group(1)), term(found.group(2))) if found else None
+    """An object with its recipient (`pair(a,b)`, b314), nested ones too (b742), as the compound of its parts' terms,
+    else None (b420: never one quoted string, which two lines' pairs of other kinds would share)."""
+    found = _split(x)
+    return "pair(%s,%s)" % tuple(_pair(p, term) or term(p) for p in found) if found else None
 
 
 def _parts(x):
-    found = PAIR.fullmatch(x)
-    return set(found.groups()) if found else set()
+    """The symbols of a pair, at any depth."""
+    found = _split(x)
+    return {s for p in found for s in (_parts(p) or {p})} if found else set()
 
 
 def _quiet(x):
