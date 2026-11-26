@@ -5,7 +5,9 @@ byte for byte, for each adapter spec of its provider (b735, checking r137): an a
 `providers:` name the bounded context (`holders`), each at the version it pins the provider at, else the one asked or
 published (checking r138). Where and how a registered contract is kept is the registry's adapter's; a register
 completed prints what it kept, `obtained <it>`, or `kept already <it>` when it was kept so already (r139), and one
-refused is refused naming the adapter spec and `contract not registered`, nothing more requested (r140). It keeps no
+refused is refused naming the adapter spec and `contract not registered`, nothing more requested (r140) but, all or
+none, the deregister of each contract a register of this obtain wrote for another adapter spec, a contract kept so
+already before the obtain left kept (b743, checking r142: register is `compensated by deregister`). It keeps no
 context request and opens no issue. In this order: an id out of the context id form (migrate init's `FORM`) is
 refused naming the id and `id not in the context id form` (r88); an upstream no upstream entry identifies, outside
 the shop, naming the bounded context and `bounded context not an upstream` (r132); an upstream the registry cannot
@@ -67,6 +69,12 @@ def holders(root, context):
     return out
 
 
+def _compensate(root, context, written):
+    """The deregister of each contract a register of this obtain wrote, the last first (b743, checking r142)."""
+    for text, folder, at in reversed(written):
+        contract_registry.deregister(root, text, folder, context, at)
+
+
 def obtain(root, context, version=None):
     """`spec obtain`: the upstream's contract registered for each adapter spec of it (at the version it pins, else
     `version`, else the published one), each reply acted on; an id out
@@ -81,7 +89,7 @@ def obtain(root, context, version=None):
         _reach(root, context)
         raise Refused("the provider {names} is the provider of no adapter spec under %s/: no adapter spec has the "
                       "provider" % ADAPTERS, reason="no adapter spec has the provider", names=["provider:%s" % context])
-    texts, replies = {}, []
+    texts, replies, written = {}, [], []
     for folder, pin in held:
         wanted = pin or version
         if wanted not in texts:
@@ -89,10 +97,13 @@ def obtain(root, context, version=None):
         at, text = texts[wanted]
         reply = contract_registry.register(root, text, folder.as_posix(), context, at)
         if reply.outcome != "done":
+            _compensate(root, context, written)
             raise Refused("the contract registry refused to register the contract of %s at %s for the adapter spec "
                           "{names}: contract not registered" % (context, at), reason=contract_registry.UNREGISTERED,
                           names=["adapter spec:%s" % folder.as_posix()])
         replies.append(reply.content)
+        if reply.content.get("changed"):
+            written.append((text, folder.as_posix(), at))
     for kept in replies:
         print(("obtained %s" if kept["changed"] else "kept already %s") % kept["kept"])
     return 0
