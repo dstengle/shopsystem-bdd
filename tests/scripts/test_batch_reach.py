@@ -84,3 +84,17 @@ def test_a_module_of_a_package_is_reached_through_a_package(tmp_path):
     left = batch_reach.unreached(batch_git.git, tmp_path, since, head, [])
     assert not {"tests/scripts/test_dotted.py", "tests/scripts/test_from.py"} & set(left)
     assert "tests/scripts/test_attr.py" in left
+
+
+def test_a_scenario_handler_or_a_feature_reaches_the_bound_check(tmp_path):
+    (tmp_path / "tests/scripts").mkdir(parents=True)
+    (tmp_path / "tests/scripts/test_bound.py").write_text("")
+    since = repo(tmp_path)
+    for path in ("tests/scenarios/x_handlers.py", "features/x.feature"):
+        head = change(tmp_path, path)
+        left = batch_reach.unreached(batch_git.git, tmp_path, since, head, [])
+        since = head
+        assert "tests/scripts/test_bound.py" not in left, path
+        assert "tests/scripts/test_other.py" in left, path
+    head = change(tmp_path, "src/y.txt")
+    assert "tests/scripts/test_bound.py" in batch_reach.unreached(batch_git.git, tmp_path, since, head, [])
