@@ -9,10 +9,10 @@ import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts"))
-from migrate_ledger import plan_ledger
-from migrate_spec import plan_references
 from plumbing import migrate_write as writing
 from plumbing.migrate_layout import Plan, plan_ids, plan_moves
+from upgrades.migrate_ledger import plan_ledger
+from upgrades.migrate_spec import plan_references
 
 
 def repository(files):

@@ -24,7 +24,7 @@ def mine(step):
 
 def current():
     """The text `migrate init` writes now (the scenario conftest form), of the plugin `migrate` runs from."""
-    import migrate_init
+    from upgrades import migrate_init
     return migrate_init.CONFTEST_TEXT
 
 

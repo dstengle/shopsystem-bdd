@@ -66,7 +66,7 @@ def unchanged(step, name):
 def step_not_printed(step, name):
     """The titles of the plugin's upgrade steps of the release the Given gave the step: none printed."""
     sys.path.insert(0, str(M.ours(step)[0] / "scripts"))
-    import migrate_upgrade
+    from upgrades import migrate_upgrade
     release = step.context.get("releases", {}).get(name)
     titles = [title for r, title, *_ in migrate_upgrade.STEPS if r == release]
     assert titles, "no upgrade step of release %s" % release

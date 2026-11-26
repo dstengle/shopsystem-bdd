@@ -3,7 +3,7 @@ plugin's, tied to no release so that it holds whatever release a context was fou
 still the old scenario conftest form (the text `migrate init` wrote before 0.41.0, which does not load `work_items`)
 rewritten to the scenario conftest form (migrate_init's `CONFTEST_TEXT`); one of neither form, edited by hand, left as
 it is and named for a session to load `work_items` in by hand; one of the current form, or none, left alone."""
-from migrate_upgrade_ids import Changes
+from upgrades.migrate_upgrade_ids import Changes
 
 # the scenario conftest `migrate init` wrote before 0.41.0, verbatim (4ba23b38b~:scripts/migrate_init.py)
 OLD = '''"""The generated features' scenarios: one `test_<capability>.py` a capability binds its feature's steps."""
@@ -12,7 +12,7 @@ OLD = '''"""The generated features' scenarios: one `test_<capability>.py` a capa
 
 def plan(root):
     # imported here: migrate_init imports migrate_upgrade, which imports this module
-    from migrate_init import CONFTEST, CONFTEST_TEXT
+    from upgrades.migrate_init import CONFTEST, CONFTEST_TEXT
     changes = Changes()
     changes.notes = []
     path = root / CONFTEST

@@ -15,13 +15,14 @@ given. A context with `spec/model/` already is left alone, so a second run chang
 import re
 from pathlib import Path
 
-import migrate_upgrade_domain_report as report
-import migrate_upgrade_domain_scaffold as scaffold
 import spec_lexicon
 import spec_packs
 import spec_read
-from migrate_upgrade_ids import Changes
 from model_parse import frontmatter
+
+from upgrades import migrate_upgrade_domain_report as report
+from upgrades import migrate_upgrade_domain_scaffold as scaffold
+from upgrades.migrate_upgrade_ids import Changes
 
 NAME = report.NAME
 REQ = re.compile(r"^- \[([rU][1-9]\d*)\] (\S.*)$")

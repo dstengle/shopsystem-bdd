@@ -13,8 +13,8 @@ sys.path.insert(0, str(ROOT / "scripts"))
 sys.path.insert(0, str(ROOT / "tests"))
 
 import domain_model
-import migrate_upgrade_domain as step
 import toolchain
+from upgrades import migrate_upgrade_domain as step
 
 FROZEN = ROOT / "tests/scripts/fixtures/upgrade-0.37"
 SCRIPTS = ROOT / "scripts"

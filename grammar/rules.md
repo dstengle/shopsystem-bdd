@@ -1087,7 +1087,7 @@ a verb's entry gives no frame: the kinds of its subject and object, or that it t
 - Since: b82
 - Changed: b123
 - Severity: error
-- Implemented in: `scripts/model.lp`, `scripts/migrate_upgrade_frames.py`, `scripts/spec_frames.py`
+- Implemented in: `scripts/model.lp`, `scripts/spec_frames.py`, `scripts/upgrades/migrate_upgrade_frames.py`
 - Cited by: no line
 - Fails on:
 
@@ -1109,7 +1109,7 @@ a condition names another kind with `the`: a relation between two kinds is a ver
 - Since: b82
 - Changed: b123
 - Severity: error
-- Implemented in: `scripts/model.lp`, `scripts/migrate_upgrade_frames.py`, `scripts/spec_frames.py`
+- Implemented in: `scripts/model.lp`, `scripts/spec_frames.py`, `scripts/upgrades/migrate_upgrade_frames.py`
 - Cited by: no line
 - Fails on:
 
@@ -1131,7 +1131,7 @@ a verb's Frame: does not read as its subject, the verb and the kinds it takes
 - Since: b106
 - Changed: b123
 - Severity: error
-- Implemented in: `scripts/model.lp`, `scripts/migrate_upgrade_frames.py`, `scripts/spec_frames.py`
+- Implemented in: `scripts/model.lp`, `scripts/spec_frames.py`, `scripts/upgrades/migrate_upgrade_frames.py`
 - Cited by: no line
 - Fails on:
 

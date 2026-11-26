@@ -170,7 +170,7 @@ def entries(step):
 def pending(step):
     """The titles of the upgrade steps after the repository's release, up to the plugin's."""
     sys.path.insert(0, str(ours(step)[0] / "scripts"))
-    import migrate_upgrade
+    from upgrades import migrate_upgrade
     version = held(step).get(".shop/plugin-version", "0.23.1").strip()
     key = tuple(int(p) for p in version.split(".")) if re.fullmatch(r"[\d.]+", version) else (0, 23, 1)
     return [title for release, title, *_ in migrate_upgrade.STEPS

@@ -14,7 +14,8 @@ from pathlib import Path
 
 import spec_lexicon
 import spec_rgl_vocab
-from migrate_upgrade_ids import Changes
+
+from upgrades.migrate_upgrade_ids import Changes
 
 NAME = "verb frames"
 LABEL = re.compile(r"^(- \*\*.+?\*\*\s*\()([^)]*)(\)\s*:)")
