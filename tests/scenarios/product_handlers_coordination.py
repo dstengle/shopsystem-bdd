@@ -5,7 +5,8 @@ When of `spec trace` the world they pick is written: the domain-model fixture (t
 with checking_handlers_port's driven port `stock` beside it and notebook's g10 serving the job, its r10 requesting
 `stock.reserve`, and
 
-- an operation outcome no requirement handles: no line on the reservation's outcomes (r31);
+- an operation with no property and an operation outcome no requirement handles: `stock.reserve` as the fixture
+  declares it, no line on the reservation's outcomes (r31);
 - a requirement that handles it and uses an operation that performs a transition: notebook's g11, on the stock
   service's completion of a reservation, archiving a note, which r9 retires (the note's lifecycle: r32);
 - two operations of the driven port with a property that refers to an operation: `stock.allocate` beside
