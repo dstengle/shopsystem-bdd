@@ -1874,7 +1874,12 @@ shall [x1: service the work service (constant)]
       initiates(e2, subject: x1, status(x3) = `done`)
 ```
 
-The check's reading of a reply (`spec logic`'s facts, `features generate`) is not built yet.
+`spec logic` reads a reply as the trigger `trig(R, reply(K), req(O,()), D, X)` (b724), K the outcome the reply's
+verb says, D the service that replies and X the replied request's object, so two lines on one reply clash (decision
+0121); `spec check`'s bound check counts a core line on a reply of an outcome's kind to the request of a port's
+operation as handling that outcome (v_pb2), a refusal each of its reasons; `features generate` brings the replied
+request's object in by a Given, says the core's request of it as a Given in the present by the response's doer, and
+the reply as the When.
 
 ### "the person lists a checklist", "the person lists the checklists": a request acts on one thing
 
