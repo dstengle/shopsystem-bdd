@@ -70,7 +70,7 @@ def mine(step):
 
 
 def _passing(step):
-    return R().block("Title of i1", R().PASSING)
+    return R().block("Title of i1", R().PASSING)   # the item i1's one group
 
 
 def _new(step, area=""):
@@ -100,13 +100,9 @@ def _colliding(step):
     return re.sub(r"(?m)^- \[r\d+\]", "- [r1]", text, count=1) + "\n\n### %s pack\n\n%s" % (PACK, TERM)
 
 
-def _universal(step):
-    (step.repo / UNIVERSAL).unlink(missing_ok=True)
-    R().give_universal(step, "i1", R().TRANSLATED_U)
-
-
 WORLDS.update({
-    "g22": _universal,
+    "g22": lambda step: ((step.repo / UNIVERSAL).unlink(missing_ok=True)
+                         or R().give_universal(step, "i1", R().TRANSLATED_U)),
     "g23": _new,
     "g7": lambda step: _passing(step).replace("\n\n####", "\n\nserves: [g4 %s]\n\n####" % JOB, 1),
     "g8": lambda step: _new(step, "\narea: %s" % AREA),
@@ -246,3 +242,5 @@ for _template in ("GivenK", "GivenK_A", "GivenDoes", "GivenDoesNot"):
 W.local("WhenRequests")(requests)
 for _template in ("ThenDoes", "ThenDoesNot"):
     W.local(_template)(then)
+for _key in (("ThenDoes", "serve"), ("ThenDoes", "import")):      # the keys `features vocab --check` reads
+    sys.modules["vocab"].handler(*_key)(L.untaken)

@@ -1,7 +1,6 @@
 """The Thens of features/batches.feature in grammar 4 (b240, b158), each in world_four's chain beside the backlog's,
 over the checks of batches_handlers*.py: what `work batch` wrote, picked, printed, refused, named, published and
 removed. A step of a kind that is not the batches' returns False."""
-import re
 import sys
 
 W, B, T, F = (sys.modules[n] for n in ("shop_work_queue_world", "shop_backlog_world", "shop_batches_world",
@@ -31,45 +30,7 @@ def writes(step):
         return _first().writes_batch(step)
     if k == "batch plan":
         return _first().writes_plan(step)
-    if k == "`universal`":
-        assert universal(step), (step.text, step.context["result"].stdout)
-        return None
-    if k == "capability":
-        return capability(step)
     return False
-
-
-def capability(step):
-    """The new capability's file on the batch's branch (b317): its frontmatter, the item's line unbuilt, and its row
-    under `## Composition` of spec/index.md."""
-    name = step.context["new_capability"][parts(step)[1][1]]
-    done = step.context["result"]
-    assert done.returncode == 0, (step.text, done.stdout, done.stderr)
-    branch = T.git(step, "branch", "--list", "batch-*", "--format=%(refname:short)").split()[0]
-    text = T.git(step, "show", "%s:spec/capabilities/%s.md" % (branch, name))
-    for field in ("id: capability/ex.com/prod/ctx/%s" % name, "group: service", "language: codified-2",
-                  "unbuilt: [r1]", "## Purpose", "## Behaviour", "- [r1] "):
-        assert field in text, (field, text)
-    index = T.git(step, "show", "%s:spec/index.md" % branch)
-    assert re.search(r"(?ms)^## Composition$.*^\| `%s` \|" % name, index), index
-
-
-def universal(step):
-    """spec/universal.md on the batch's branch `work batch start` made, after the run exited 0 (b203)."""
-    done = step.context["result"]
-    assert done.returncode == 0, (step.text, done.stdout, done.stderr)
-    branch = T.git(step, "branch", "--list", "batch-*", "--format=%(refname:short)").split()
-    assert len(branch) == 1, (step.text, branch)
-    return T.git(step, "show", "%s:spec/universal.md" % branch[0])
-
-
-@four("ThenDoes", "set", *BOTH)
-def sets_language(step):
-    """The language of `universal`: the marker of spec/universal.md on the batch's branch."""
-    if step.nps[0] != "the language of `universal`":
-        return False
-    wanted = step.text.rsplit(" to ", 1)[1].strip("`")
-    assert re.search(r"(?m)^language: %s$" % re.escape(wanted), universal(step)), (step.text, universal(step))
 
 
 @four("ThenDoes", "remove", *BOTH)

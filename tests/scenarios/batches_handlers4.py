@@ -19,8 +19,7 @@ def _module(stem):
 @four("GivenDoes", "holds", *BOTH)
 def holds_given(step):
     """A batch holds an item (in it, `in-batch` unless a Given says otherwise); a git branch holds a requirement (the
-    world lays the item's lines on the batch's branch); an item holds a universal condition (its `U1`, which `model
-    logic` reads, beside a passing line, b203); an item holds a capability (a new one, `shelf`, b317)."""
+    world lays the item's lines on the batch's branch)."""
     (k1, n1), (k2, n2) = parts(step)
     if (k1, k2) == ("batch", "item"):
         T.given(step, "batch", n1)
@@ -29,32 +28,10 @@ def holds_given(step):
             B.write_item(step, n2)
         if T.status_of(step, n2) == "idea":
             B.write_item(step, n2, status="in-batch")
-    elif (k1, k2) == ("item", "capability"):          # b317: a new capability, its block with the passing line
-        new_capability(step, n1, n2)
-    elif (k1, k2) == ("item", "universal condition"):
-        sys.modules["shop_readiness_world"].give_universal(step, n1, sys.modules["shop_readiness_world"].TRANSLATED_U)
     elif (k1, k2) == ("worktree", "commit"):           # a task's workspace holds its kept change (the reword)
         has_given(step, ("git branch", n1), ("commit", n2))
     elif (k1, k2) not in (("git branch", "requirement"), ("worktree", "requirement")):
         return False
-
-
-NEW = ("shelf", "a person shelving things", "Things kept on a shelf, each found by its name.")
-
-
-def new_capability(step, item, name):
-    """The item's one block a capability new to the world's spec (`work line --capability`), its one group the
-    passing line under g1, r1; spec/index.md given the empty `## Composition` `migrate init` writes (b391)."""
-    R = sys.modules["shop_readiness_world"]
-    R.codify(step)
-    index = step.repo / "spec" / "index.md"
-    if "\n## Composition" not in index.read_text():
-        index.write_text(index.read_text().rstrip("\n") + "\n\n## Composition\n")
-    capability, narrator, purpose = NEW
-    step.context.setdefault("new_capability", {})[name] = capability
-    lines = ("### %s\n\nnarrator: %s\ngroup: service\npurpose: %s\n\n#### [g1] Shelving\n- [r1] %s"
-             % (capability, narrator, purpose, R.PASSING))
-    B.write_item(step, item, sections={"Requirements": lines})
 
 
 @four("GivenDoes", "has", *BOTH)
@@ -89,16 +66,6 @@ def has_not_given(step):
     T.given(step, "review folder", n2)["batch"] = ("not", n1)
 
 
-@four("GivenDoesNot", "exist", *BOTH)
-def universal_absent(step):
-    """`` `universal` does not exist``: the world's codified spec, which has no spec/universal.md (b203)."""
-    if step.subject != "`universal`":
-        return False
-    sys.modules["shop_readiness_world"].codify(step)
-    (step.repo / "spec" / "universal.md").unlink(missing_ok=True)
-
-
-@four("GivenK", "universal condition", *BOTH)
 @four("GivenK", "worktree", *BOTH)
 def given_worktree(step):
     """The task's worktree, which the world makes for a running task."""

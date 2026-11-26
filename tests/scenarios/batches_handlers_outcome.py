@@ -1,10 +1,10 @@
 """A ready item whose port outcome no line handles reopened at the batch's opening (batches r160, b721): beside
 readiness_world's codified spec, the domain-model fixture's model, vocabulary, CLI contract and notebook (the index
-importing the request pack), as batches_handlers_port's world; the item holds readiness_handlers_outcome's BLOCK, the
-driven port `stock-port` whose port line governs `stock.reserve` and excludes its refusal, its model line, and
-notebook's core line requesting it, no core line on its completion, so the outcome `stock.reserve done` no line
-handles. The Then of the outcome named reads `work batch start`'s output for its name in the bound check. r167, which
-retired r160, is laying#r19 (b758), whose world laying_handlers_reached builds with `_spec`. r166 (b725): BLOCK laid on the base spec before the item, so the base already leaves
+importing the request pack), as laying_handlers_pieces' world of a driven port; the item holds
+readiness_handlers_outcome's BLOCK, the driven port `stock-port` whose port line governs `stock.reserve` and excludes
+its refusal, its model line, and notebook's core line requesting it, no core line on its completion, so the outcome
+`stock.reserve done` no line handles. The Then of the outcome named reads `work batch start`'s output for its name in
+the bound check. r167, which retired r160, is laying#r19 (b758), whose world laying_handlers_reached builds with `_spec`. r166 (b725): BLOCK laid on the base spec before the item, so the base already leaves
 the outcome unhandled, and the item holding only a second port line of `stock-port` that governs `stock.reserve`
 (SECOND). r168 (b730), which retires r166, keeps its world."""
 import shutil
