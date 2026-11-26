@@ -73,7 +73,7 @@ The session:
 What you see is the grammar tools it found, and the commit:
 
 ```text
-No Python file: the analysis tools are not probed or installed; agents search by text, and say so
+no Python file: the analysis tools are not probed or installed; agents search by text, and say so
 grammar:
   gf 3.12.0 (~/.local/share/shopsystem-bdd/gf-3.12/bin/gf)
   pgf 1.1
