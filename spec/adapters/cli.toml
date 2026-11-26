@@ -161,6 +161,7 @@ requirements = [
   "checking#r121: While this bounded context has a job and a capability has a port line, when the person validates this specification, the specification service shall return no capability that violates `w_unserved_cap`.",
   "checking#r122: While this bounded context has a job and a requirement group serves the job and the group of a capability is `guarantees`, when the person validates this specification, the specification service shall return no capability that violates `w_unserved_cap`.",
   "checking#r123: While a requirement group serves a job and this bounded context has the job and another bounded context holds the job, if the person validates this specification, then the specification service shall fail the check and name the job.",
+  "checking#r124: While this product does not conform to the product form, when the person validates this specification, the specification service shall name this product and complete the request.",
   "decisions#r1: While a design-decision is not `superseded` or `rejected` and the design-decision has no tier, when the person validates this specification, the specification service shall return `w_untiered`.",
   "decisions#r2: While the tier of a design-decision is `check` and no test enforces the design-decision, if the person validates this specification, then the specification service shall fail the check and name `v_d6`.",
   "decisions#r3: While the tier of a design-decision is `requirement` and no requirement enforces the design-decision, if the person validates this specification, then the specification service shall fail the check and name `v_d7`.",
@@ -611,6 +612,7 @@ requirements = [
   "drafting#r39: While an item is `in-batch`, when the person drafts the item with a requirement, the drafting service shall keep the requirement in the item.",
   "drafting#r65: While an item holds a requirement group of a capability and the requirement group has a group title, when the person drafts the item with a requirement of the capability, the drafting service shall keep only one requirement group that has the group title.",
   "drafting#r72: When the person drafts an item with a capability and an area, the drafting service shall keep the capability in the item and keep the area that holds the capability in the item.",
+  "drafting#r85: When the person drafts an item with a capability and a driven port, the drafting service shall keep the capability in the item and keep the driven port that holds the capability in the item.",
 ]
 [operations."drafting.draft".parameters]
 item = { positional = 1 }
@@ -1020,6 +1022,7 @@ requirements = [
   "batches#r133: While an item is `ready` and the item meets the readiness bar and the item retires a model line, when the person opens a batch, the batches service shall keep an area that does not hold the model line.",
   "batches#r134: While an item is `ready` and the item meets the readiness bar and the item retires a term, when the person opens a batch, the batches service shall keep an area that does not hold the term.",
   "batches#r142: While an item is `ready` and the item meets the readiness bar and the item retires a model line that restates an element and the item retires a term that means the element, when the person opens a batch, the batches service shall keep an area that does not hold the term.",
+  "batches#r151: While an item is `ready` and the item meets the readiness bar and the item holds a capability and the item holds a driven port that holds the capability, when the person opens a batch, the batches service shall keep the driven port that holds the capability.",
 ]
 
 [operations."batches.resume"]
@@ -1729,6 +1732,8 @@ requirements = [
   "batches#r146: While a batch is `building` and a task of an item in the batch is `pending` and the item is `in-batch` and no task of the batch is `failed` and no task of the batch is `running`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `prepare task` and the task.",
   "batches#r147: While a batch is `in-review`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `review change`, a review folder of the batch and a findings file in the review folder.",
   "batches#r148: While a batch is `building` and a review of the batch holds a review finding whose triage is `fix now` and no kept change for the review finding exists, when the driver polls the batch, the batches service shall return a batch step whose instruction is `fix finding` and the review finding.",
+  "batches#r149: While a batch is `building` and a task of an item in the batch is `done` and every task of the batch is `done` and a scenario of the item breaks in the workspace of the batch, if the driver polls the batch, then the batches service shall return a batch step whose instruction is `fix task` and the task.",
+  "batches#r150: While a batch is `building` and a task of an item in the batch is `running` and the item is `in-batch` and the workspace of the task holds an amendment that cites the item and the workspace of the task holds exactly one kept change that cites the item and no task of the batch is `failed`, if the driver polls the batch, then the batches service shall return a batch step whose instruction is `build task`, the task and the batch brief of the batch.",
 ]
 [operations."batches.poll".parameters]
 batch = { positional = 1, example = "batch-1" }

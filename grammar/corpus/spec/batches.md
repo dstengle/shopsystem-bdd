@@ -1439,3 +1439,80 @@ shall [x5: agent the driver (constant), x6: service the batches service (constan
     return(e2, subject: x6, object: x7)
     return(e3, subject: x6, object: x3)
 ```
+
+## r149
+From: b696 r149.
+
+```reading
+While a batch is `building` and a task of an item in the batch is `done` and every task of the batch is `done` and a scenario of the item breaks in the workspace of the batch, if the driver polls the batch, then the batches service shall return a batch step whose instruction is `fix task` and the task.
+shall [x7: agent the driver (constant), x8: service the batches service (constant)]
+  while [x1: batch, x2: task, x3: item, x5: scenario, x6: workspace]
+    status(x1) = `building`
+    in(x3, x1)
+    of(x2, x3)
+    status(x2) = `done`
+    every [x4: task]
+      of(x4, x1)
+      scope
+        status(x4) = `done`
+    of(x5, x3)
+    of(x6, x1)
+    break(subject: x5, in: x6)
+  if
+    request(e1, batches.poll, subject: x7, object: x1)
+  response [x9: batch step]
+    instruction(x9) = `fix task`
+    return(e2, subject: x8, object: x9)
+    return(e3, subject: x8, object: x2)
+```
+
+## r150
+From: b698 r150.
+
+```reading
+While a batch is `building` and a task of an item in the batch is `running` and the item is `in-batch` and the workspace of the task holds an amendment that cites the item and the workspace of the task holds exactly one kept change that cites the item and no task of the batch is `failed`, if the driver polls the batch, then the batches service shall return a batch step whose instruction is `build task`, the task and the batch brief of the batch.
+shall [x8: agent the driver (constant), x9: service the batches service (constant)]
+  while [x1: batch, x2: task, x3: item, x4: workspace, x5: amendment]
+    status(x1) = `building`
+    in(x3, x1)
+    of(x2, x3)
+    status(x2) = `running`
+    status(x3) = `in-batch`
+    of(x4, x2)
+    cite(subject: x5, object: x3)
+    in(x5, x4)
+    count exactly 1 [x6: kept change]
+      cite(subject: x6, object: x3)
+      scope
+        in(x6, x4)
+    not [x7: task]
+      of(x7, x1)
+      status(x7) = `failed`
+  if
+    request(e1, batches.poll, subject: x8, object: x1)
+  response [x10: batch step, x11: batch brief]
+    instruction(x10) = `build task`
+    return(e2, subject: x9, object: x10)
+    return(e3, subject: x9, object: x2)
+    of(x11, x1)
+    return(e4, subject: x9, object: x11)
+```
+
+## r151
+From: b701 r151.
+
+```reading
+While an item is `ready` and the item meets the readiness bar and the item holds a capability and the item holds a driven port that holds the capability, when the person opens a batch, the batches service shall keep the driven port that holds the capability.
+shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x5: agent the person (constant), x7: service the batches service (constant)]
+  while [x1: item, x3: capability, x4: driven port]
+    status(x1) = `ready`
+    meet(subject: x1, object: x2)
+    in(x3, x1)
+    in(x3, x4)
+    in(x4, x1)
+  when [x6: batch]
+    request(e1, batches.open, subject: x5, object: x6)
+  response
+    in(x3, x4)
+    keep(e2, subject: x7, object: x4)
+```

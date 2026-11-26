@@ -1048,3 +1048,10 @@ Feature: Checking
     When the person validates this specification
     Then the specification service fails this check
     And the specification service names the job j1
+
+  @g124 @r124
+  Scenario: A product not of the product form is named by the check, which completes
+    Given this product does not conform to the product form
+    When the person validates this specification
+    Then the specification service names this product
+    And the specification service completes this request

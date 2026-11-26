@@ -115,9 +115,9 @@ object product id kind of text
 
 actor the driver kind of agent
 
-object batch step
-  attributes: instruction: prepare task | build task | finish task | submit batch | review change | fix finding | park item | stop
-  relations: holds → task | batch brief | review folder | findings file | review finding (many)
-
 object findings file kind of file
+
+object batch step
+  attributes: instruction: prepare task | build task | finish task | submit batch | review change | fix finding | fix task | park item | stop
+  relations: holds → task | batch brief | review folder | findings file | review finding (many)
 ```

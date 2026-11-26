@@ -1665,3 +1665,19 @@ shall [x3: bounded context "the bounded context the request is made in" (indexic
     fail(e2, subject: x7, object: x8)
     name(e3, subject: x7, object: x2)
 ```
+
+## r124
+From: b695 r124.
+
+```reading
+While this product does not conform to the product form, when the person validates this specification, the specification service shall name this product and complete the request.
+shall [x1: product "the product this bounded context belongs to" (indexical), x2: artifact the product form (constant), x3: agent the person (constant), x4: specification "the specification of this bounded context" (indexical), x5: service the specification service (constant), x6: request "the request the trigger makes" (indexical)]
+  while
+    not
+      conforms(x1, x2)
+  when
+    request(e1, specification.check, subject: x3, object: x4)
+  response
+    name(e2, subject: x5, object: x1)
+    complete(e3, subject: x5, object: x6)
+```
