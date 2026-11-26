@@ -1226,3 +1226,26 @@ shall [x4: readiness bar "the readiness bar of the plugin that runs the command"
   response
     initiates(e2, subject: x6, status(x1) = `ready`)
 ```
+
+## r70
+From: b694 r70.
+
+```reading
+While an item is `shaped` and the item imports a pack and the pack has a term and an element refers to the term and the term spells another element and the item retires another term that means the element and the item meets the readiness bar, when the person readies the item, the backlog service shall set the status of the item to `ready`.
+shall [x7: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x8: agent the person (constant), x9: service the backlog service (constant)]
+  while [x1: item, x2: pack, x3: term, x4: element, x5: element, x6: term]
+    status(x1) = `shaped`
+    import#3(subject: x1, object: x2)
+    of(x3, x2)
+    refer#3(subject: x4, to: x3)
+    distinct(x5, x4)
+    spell(subject: x3, object: x5)
+    distinct(x6, x3)
+    mean(subject: x6, object: x5)
+    retire#4(subject: x1, object: x6)
+    meet(subject: x1, object: x7)
+  when
+    request(e1, backlog.ready, subject: x8, object: x1)
+  response
+    initiates(e2, subject: x9, status(x1) = `ready`)
+```

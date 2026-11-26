@@ -76,8 +76,11 @@ area: execution
 - **shop** (noun) → object shop. The unit one product's work is managed and executed in, which keeps bounded contexts, each under its id. Plural: shops. This: the shop the request is made in.
 - **product id** (noun) → object product id. The id of the product a shop belongs to, the part of the id of this bounded context before its last part, as `missingmass.io/shopsystem`. Plural: product ids.
 - **cover** (verb, state) → relation product id.covers. An id lies under a product id: the path of the id opens with the product id. Forms: covers, covered. Frame: <product id> covers <id>.
-- **batch step** (noun) → object batch step. What a batch needs done next, as the batches service says it to the driver: its instruction and the tasks, brief, review folder or findings it is about.
+- **the driver** (proper noun) → actor the driver. Whatever runs a batch by asking the batches service for its next step and reporting each step's result back: an agent, a script or a runner.
+- **poll** (verb, action) → operation batches.poll. The driver asks the batches service for the next step of a batch. Forms: polls, polled. Frame: <actor> polls <batch>.
+- **batch step** (noun) → object batch step. What a batch needs done next, as the batches service says it to the driver: its instruction and the task, brief, review folder, findings file or finding it is about.
 - **instruction** (attribute) → attribute batch step.instruction. What a batch step asks the driver to do.
+- **prepare task** (noun) → value batch step.instruction prepare task.
 - **build task** (noun) → value batch step.instruction build task.
 - **finish task** (noun) → value batch step.instruction finish task.
 - **submit batch** (noun) → value batch step.instruction submit batch.
@@ -85,5 +88,4 @@ area: execution
 - **fix finding** (noun) → value batch step.instruction fix finding.
 - **park item** (noun) → value batch step.instruction park item.
 - **stop** (noun) → value batch step.instruction stop.
-- **the driver** (proper noun) → actor the driver. Whatever runs a batch by asking the batches service for its next step and reporting each step's result back: an agent, a script or a runner.
-- **poll** (verb, action) → operation batches.poll. The driver asks the batches service for the next step of a batch. Forms: polls, polled. Frame: <actor> polls <batch>.
+- **findings file** (noun) → object findings file. The file `findings.md` in a review folder where the reviewer's reply is saved, which `work batch reviewed` reads. Plural: findings files.

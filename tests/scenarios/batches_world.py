@@ -191,7 +191,7 @@ def built(tree, item):
 def make_batch(step, name):
     """The batch `name` written by hand: `batch-<n>` made from main with the lines commit of its items (`lay`), one
     branch for each item with one commit adding `src/b<j>.txt` and taking its ids out of `unbuilt:` (citing it unless
-    a Given made the commit uncited), and `plan.md` with its tasks, committed on main."""
+    a Given made the commit uncited; none on the branch of an item no kept change cites), and `plan.md` with its tasks, committed on main."""
     n, found = batch_name(step, name), step.context["given"]["batch"][name]
     items = [i for i, f in step.context["given"]["item"].items() if f["batch"] == name]
     tasks = [(t, f) for t, f in step.context["given"]["task"].items() if f["batch"] == name]
@@ -208,6 +208,8 @@ def make_batch(step, name):
         b = B().ident(item)
         branch = "%s-%s" % (n, b)
         git(step, "branch", branch, n)
+        if step.context["given"]["item"][item].get("unbuilt"):     # no kept change cites it: nothing built (b692)
+            continue
         tree = outside(step) / ("tree-%s" % branch)
         git(step, "worktree", "add", "-q", str(tree), branch)
         (tree / "src").mkdir(exist_ok=True)

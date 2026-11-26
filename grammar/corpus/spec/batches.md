@@ -1258,98 +1258,6 @@ shall [x2: agent the driver (constant), x3: service the batches service (constan
     return(e2, subject: x3, object: x4)
 ```
 
-## r136
-From: b683 r136.
-
-```reading
-While a batch is `in-review`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `review change` and a review folder of the batch.
-shall [x2: agent the driver (constant), x3: service the batches service (constant)]
-  while [x1: batch]
-    status(x1) = `in-review`
-  when
-    request(e1, batches.poll, subject: x2, object: x1)
-  response [x4: batch step, x5: review folder]
-    instruction(x4) = `review change`
-    return(e2, subject: x3, object: x4)
-    of(x5, x1)
-    return(e3, subject: x3, object: x5)
-```
-
-## r137
-From: b683 r137.
-
-```reading
-While a batch is `building` and a review of the batch holds a review finding whose triage is `fix now`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `fix finding` and the review finding.
-shall [x4: agent the driver (constant), x5: service the batches service (constant)]
-  while [x1: batch, x2: review, x3: review finding]
-    status(x1) = `building`
-    of(x2, x1)
-    triage(x3) = `fix now`
-    in(x3, x2)
-  when
-    request(e1, batches.poll, subject: x4, object: x1)
-  response [x6: batch step]
-    instruction(x6) = `fix finding`
-    return(e2, subject: x5, object: x6)
-    return(e3, subject: x5, object: x3)
-```
-
-## r138
-From: b683 r138.
-
-```reading
-While a batch is `building` and a task of the batch is `failed`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `park item` and the task.
-shall [x3: agent the driver (constant), x4: service the batches service (constant)]
-  while [x1: batch, x2: task]
-    status(x1) = `building`
-    of(x2, x1)
-    status(x2) = `failed`
-  when
-    request(e1, batches.poll, subject: x3, object: x1)
-  response [x5: batch step]
-    instruction(x5) = `park item`
-    return(e2, subject: x4, object: x5)
-    return(e3, subject: x4, object: x2)
-```
-
-## r139
-From: b683 r139.
-
-```reading
-While a batch is `building` and a task of the batch is `pending`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `build task`, the task and the batch brief of the batch.
-shall [x3: agent the driver (constant), x4: service the batches service (constant)]
-  while [x1: batch, x2: task]
-    status(x1) = `building`
-    of(x2, x1)
-    status(x2) = `pending`
-  when
-    request(e1, batches.poll, subject: x3, object: x1)
-  response [x5: batch step, x6: batch brief]
-    instruction(x5) = `build task`
-    return(e2, subject: x4, object: x5)
-    return(e3, subject: x4, object: x2)
-    of(x6, x1)
-    return(e4, subject: x4, object: x6)
-```
-
-## r140
-From: b683 r140.
-
-```reading
-While a batch is `building` and a task of the batch is `running`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `finish task` and the task.
-shall [x3: agent the driver (constant), x4: service the batches service (constant)]
-  while [x1: batch, x2: task]
-    status(x1) = `building`
-    of(x2, x1)
-    status(x2) = `running`
-  when
-    request(e1, batches.poll, subject: x3, object: x1)
-  response [x5: batch step]
-    instruction(x5) = `finish task`
-    return(e2, subject: x4, object: x5)
-    return(e3, subject: x4, object: x2)
-```
-
 ## r141
 From: b683 r141.
 
@@ -1388,4 +1296,146 @@ shall [x2: readiness bar "the readiness bar of the plugin that runs the command"
     not
       in(x5, x9)
     keep(e2, subject: x8, object: x9)
+```
+
+## r143
+Retires: r138. From: b692 r143.
+
+```reading
+While a batch is `building` and a task of an item in the batch is `failed` and the item is `in-batch`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `park item` and the task.
+shall [x4: agent the driver (constant), x5: service the batches service (constant)]
+  while [x1: batch, x2: task, x3: item]
+    status(x1) = `building`
+    in(x3, x1)
+    of(x2, x3)
+    status(x2) = `failed`
+    status(x3) = `in-batch`
+  when
+    request(e1, batches.poll, subject: x4, object: x1)
+  response [x6: batch step]
+    instruction(x6) = `park item`
+    return(e2, subject: x5, object: x6)
+    return(e3, subject: x5, object: x2)
+```
+
+## r144
+Retires: r140. From: b692 r144.
+
+```reading
+While a batch is `building` and a task of an item in the batch is `running` and the item is `in-batch` and the workspace of the task holds a kept change that cites the item and no task of the batch is `failed`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `finish task` and the task.
+shall [x7: agent the driver (constant), x8: service the batches service (constant)]
+  while [x1: batch, x2: task, x3: item, x4: workspace, x5: kept change]
+    status(x1) = `building`
+    in(x3, x1)
+    of(x2, x3)
+    status(x2) = `running`
+    status(x3) = `in-batch`
+    of(x4, x2)
+    cite(subject: x5, object: x3)
+    in(x5, x4)
+    not [x6: task]
+      of(x6, x1)
+      status(x6) = `failed`
+  when
+    request(e1, batches.poll, subject: x7, object: x1)
+  response [x9: batch step]
+    instruction(x9) = `finish task`
+    return(e2, subject: x8, object: x9)
+    return(e3, subject: x8, object: x2)
+```
+
+## r145
+From: b692 r145.
+
+```reading
+While a batch is `building` and a task of an item in the batch is `running` and the item is `in-batch` and the workspace of the task holds no kept change that cites the item and no task of the batch is `failed`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `build task`, the task and the batch brief of the batch.
+shall [x7: agent the driver (constant), x8: service the batches service (constant)]
+  while [x1: batch, x2: task, x3: item, x4: workspace]
+    status(x1) = `building`
+    in(x3, x1)
+    of(x2, x3)
+    status(x2) = `running`
+    status(x3) = `in-batch`
+    of(x4, x2)
+    not [x5: kept change]
+      cite(subject: x5, object: x3)
+      in(x5, x4)
+    not [x6: task]
+      of(x6, x1)
+      status(x6) = `failed`
+  when
+    request(e1, batches.poll, subject: x7, object: x1)
+  response [x9: batch step, x10: batch brief]
+    instruction(x9) = `build task`
+    return(e2, subject: x8, object: x9)
+    return(e3, subject: x8, object: x2)
+    of(x10, x1)
+    return(e4, subject: x8, object: x10)
+```
+
+## r146
+Retires: r139. From: b692 r146.
+
+```reading
+While a batch is `building` and a task of an item in the batch is `pending` and the item is `in-batch` and no task of the batch is `failed` and no task of the batch is `running`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `prepare task` and the task.
+shall [x6: agent the driver (constant), x7: service the batches service (constant)]
+  while [x1: batch, x2: task, x3: item]
+    status(x1) = `building`
+    in(x3, x1)
+    of(x2, x3)
+    status(x2) = `pending`
+    status(x3) = `in-batch`
+    not [x4: task]
+      of(x4, x1)
+      status(x4) = `failed`
+    not [x5: task]
+      of(x5, x1)
+      status(x5) = `running`
+  when
+    request(e1, batches.poll, subject: x6, object: x1)
+  response [x8: batch step]
+    instruction(x8) = `prepare task`
+    return(e2, subject: x7, object: x8)
+    return(e3, subject: x7, object: x2)
+```
+
+## r147
+Retires: r136. From: b692 r147.
+
+```reading
+While a batch is `in-review`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `review change`, a review folder of the batch and a findings file in the review folder.
+shall [x2: agent the driver (constant), x3: service the batches service (constant)]
+  while [x1: batch]
+    status(x1) = `in-review`
+  when
+    request(e1, batches.poll, subject: x2, object: x1)
+  response [x4: batch step, x5: review folder, x6: findings file]
+    instruction(x4) = `review change`
+    return(e2, subject: x3, object: x4)
+    of(x5, x1)
+    return(e3, subject: x3, object: x5)
+    in(x6, x5)
+    return(e4, subject: x3, object: x6)
+```
+
+## r148
+Retires: r137. From: b692 r148.
+
+```reading
+While a batch is `building` and a review of the batch holds a review finding whose triage is `fix now` and no kept change for the review finding exists, when the driver polls the batch, the batches service shall return a batch step whose instruction is `fix finding` and the review finding.
+shall [x5: agent the driver (constant), x6: service the batches service (constant)]
+  while [x1: batch, x2: review, x3: review finding]
+    status(x1) = `building`
+    of(x2, x1)
+    triage(x3) = `fix now`
+    in(x3, x2)
+    not [x4: kept change]
+      for(x4, x3)
+      exists(x4)
+  when
+    request(e1, batches.poll, subject: x5, object: x1)
+  response [x7: batch step]
+    instruction(x7) = `fix finding`
+    return(e2, subject: x6, object: x7)
+    return(e3, subject: x6, object: x3)
 ```

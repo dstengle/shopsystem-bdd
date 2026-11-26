@@ -6,7 +6,7 @@ group: service
 area: execution
 specifies: object batch, object task, service batches
 language: codified-2
-retired: [g69, r69, g82, r82, g88, r88, g53, r53, g59, r59, g51, r51, g103, r103, g50, r50, g54, r54, g55, r55, g57, r57, g58, r58, g65, r65, g89, r89, g93, r93, g94, r94, g97, r97, g101, r101, g107, r107]
+retired: [g69, r69, g82, r82, g88, r88, g53, r53, g59, r59, g51, r51, g103, r103, g50, r50, g54, r54, g55, r55, g57, r57, g58, r58, g65, r65, g89, r89, g93, r93, g94, r94, g97, r97, g101, r101, g107, r107, g138, r138, g140, r140, g139, r139, g136, r136, g137, r137]
 unbuilt: []
 ---
 
@@ -231,27 +231,30 @@ when the change is merged.
 ### [g134] A batch opened takes each retired term out of its area
 - [r134] While an item is `ready` and the item meets the readiness bar and the item retires a term, when the person opens a batch, the batches service shall keep an area that does not hold the term.
 
-### [g139] A batch with a pending task asks the driver to build the task with its brief
-- [r139] While a batch is `building` and a task of the batch is `pending`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `build task`, the task and the batch brief of the batch.
-
-### [g140] A batch with a running task asks the driver to finish the task
-- [r140] While a batch is `building` and a task of the batch is `running`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `finish task` and the task.
-
 ### [g141] A batch whose every task is done asks the driver to submit it
 - [r141] While a batch is `building` and every task of the batch is `done`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `submit batch`.
 
 ### [g135] A batch awaiting its merge tells the driver to stop
 - [r135] While a batch is `awaiting-merge`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `stop`.
 
-### [g136] A batch in review asks the driver to review its change with the review folder
-- [r136] While a batch is `in-review`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `review change` and a review folder of the batch.
-
-### [g137] A batch with a finding to fix now asks the driver to fix the finding
-- [r137] While a batch is `building` and a review of the batch holds a review finding whose triage is `fix now`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `fix finding` and the review finding.
-
-### [g138] A batch with a failed task asks the driver to park the task's item
-- [r138] While a batch is `building` and a task of the batch is `failed`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `park item` and the task.
-
 ### [g142] A batch opened takes out a retired term whose element a retired model line already took out
 - [r142] While an item is `ready` and the item meets the readiness bar and the item retires a model line that restates an element and the item retires a term that means the element, when the person opens a batch, the batches service shall keep an area that does not hold the term.
+
+### [g143] A batch with a failed task of an in-batch item asks the driver to park the task's item
+- [r143] While a batch is `building` and a task of an item in the batch is `failed` and the item is `in-batch`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `park item` and the task.
+
+### [g144] A batch with a built running task and no failed task asks the driver to finish the task
+- [r144] While a batch is `building` and a task of an item in the batch is `running` and the item is `in-batch` and the workspace of the task holds a kept change that cites the item and no task of the batch is `failed`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `finish task` and the task.
+
+### [g145] A batch with an unbuilt running task and no failed task asks the driver to build the task with its brief
+- [r145] While a batch is `building` and a task of an item in the batch is `running` and the item is `in-batch` and the workspace of the task holds no kept change that cites the item and no task of the batch is `failed`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `build task`, the task and the batch brief of the batch.
+
+### [g146] A batch with a pending task and no failed or running task asks the driver to prepare the task
+- [r146] While a batch is `building` and a task of an item in the batch is `pending` and the item is `in-batch` and no task of the batch is `failed` and no task of the batch is `running`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `prepare task` and the task.
+
+### [g147] A batch in review asks the driver to review its change with the review folder and its findings file
+- [r147] While a batch is `in-review`, when the driver polls the batch, the batches service shall return a batch step whose instruction is `review change`, a review folder of the batch and a findings file in the review folder.
+
+### [g148] A batch with a finding to fix now that no kept change is for asks the driver to fix the finding
+- [r148] While a batch is `building` and a review of the batch holds a review finding whose triage is `fix now` and no kept change for the review finding exists, when the driver polls the batch, the batches service shall return a batch step whose instruction is `fix finding` and the review finding.
 

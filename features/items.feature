@@ -1023,3 +1023,22 @@ Feature: Items
     And the item i1 meets this readiness bar
     When the person readies the item i1
     Then the backlog service sets the status of the item i1 to `ready`
+
+  @g70 @r70
+  Scenario: An item that imports a pack and retires the term of the element a pack term spells is readied
+    Given an item i1
+    And the status of the item i1 is `shaped`
+    And a pack p1
+    And the item i1 imports the pack p1
+    And a term t1
+    And the pack p1 has the term t1
+    And an element e1
+    And the element e1 refers to the term t1
+    And an element e2
+    And the term t1 spells the element e2
+    And a term t2
+    And the term t2 means the element e2
+    And the item i1 retires the term t2
+    And the item i1 meets this readiness bar
+    When the person readies the item i1
+    Then the backlog service sets the status of the item i1 to `ready`

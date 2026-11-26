@@ -245,3 +245,6 @@ declined, withdrawn, answered and listed.
 ### [g69] A shaped item whose only lines are retired terms is readied
 - [r69] While an item is `shaped` and the item retires a term and the item holds no requirement and the item meets the readiness bar, when the person readies the item, the backlog service shall set the status of the item to `ready`.
 
+### [g70] An item that imports a pack and retires the term of the element a pack term spells is readied
+- [r70] While an item is `shaped` and the item imports a pack and the pack has a term and an element refers to the term and the term spells another element and the item retires another term that means the element and the item meets the readiness bar, when the person readies the item, the backlog service shall set the status of the item to `ready`.
+
