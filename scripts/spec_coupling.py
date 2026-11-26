@@ -1,7 +1,7 @@
 """`spec coupling` (b612, checking r144-r146): the specification service's report of the coupling between the areas
 of the context's domain model (`spec/model/`), each area a context the disentangling (decisions 0129-0133) will make.
 A coupling is of the area depended on, by another area, and holds what couples them: each word both areas' vocabulary
-layers define, of the area of the word's second entry in file order (r144, `words`); each element of the area that an
+layers define, of the area of the word's later entry in file order (r144, `words`); each element of the area that an
 element of the other's model refers to by its word (a relation's or an object attribute's target, a `kind of`, an
 operation's object or a parameter naming an object, the operation an event is raised by), named by its kind and id
 (r145, `elements`); each requirement of a capability of the other area whose logical form uses a term only the area's
@@ -20,15 +20,16 @@ def _coupling(found, area, by):
 
 
 def _words(root, found):
-    """r144: a word two areas' layers define, the coupling of the area of its second entry by the first's."""
+    """r144: a word two areas' layers define, of each two of them the coupling of the area of its later entry by
+    the earlier's."""
     import spec_vocabulary
-    first = {}
+    earlier = defaultdict(list)
     for e in spec_vocabulary.entries(root):
-        if e.layer == spec_vocabulary.SHARED:
+        if e.layer == spec_vocabulary.SHARED or e.layer in earlier[e.term]:
             continue
-        held = first.setdefault(e.term, e.layer)
-        if held != e.layer:
+        for held in earlier[e.term]:
             _coupling(found, e.layer, held)["words"].add(e.term)
+        earlier[e.term].append(e.layer)
 
 
 def _references(model):
