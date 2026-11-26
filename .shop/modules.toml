@@ -1,0 +1,34 @@
+# Each area's Python files (decision 0151): one table an area of spec/index.md's Composition, its files by
+# path patterns from the repository's root; a file two tables match is the first table's, one none matches no area's.
+# Read by `spec coupling` (spec_coupling_imports). The tests are left to no area.
+
+[registry]
+modules = ["scripts/contract_registry*.py"]
+
+[laying]
+modules = ["scripts/laying*.py"]
+
+[specification]
+modules = ["scripts/spec", "scripts/spec_*.py", "scripts/model", "scripts/model_*.py", "scripts/domain_*.py",
+           "scripts/adapter_*.py", "scripts/contract_*.py", "scripts/product_*.py", "scripts/decision_*.py",
+           "scripts/record_*.py", "scripts/observation_write.py", "scripts/shop_ids.py", "scripts/store_git.py",
+           "scripts/features", "scripts/features_*.py"]
+
+[tracking]
+modules = ["scripts/backlog_*.py", "scripts/request_*.py", "scripts/request_hook", "scripts/intake_moves.py",
+           "scripts/conversation_*.py", "scripts/conversation_hook", "scripts/directive*.py", "scripts/readiness_*.py",
+           "scripts/shop_frozen.py"]
+
+[execution]
+modules = ["scripts/work", "scripts/shop", "scripts/batch_*.py", "scripts/delivery_settings.py", "scripts/toml_edit.py",
+           "scripts/shop_files.py", "scripts/shop_refused.py", "scripts/shop_contexts.py", "scripts/work_items.py",
+           "scripts/review_*.py"]
+
+[measurement]
+modules = ["scripts/measure", "scripts/measure_*.py", "scripts/transcripts.py"]
+
+[analysis]
+modules = ["scripts/tools", "scripts/tools_*.py"]
+
+[upgrades]
+modules = ["scripts/migrate", "scripts/migrate*.py"]
