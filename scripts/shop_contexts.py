@@ -2,14 +2,13 @@
 context id, kept in `.shop/contexts.toml` (`contexts = [...]`, one id a line, in the order kept), which only `work
 context keep` writes and commits. The shop's product id is the product path of this bounded context's id
 (spec/index.md's id less `bounded-context/` and its last part, `missingmass.io/shopsystem`: `product_id`), and it
-covers an id `bounded-context/<product id>/<name>` (`covers`). An id not in the context id form, one the product id
-does not cover and one kept already are refused naming the id (`keep`). The listing prints each id kept, or, while the
-shop keeps none, this bounded context's id alone (`listed`)."""
+covers an id `bounded-context/<product id>/<name>` (`covers`). An id the product id does not cover and one kept
+already are refused naming the id (`keep`). The listing prints each id kept, or, while the shop keeps none, this
+bounded context's id alone (`listed`)."""
 import tomllib
 from pathlib import Path
 
 import shop_files
-from migrate_init import FORM
 from shop_files import Refused
 
 REL = ".shop/contexts.toml"
@@ -49,12 +48,9 @@ def render(ids):
 
 
 def keep(root, ident):
-    """The bounded context of `ident` kept in the shop and committed; refused, naming the id, when it is not in the
-    context id form, its product is not the shop's, or the shop keeps one under it already."""
+    """The bounded context of `ident` kept in the shop and committed; refused, naming the id, when its product is not the
+    shop's, or the shop keeps one under it already."""
     names = ["id:%s" % ident]
-    if not FORM.fullmatch(ident):
-        raise Refused("{names} is not in the context id form bounded-context/<domain>/<path>",
-                      reason="id not in the context id form", names=names)
     product = product_id(root)
     if not covers(product, ident):
         raise Refused("{names} is outside the product id %s of this shop" % product,
