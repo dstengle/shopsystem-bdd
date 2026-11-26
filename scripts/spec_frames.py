@@ -21,8 +21,12 @@ import difflib
 import re
 from collections import namedtuple
 
-# prep: the verb's preposition before its object; oblique: the one before its recipient ("records thing in file")
-Frame = namedtuple("Frame", "subject object recipient prep oblique", defaults=(None, "to"))
+# prep: the verb's preposition before its object; oblique: the one before its recipient ("records thing in file");
+# fixed: the fixed phrase before the object of a verb naming an operation ("lists the characters of note", b796)
+Frame = namedtuple("Frame", "subject object recipient prep oblique fixed", defaults=(None, "to", None))
+# what fixed words after the verb may be, said when a frame of them does not read (b796)
+FIXED = ("words of no kind after the verb read as a fixed phrase before the object, or as the whole object, on a verb "
+         "naming an operation")
 # the words that, right after a verb in its frame, are the verb's preposition before its object
 PREPOSITIONS = {"to", "for", "from", "on", "onto", "in", "into", "at", "with", "about", "of", "by", "over", "under",
                 "through", "after", "before", "against", "upon", "without"}
@@ -55,8 +59,9 @@ def read(term, names, said=None):
     it reads it as)); (None, None) when the entry gives no `Frame:`. A preposition after the verb is the verb's
     (`Frame: viewer subscribes to channel.`): the object comes after it; a recipient follows the object behind any
     preposition (`Frame: agent records thing in file.`); a verb naming an operation may take a fixed phrase of no kind
-    in place of its object (`Frame: <actor> lists the notes.`, the domain contract design §4.2). `said` reads another
-    of its frames."""
+    in place of its object (`Frame: <actor> lists the notes.`, the domain contract design §4.2) or before it
+    (`Frame: <actor> lists the characters of <note>.`, as grammar 4 reads it, b796). `said` reads another of its
+    frames."""
     text = " ".join((term.frame if said is None else said).split())
     if not text:
         return None, None
@@ -80,9 +85,23 @@ def read(term, names, said=None):
         return Frame(subject, _noun(rest, names), None, prep), None
     if term.operation and not any(_noun(w, names) for w in rest.split()):     # a fixed object: "lists the notes"
         return Frame(subject, None, None), None
+    fixed = _fixed(rest, names) if term.operation else None
+    if fixed:
+        return Frame(subject, fixed[1], None, None, "to", " ".join(filter(None, (prep, fixed[0])))), None
     if to and _noun(obj, names):
         return None, (rec, "recipient")
     return None, (obj if to and _noun(rec, names) else rest, "object")
+
+
+def _fixed(rest, names):
+    """(fixed phrase, object) of the words after a verb that are words of no kind, then a kind: "the characters of
+    note"; None when they are not."""
+    words = rest.split()
+    for j in range(1, len(words)):
+        obj = _noun(" ".join(words[j:]), names)
+        if obj:
+            return None if any(_noun(w, names) for w in words[:j]) else (" ".join(words[:j]), obj)
+    return None
 
 
 def _recipient(rest, names):
@@ -107,18 +126,25 @@ def frames(term, names):
     return [f for f in (read(term, names, said)[0] for said in term.frames) if f]
 
 
-def misread(term, names):
+def misread(term, names, shown=False):
     """Why a verb's `Frame:` (the first of its frames that does not read) does not read, naming the word it could not
-    read and what it expected there; None when each reads or the entry gives no `Frame:` (v_t11)."""
-    why = next((w for w in (read(term, names, said)[1] for said in term.frames or (term.frame,)) if w), None)
+    read and what it expected there, and, `shown`, the frame as its entry writes it (b796); None when each reads or
+    the entry gives no `Frame:` (v_t11). A word the frame could not read that is no one word is given no nearest
+    names, and what fixed words after the verb may be in their place."""
+    said = term.frames or (term.frame,)
+    at, why = next(((i, w) for i, w in enumerate(read(term, names, f)[1] for f in said) if w), (None, None))
     if why is None:
         return None
     word, role = why
+    head = 'the Frame: "%s." ' % (term.written or said)[at] if shown else "the Frame: "
     if role.startswith("verb"):
-        return 'the Frame: does not read at "%s": it expects its subject, then the %s' % (word, role)
+        return '%sdoes not read at "%s": it expects its subject, then the %s' % (head, word, role)
+    if " " in word:
+        return '%sdoes not read at "%s": the verb\'s %s is a kind or an actor of the glossary; %s' % (
+            head, word, role, FIXED)
     near = difflib.get_close_matches(word, sorted(names), 3)
-    return 'the Frame: does not read at "%s": the verb\'s %s is a kind or an actor of the glossary%s' % (
-        word, role, " (nearest: %s)" % ", ".join(near) if near else "")
+    return '%sdoes not read at "%s": the verb\'s %s is a kind or an actor of the glossary%s' % (
+        head, word, role, " (nearest: %s)" % ", ".join(near) if near else "")
 
 
 def names(lexicon, outer=frozenset()):
@@ -155,7 +181,7 @@ def overlapping(lexicon):
     for verb, entries in senses.items():
         for i, mine in enumerate(entries):
             for theirs in entries[i + 1:]:
-                if any(all(near(a, b) if a and b else a == b for a, b in zip(f[:3], g[:3]))
+                if any(f.fixed == g.fixed and all(near(a, b) if a and b else a == b for a, b in zip(f[:3], g[:3]))
                        for f in mine for g in theirs):
                     out.add(verb)
     return out
@@ -172,7 +198,7 @@ def problems(lexicon, outer=frozenset()):
     out += [("v_t4", t.term, "%s: Kind of: %s is not a kind" % (t.where, t.supertype)) for t in lexicon.of("actor")
             if t.supertype and t.supertype not in kinds and t.label != "artifact"]     # artifact: the CLI pack's
     for t in lexicon.of("event"):
-        why = misread(t, known)
+        why = misread(t, known, shown=True)
         if why:
             out.append(("v_t13", t.term, "%s: %s" % (t.where, why)))
         elif frame(t, known) is None:
