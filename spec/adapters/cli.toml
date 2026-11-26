@@ -1722,31 +1722,31 @@ requirements = [
 batch = { positional = 1, example = "batch-1" }
 
 [operations."drafting.reinstate model line"]
-command = "work reinstate model line"
+command = "work line"
 requirements = [
   "drafting#r79: When the person reinstates a model line in an item, the drafting service shall keep an item that does not retire the model line.",
   "drafting#r80: If the person reinstates a model line in an item that does not retire the model line, then the drafting service shall refuse the request and name the model line.",
 ]
 [operations."drafting.reinstate model line".parameters]
-"model line" = { option = "--model-line", example = "model line-1" }
-item = { option = "--item", example = "item-1" }
+item = { positional = 1 }
+"model line" = { option = "--reinstate-model" }
 
 [operations."drafting.reinstate term"]
-command = "work reinstate term"
+command = "work line"
 requirements = [
   "drafting#r81: When the person reinstates a term in an item, the drafting service shall keep an item that does not retire the term.",
   "drafting#r82: If the person reinstates a term in an item that does not retire the term, then the drafting service shall refuse the request and name the term.",
 ]
 [operations."drafting.reinstate term".parameters]
-term = { option = "--term", example = "term-1" }
-item = { option = "--item", example = "item-1" }
+item = { positional = 1 }
+term = { option = "--reinstate-term" }
 
 [operations."drafting.remove import"]
-command = "work remove import"
+command = "work line"
 requirements = [
   "drafting#r83: When the person removes a pack from an item, the drafting service shall keep an item that does not import the pack.",
   "drafting#r84: If the person removes a pack from an item that does not import the pack, then the drafting service shall refuse the request and name the pack.",
 ]
 [operations."drafting.remove import".parameters]
-pack = { option = "--pack", example = "pack-1" }
-item = { option = "--item", example = "item-1" }
+item = { positional = 1 }
+pack = { option = "--remove-import" }
