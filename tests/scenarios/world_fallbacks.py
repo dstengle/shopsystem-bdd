@@ -54,8 +54,32 @@ for _template, _term in (("GivenDoes", "has"), ("ThenDoes", "has"), ("ThenDoes",
 @handler("GivenDoes")
 @handler("GivenDoesNot")
 def given_recorded(step):
-    """A codified-2 feature's Given of an instance, a value or a link that no handler of its kind or verb takes (b240):
-    the scenario's example data holds the thing, and its When's handler reads the given block, so it records nothing."""
+    """A codified-2 feature's Given that no handler of its kind or verb takes (b240): a bare introduction of a kind
+    whose instance the When or a later Given makes (`INTRODUCED`), a negative fact that holds because the world lacks
+    the thing (`NEGATIVE`) or a value the world has by default (`DEFAULTS`) records nothing; any other fails, naming
+    the scenario and the Given, until a world of its own reads it (b748)."""
+    if step.template == "GivenK" and step.kind in INTRODUCED:
+        return
+    negative = step.template == "GivenDoesNot" or any(str(t).startswith("no ") for t in [step.subject, *step.nps])
+    if negative and step.term in NEGATIVE.get(step.template, ()):
+        return
+    if step.template == "GivenK_A" and (step.kind, step.attribute, tuple(step.values)) in DEFAULTS:
+        return
+    _shared("shop_scenario_unread", "scenario_unread.py").unread(step, "the Given %r" % step.text)
+
+
+# The kinds a bare `a K k1` brings in with nothing more: the When, or a Given of what is said of it, makes the thing.
+INTRODUCED = frozenset({
+    "adapter contract", "adapter spec", "ambiguous text", "area", "batch plan", "batch summary form", "batch summary",
+    "channel", "chore", "construct", "contract", "defect", "element", "enforcer", "foundation", "fragment",
+    "heading", "idea", "operation", "pip command", "plural object", "question", "quote", "ratio", "reading rule",
+    "replied request", "requester", "review", "role", "session time", "session", "test run", "thread", "token",
+    "translation", "turn", "value in use", "wall time"})
+# The verbs of a negative fact ("no commit is for ...", "... does not contain ...") the world holds by lacking it.
+NEGATIVE = {"GivenDoes": frozenset({"touch", "retire", "for"}),
+            "GivenDoesNot": frozenset({"allow", "contain"})}
+# (kind, attribute, values) of a value the world has with no Given: the stand-in gh's issue is open.
+DEFAULTS = frozenset({("thread", "status", ("`open`",))})
 
 
 for _template, _term in (("ThenDoes", "has"), ("ThenDoes", "holds"), ("ThenDoes", "for"), ("ThenDoes", "give"),

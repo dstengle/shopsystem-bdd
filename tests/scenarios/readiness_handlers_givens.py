@@ -17,6 +17,9 @@ def shared(name, file):
     return sys.modules[name]
 
 
+unread = shared("shop_scenario_unread", "scenario_unread.py").unread     # b748
+
+
 W = shared("shop_work_queue_world", "work_queue_world.py")
 B = shared("shop_backlog_world", "backlog_world.py")
 R = shared("shop_readiness_world", "readiness_world.py")
@@ -166,6 +169,13 @@ def given_does(step):
         says(step, step.names[-1], R.DIFFERING_RULE)
     elif step.term == "violate":
         says(step, step.names[1], "v_t12")
+    elif not (step.nps and step.nps[0].startswith(WRITTEN.get(step.term, ()))):
+        unread(step, "the Given %r" % step.text)     # b748: no world of readiness reads it
+
+
+# What a has or holds names that the bar or the When writes, so its Given records nothing: a bar check of the bar, a
+# scenario of the item, a step of the scenario; the capability whose block the When writes into the item (drafting r25).
+WRITTEN = {"has": ("the bar check ", "the scenario ", "the step "), "holds": ("the capability ",)}
 
 
 @local("GivenDoes")
