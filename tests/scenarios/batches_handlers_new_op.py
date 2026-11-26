@@ -65,10 +65,13 @@ def has_table(step):
 @four("GivenDoesNot", "hold", *BOTH)
 @four("GivenDoesNot", "has", *BOTH)
 @four("GivenDoes", "has", *BOTH)
+@four("GivenDoes", "holds", *BOTH)
 def lacks(step):
-    """this domain model does not hold the operation o1, the operation o1 has no operation table: the fixture's
-    model and contract hold no `pin`."""
+    """this domain model does not hold the operation o1, the operation o1 has no operation table, the item i1 holds no
+    operation table of the operation o1 (b716): the fixture's model and contract hold no `pin`, nor does the item."""
     kinds = [k for k, _ in parts(step)]
+    if kinds[0] == "item" and " holds no operation table of " in step.text and step.context.get("specified"):
+        return None
     if kinds not in (["model", "operation"], ["domain model", "operation"], ["operation", "operation table"]) \
             or not step.context.get("specified"):
         return False

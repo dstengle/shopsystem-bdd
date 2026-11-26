@@ -171,7 +171,7 @@ Feature: Decisions
   @g20 @r20
   Scenario: A decision with no Decision section
     Given a design-decision d1
-    And the design-decision d1 has no section
+    And no section of the design-decision d1 whose heading is `Decision` exists
     When the person validates this specification
     Then the specification service fails this check
     And the specification service names the design-decision d1

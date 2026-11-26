@@ -171,6 +171,8 @@ def then_does(step):
         getattr(ORDER, {"has": "has", "follow": "follows"}.get(step.term, "writes"))(step, w)
     elif step.term == "use" and step.subject.startswith("the step"):     # the step s2 uses `nothing` (b274)
         GEN.USES.uses(step, GEN.NAME)
+    elif step.term == "use" and step.subject.startswith("the given step"):     # b716
+        GEN.USES.given_code(step, w, GEN.NAME)
     elif step.term == "use":      # the scenario s1 uses `only` (b272)
         GEN.uses(step, w)
     elif step.term == "refuse":

@@ -75,7 +75,7 @@ def holds(step):
     (k1, n1), (k2, _) = parts(step)
     if (k1, k2) == ("item", "model line"):
         B.write_item(step, n1, sections={"Requirements": BLOCK})
-    elif not step.text.endswith(" holds no requirement id"):
+    elif " holds no requirement id" not in step.text:     # "... in the capability c1" (b716)
         return False
 
 
