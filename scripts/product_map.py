@@ -6,11 +6,17 @@ gives (product_store's). `declare_subdomain` keeps a subdomain and `declare_cont
 again in place of the one of its id (its other keys kept). A subdomain is refused, naming the parameter, when its type
 is not of the subdomain type form (`TYPES`) or a job it serves is no job of the product; a bounded context when its id
 is not of the context id form, `bounded-context/<domain>/<path>` (migrate init's `FORM`, `conformed`, b793), lies
-outside the product's id (`covers`) or a subdomain it addresses is no subdomain of the product."""
+outside the product's id (`covers`) or a subdomain it addresses is no subdomain of the product. A subdomain's id
+is checked first, refused naming it when it is not of the subdomain id form (`IDENT`: lower-case words joined by
+hyphens, as `note-keeping`; b827, r73)."""
+import re
+
 from plumbing.shop_refused import Refused
 
 # the subdomain type form: the types of subdomain decision 0128 names
 TYPES = ("core", "supporting", "generic")
+# the subdomain id form: lower-case words joined by hyphens, as note-keeping (b827)
+IDENT = re.compile(r"[a-z0-9]+(-[a-z0-9]+)*")
 
 
 def conformed(ident, names):
@@ -30,7 +36,10 @@ def covers(product_id, ident):
 
 
 def declare_subdomain(product, ident, kind, jobs):
-    """The product with the subdomain of `ident`; refused naming the subdomain type or a job as above."""
+    """The product with the subdomain of `ident`; refused naming the id, the subdomain type or a job as above."""
+    if not IDENT.fullmatch(ident):
+        raise Refused("{names} %s is not of the subdomain id form: lower-case words joined by hyphens, as "
+                      "note-keeping" % ident, reason="id not in the subdomain id form", names=["parameter:id"])
     if kind not in TYPES:
         raise Refused("{names} %r is not of the subdomain type form: %s" % (kind, ", ".join(TYPES)),
                       reason="subdomain type not in the subdomain type form", names=["parameter:subdomain type"])
