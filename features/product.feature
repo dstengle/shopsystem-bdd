@@ -309,3 +309,65 @@ Feature: Product
     When the person traces the job j1
     Then the product service refuses this request
     And the product service names the job j1
+
+  @g31 @r31
+  Scenario: A job whose trace makes a port request no line awaits is coordinated by a port request
+    Given a requirement group r1
+    And a job j1
+    And the requirement group r1 serves the job j1
+    And a requirement r2
+    And the requirement group r1 has the requirement r2
+    And an operation o1
+    And the requirement r2 uses the operation o1
+    And a port line p1
+    And the port line p1 governs the operation o1
+    And the operation o1 has no operation outcome
+    When the person traces the job j1
+    Then the coordination of the job j1 is `port request`
+    And the product service returns the job j1
+
+  @g32 @r32
+  Scenario: A job whose trace awaits a port's reply in a lifecycle is coordinated by a long-running process
+    Given a requirement group r1
+    And a job j1
+    And the requirement group r1 serves the job j1
+    And a requirement r2
+    And the requirement group r1 has the requirement r2
+    And an operation o1
+    And the requirement r2 uses the operation o1
+    And a port line p1
+    And the port line p1 governs the operation o1
+    And an operation outcome o2
+    And the operation o1 has the operation outcome o2
+    And a requirement r3
+    And the requirement r3 handles the operation outcome o2
+    And an operation o3
+    And a transition t1
+    And the operation o3 performs the transition t1
+    And the requirement r3 uses the operation o3
+    When the person traces the job j1
+    Then the coordination of the job j1 is `long-running process`
+    And the product service returns the job j1
+
+  @g33 @r33
+  Scenario: A job whose trace makes compensated requests of two ports is coordinated by a saga
+    Given a requirement group r1
+    And a job j1
+    And the requirement group r1 serves the job j1
+    And a requirement r2
+    And the requirement group r1 has the requirement r2
+    And an operation o1
+    And a driven port d1
+    And the driven port d1 holds the operation o1
+    And a property p1
+    And an operation o2
+    And the property p1 refers to the operation o2
+    And the operation o1 has the property p1
+    And the requirement r2 uses the operation o1
+    And an operation o3
+    And the driven port d1 holds the operation o3
+    And the operation o3 has the property p1
+    And the requirement r2 uses the operation o3
+    When the person traces the job j1
+    Then the coordination of the job j1 is `saga`
+    And the product service returns the job j1

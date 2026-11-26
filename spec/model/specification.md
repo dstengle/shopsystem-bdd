@@ -121,6 +121,7 @@ object preposition
 
 object job
   relations: has → id (one); has → job statement (one); has → product actor (many); needs → job (many); depends on → job (many)
+  attributes: coordination: port request | long-running process | saga
 
 object index entry kind of text
 
