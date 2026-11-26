@@ -84,7 +84,7 @@ ADDED = {"consistency#g33": "design-model-check", "consistency#g34": "design-mod
          "items#g41": "readiness",                                               # b477: a model line breaks a rule
          "items#g53": "readiness", "items#g54": "readiness",                     # b516: universal conditions only
          "items#g55": "readiness",                                               # b581: two groups of one title
-         **{"items#g%d" % n: "readiness" for n in (64, 65, 66, 67, 68, 69, 70)},   # b654, b648, b688, b694
+         **{"items#g%d" % n: "readiness" for n in (64, 65, 66, 67, 68, 69, 70, 71)},   # b654, b648, b688, b694, b705
          **{"items#g%d" % n: "backlog" for n in range(56, 64)},                 # b578, b585: tracking's operations
          **{"checking#g%d" % n: "design-model-check" for n in range(52, 58)},
          "checking#g63": "design-model-check",                                   # b538: an attribute's senses

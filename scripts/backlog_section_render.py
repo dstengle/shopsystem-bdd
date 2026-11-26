@@ -19,8 +19,12 @@ LISTS = (("moves", backlog_area_move), ("imports", backlog_import), ("retirement
 
 
 def laid_group(group, level="###"):
-    """A group's text as in a capability file (`level` its heading): its lines, then its given block."""
-    text = "%s [%s] %s" % (level, group.id, group.title) + "".join("\n- [%s] %s" % r for r in group.requirements)
+    """A group's text as in a capability file (`level` its heading): its lines, each with the ids it is relied on by,
+    then its given block."""
+    relied = dict(getattr(group, "relied", ()))     # each line's `Relied on by:` line after it (b705)
+    text = "%s [%s] %s" % (level, group.id, group.title) + "".join(
+        "\n- [%s] %s" % r + ("\nRelied on by: %s" % ", ".join(relied[r[0]]) if relied.get(r[0]) else "")
+        for r in group.requirements)
     return text + ("\n\n%s\n%s\n%s" % (FENCE, "\n".join(group.given), CLOSE) if group.given else "")
 
 
