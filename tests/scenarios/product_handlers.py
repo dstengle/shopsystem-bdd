@@ -211,7 +211,7 @@ def completes(step):
 
 
 W.local("GivenK")(given_instance)
-W.local("GivenCode", "job statement")(given_text)
+sys.modules["vocab"].handler("GivenCode", "job statement")(given_text)     # a claim `features vocab --check` sees
 W.local("GivenDoes")(given_does)
 W.local("GivenDoesNot")(given_not)
 W.local("WhenRuns")(runs)
