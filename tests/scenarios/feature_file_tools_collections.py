@@ -42,6 +42,11 @@ LINES = {
          [r"Given a file f1\n", r"And a file f3\n", r"And the version of the file f3 is `2.0.0`\n",
           r"And the worktree w1 holds fewer than three files whose version is `2.0.0`\n"],
          [r"a file f4", r"holds the file"])],
+    "excluded": [     # b732: the counter-example of every takes a value the precondition's no box does not deny
+        (("While no stage is `low`, when the person runs `work status`, `work` shall print every stage whose priority "
+          "is `urgent`."),
+         [r"And the priority of the stage s3 is `high`\n", COUNTER % "stage s3", r"`work` prints the stage s2\n"],
+         [r"priority of the stage s3 is `low`"])],
     "satisfy": [
         (("While a stage has a line and every line of the stage is `accepted`, when the person runs `work status`, "
          "`work` shall print the stage."),
@@ -90,8 +95,10 @@ def kind(w, K):
     """The lines the Givens describe: a precondition that uses every or holds a count, a requirement that uses two,
     every or only with a restriction, or no-noun (b299), or has an upper bound (of a count over a row of a response's
     object: b296), a precondition of every over a not
-    (b310); None for none of these."""
+    (b310), every under a precondition of no-noun (b732); None for none of these."""
     facts = {(v, K(w, a), b if str(b).startswith("`") else K(w, b)) for v, a, b, pos in w["facts"] if pos}
+    if {("use", "precondition", "`no-noun`"), ("use", "requirement", "`every`")} <= facts:     # b732
+        return "excluded"
     if {("use", "precondition", "`every`"), ("use", "precondition", "`not-condition`")} <= facts:
         return "negated"
     if {("use", "requirement", "`count`"), ("use", "requirement", "`holds-relation`"),
@@ -156,3 +163,21 @@ def check(name, text, what):
         else:
             missing = [p for p in line[1] if not re.search(p, s)] + [p for p in line[2] if re.search(p, s)]
             assert not missing, (g, missing, s)
+
+
+def bind(w, K):
+    """The code a Given says the precondition uses, of the excluded lines: the value their no box denies (b732)."""
+    if kind(w, K) == "excluded":
+        w["values"].update({b: "`low`" for v, a, b, pos in w["facts"]
+                            if v == "use" and pos and K(w, a) == "precondition" and not b.startswith("`")
+                            and w["kinds"].get(b) in (None, "code")})
+
+
+def unused(text, code):
+    """AssertionError naming the scenario when a step that names a counter-example's member (the thing a scenario's
+    Then says is not printed) holds `code` (b732)."""
+    for g, s in scenarios(text):
+        members = re.findall(r"^    (?:Then|And) `work` does not print the ([a-z]+ [a-z]\d+)$", s, re.MULTILINE)
+        assert members, (g, "no counter-example", s)
+        said = [line for line in s.split("\n") for m in members if re.search(r"\b%s\b" % m, line) and code in line]
+        assert not said, (g, code, said, s)
