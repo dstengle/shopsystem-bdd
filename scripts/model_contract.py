@@ -26,7 +26,7 @@ contract:
     spec/capabilities/*.md, each a capability with frontmatter (id, narrator,
     group, rests_on, retired) and a `## Behaviour` section; a `formulated_as`
     key is a file problem. A file whose own frontmatter has
-    `language: codified-2` is codified (design model v5): its Behaviour is
+    `language: codified-2` is codified: its Behaviour is
     groups `### [g<n>] <title>`, each with an optional
     `Restates: r<n>@0.29, <cap>#r<n>@0.29.` line, `- [r<n>] <statement>`
     bullets and an optional fenced `given` block of example data; its
@@ -162,12 +162,16 @@ contract:
     as it reads once the terms, relation rows, lines and model lines the
     item b<n> holds are laid on a copy of spec/, as the readiness bar lays
     them (spec_preview); an item with no file is refused, naming it.
-  - lexicon lists the terms by category; lexicon --check prints v_t4-v_t10
-    (`<code>  <term>  <message>`) and exits 1 when there is any: v_t7 a
-    gloss of more than one sentence, v_t8 a relation entry (a relation is a
-    row of `## Relations`), v_t9 a meaning given as a field rather than a sentence,
-    v_t10 two relation rows with one (from, word, to), and spec_frames'
-    v_t11-v_t15.
+  - lexicon lists the terms by category; lexicon --check prints v_t4-v_t17
+    (`<code>  <term>  <message>`) and exits 1 when there is any: v_t4 a
+    term that names no part of speech, a kind that is no kind or an
+    attribute with no values, v_t5 a value of two attributes, v_t6 two
+    terms that read alike, v_t7 a gloss of more than one sentence, v_t8 a
+    relation entry (a relation is a row of `## Relations`), v_t9 a meaning
+    given as a field rather than a sentence,
+    v_t10 two relation rows with one (from, word, to), spec_frames'
+    v_t11-v_t15, and spec_packs' v_t16 (a term a pack defines too, its
+    entry not marked `Redefines:`) and v_t17 (an import of no pack).
   - logic [--json] [<capability> | <capability>#r<n>] runs the temporal check
     (spec_solve; L7, a "shall not" line that forbids what a "may" line
     permits) and the entailment check (spec_entail: L8, a requirement each
