@@ -1374,7 +1374,7 @@ unassigned the job j1 from the bounded context bounded-context/missingmass.io/sh
 
 Takes a job out of the product file, in one commit. A job still referred to is refused naming what refers to it: a
 job that needs it (the job), a bounded context that holds it (the bounded context; `shop spec unassign` it first) or a
-subdomain that serves it (the subdomain). A job the product does not hold is refused naming it.\
+subdomain that serves it (the subdomain). Dropping a job the product does not hold changes nothing.\
 Synopsis: `shop spec drop job <job>`
 
 ```console

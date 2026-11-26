@@ -1,6 +1,6 @@
 """`spec unassign <job> --from <bounded context>` and `spec drop job|actor|subdomain|context <it>` (b795, product
 r45-r57): the product service's operations unassign, drop job, drop actor, drop subdomain and drop context requested
-on the command line, product_drop's over the product product_store keeps, committed, and what was taken back printed.
+on the command line, product_drop's over the product product_store keeps, committed, and what was taken back printed; a drop that changes nothing commits nothing.
 A refusal names the parameter, which the CLI adapter spells as its option or positional (the dests are the
 parameters' names), or the job, the subdomain or the bounded context that still refers to what is dropped."""
 import product_drop
@@ -23,7 +23,10 @@ def cmd_unassign(args):
 def cmd_drop(args):
     drop, dest, words = DROPS[args.what]
     ident = getattr(args, dest)
-    product_store.kept(args.root, drop(product_store.read(args.root), ident), "spec drop %s: %s" % (args.what, ident))
+    product = product_store.read(args.root)
+    dropped = drop(product, ident)
+    if dropped != product:
+        product_store.kept(args.root, dropped, "spec drop %s: %s" % (args.what, ident))
     print("dropped %s %s" % (words, ident))
     return 0
 
