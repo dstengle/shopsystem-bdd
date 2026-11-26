@@ -11,6 +11,7 @@ import re
 import subprocess
 from pathlib import Path
 
+import backlog_model_area
 from backlog_items import Refused, commit, find, label, one_line
 from backlog_section import (
     CAP,
@@ -115,25 +116,11 @@ def kind(block):
 
 
 def specifies(block, root=None):
-    """What the capability is about: the service its area's model declares (`_service`, b850), or its guarantees."""
+    """What the capability is about: the service its area's model declares (backlog_model_area's `service`, b850), or its guarantees."""
     fields = dict(zip(NEW_FIELDS, block.new))
     if fields["group"] != "service":
         return "the %s guarantees" % block.capability
-    return "service %s" % _service(root, area(block), block.capability)
-
-
-def _service(root, name, capability):
-    """The service the model at `root` declares in the area `name`, the one named `capability` of several, else the
-    first; with none `capability`."""
-    import domain_model
-    if root is None or not domain_model.exists(root):
-        return capability
-    try:
-        services = domain_model.load(root).services
-    except Refused:     # a model that does not read is spec check's to name, not the lay's
-        return capability
-    held = [s for s, found in services.items() if found.area == name]
-    return capability if capability in held or not held else held[0]
+    return "service %s" % backlog_model_area.service(root, area(block), block.capability)
 
 
 def text(root, block):
@@ -257,6 +244,15 @@ def _without(body, block, root):
         return body[:row.start()] + "| %s |" % " | ".join(cells) + row.group(0)[len(row.group(0).rstrip("\n")):] \
             + body[row.end():]
     return body
+
+
+def respecify(into, block):
+    """`specifies:` written again once the item's model lines are laid, so a service they declare is read (b850)."""
+    import spec_held
+    spec_held.invalidate(into)
+    path = path_of(into, block.capability)
+    path.write_text(re.sub(r"(?m)^specifies: .*$", lambda _: "specifies: %s" % specifies(block, into),
+                           path.read_text(), count=1))
 
 
 def _row(block):

@@ -191,7 +191,7 @@ def lay_onto(into, item, files=None):
     rows at the end of its `## Relations` table (made when it has none), the lines it retires out of its `## Behaviour`
     and into its `retired:` (backlog_retires), groups (headings raised to `### `, each with its given block) at the end
     of its `## Behaviour`, its marker switched when the block says `language:` (backlog_recodify); a capability the
-    block makes written first, with its Composition row (backlog_capability, b317); its universal conditions and upstream entries by `backlog_forms.lay_spec`, the paths they
+    block makes written first, with its Composition row (backlog_capability, b317), its `specifies:` again after the model lines (b850); its universal conditions and upstream entries by `backlog_forms.lay_spec`, the paths they
     change added to `files`. The names of the capabilities laid."""
     blocks = read(item, "the item %s" % item.name)
     files = [] if files is None else files
@@ -216,6 +216,8 @@ def lay_onto(into, item, files=None):
     backlog_universal.lay(into, blocks, files)
     backlog_adapter_ops.lay(into, blocks, files)        # the model lines, the adapter blocks, a new operation's table
     backlog_port.lay(into, blocks, files)               # a driven port the item makes, its imports (b701)
+    for block in (b for b in blocks if b.new):          # the service its model lines declare (b850)
+        backlog_capability.respecify(into, block)
     return [b.capability for b in blocks]
 
 
