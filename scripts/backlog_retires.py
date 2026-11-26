@@ -7,7 +7,8 @@ Laid over a spec (`lay`), the old line is taken out of the capability's `## Beha
 group's last line, and its id (and the group's) put into the capability's `retired:`; a removed group's `Restates:` id
 that no group left restates is written under the capability's `## Dropped` as `r<n>@0.29: retired with <cap>#r<m> by
 b<k>.` (b333). Taken out again (`unlay`), all are put back, the text read off the file as git last held it with the
-line in it, a group put back less the lines of it another item still laid retires (b755)."""
+line in it, a group put back less the lines of it another item still laid retires (b755). A line goes, and comes
+back, with its continuation lines and its `Relied on by:` line (b761)."""
 import re
 import subprocess
 from pathlib import Path
@@ -18,11 +19,13 @@ from backlog_section import SECTION, capability_file, read, render, takes
 
 IDENT = re.compile(r"^([a-z0-9]+(?:-[a-z0-9]+)*)#(r[1-9]\d*)$")
 GROUP = r"(?ms)^### \[(g[1-9]\d*)\] [^\n]*\n.*?(?=^### |^## |\Z)"
+LINE = r"^- \[%s\] .*(?:\n  .*)*(?:\nRelied on by:.*)?(?:\n|\Z)"        # a line, continued, with its support
 
 
 def _line(rid):
-    """A requirement line `- [r<n>] ...` with its continuation lines, and the line break after it."""
-    return r"(?m)^- \[%s\] .*(?:\n  .*)*(?:\n|\Z)" % re.escape(rid)
+    """A requirement line `- [r<n>] ...` with its continuation lines, its `Relied on by:` line (b761), and the line
+    break after it."""
+    return "(?m)" + LINE % re.escape(rid)
 
 
 def check(root, item, ident, into=None):
@@ -159,7 +162,7 @@ def unlay(path, text, rids):
         here = next((g for g in re.finditer(GROUP, text) if g.group(1) == gid), None)
         back.append(rid)
         if here is not None:
-            after = [m for m in re.finditer(r"(?m)^- \[r([1-9]\d*)\] .*(?:\n  .*)*\n?", here.group(0))
+            after = [m for m in re.finditer("(?m)" + LINE % r"r([1-9]\d*)", here.group(0))
                      if int(m.group(1)) < int(rid[1:])]
             first = re.search(r"(?m)^- \[r[1-9]\d*\] ", here.group(0))     # after a Restates: line (b755)
             at = here.start() + (after[-1].end() if after else first.start() if first else
