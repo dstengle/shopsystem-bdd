@@ -6,8 +6,8 @@ group: service
 area: execution
 specifies: object batch, object task, service batches
 language: codified-2
-retired: [g69, r69, g82, r82, g88, r88, g53, r53, g59, r59, g51, r51, g103, r103, g50, r50, g54, r54, g55, r55, g57, r57, g58, r58, g65, r65, g89, r89, g93, r93, g94, r94, g97, r97, g101, r101, g107, r107, g138, r138, g140, r140, g139, r139, g136, r136, g137, r137, g145, r145, g146, r146, g152, r152, g149, r149, g154, r154, g160, r160, g166, r166]
-unbuilt: []
+retired: [g69, r69, g82, r82, g88, r88, g53, r53, g59, r59, g51, r51, g103, r103, g50, r50, g54, r54, g55, r55, g57, r57, g58, r58, g65, r65, g89, r89, g93, r93, g94, r94, g97, r97, g101, r101, g107, r107, g138, r138, g140, r140, g139, r139, g136, r136, g137, r137, g145, r145, g146, r146, g152, r152, g149, r149, g154, r154, g160, r160, g166, r166, g108, r108, g106, r106, g60, r60]
+unbuilt: [r179, r180, r181, r182, r183, r184]
 ---
 
 # Batches
@@ -24,10 +24,6 @@ when the change is merged.
 ### [g56] A batch resumed gives its plan and asks nothing
 - [r56] While a batch is `building`, when a session resumes the batch, the batches service shall return the batch plan
   of the batch and not ask a question.
-
-### [g60] An item parked has its lines taken out of the batch's workspace
-- [r60] While an item in a batch is `in-batch` and the workspace of the batch holds a requirement of the item, when a
-  session parks the item, the batches service shall keep a workspace of the batch that does not hold the requirement.
 
 ### [g61] A task finishes while a parked item's scenario breaks
 - [r61] While an item in a batch is `in-batch` and a task of the item is `running` and the status of an item in the
@@ -161,12 +157,6 @@ when the change is merged.
 
 ### [g105] Merging a batch's change resolves the accepted context request of its item
 - [r105] While an item in a batch is `in-batch` and the item has a request line of a context request and the context request is `accepted`, when the person merges the proposed change of the batch, the batches service shall resolve the context request.
-
-### [g106] A ready item whose lines laid violate a rule is reopened
-- [r106] While an item is `ready` and the item meets the readiness bar and a requirement of the item violates a rule whose severity is `error`, if the person opens a batch, then the batches service shall reopen the item and name the rule.
-
-### [g108] A batch opened allocates each ready item within the review limit
-- [r108] While an item is `ready` and the item meets the readiness bar and the item has no dependency on an item whose status is not `delivered` and the item does not exceed the review limit, when the person opens a batch, the batches service shall allocate the item, keep a batch that holds the item and keep a batch plan of the batch.
 
 ### [g109] A ready item whose new line's scenario passes on the lay is reopened
 - [r109] While an item is `ready` and the item meets the readiness bar and a requirement of the item retires no requirement id and a scenario of the item refers to the requirement id of the requirement and the scenario succeeds in a workspace of a batch, if the person opens the batch, then the batches service shall reopen the item and name the scenario.
@@ -326,4 +316,22 @@ when the change is merged.
 
 ### [g178] A park of one of two items retiring ids of one decision keeps the decision superseded by the other item's line
 - [r178] While an item in a batch is `in-batch` and the item holds a requirement and the requirement retires the requirement id of a requirement that enforces a design-decision whose status is `superseded` and a requirement that enforces the design-decision has a requirement id and another requirement retires the requirement id, when the person parks the item, the batches service shall keep a design-decision that the requirement enforces.
+
+### [g179] An item allocated to a batch is laid in the batch's workspace
+- [r179] While an item is `ready` and the item meets the readiness bar and the item has no dependency on an item whose status is not `delivered` and the item does not exceed the review limit, when the person opens a batch, the batches service shall allocate the item, keep a batch that holds the item, keep a batch plan of the batch and lay the item in the workspace of the batch.
+
+### [g180] An item the laying service has laid is checked in the workspace
+- [r180] When the laying service completes the request to lay an item in a workspace, the batches service shall check the item in the workspace.
+
+### [g181] An item whose check the laying service fails is reopened naming the rules it violates
+- [r181] When the laying service fails the request to check an item in a workspace, the batches service shall reopen the item and name every rule that a requirement of the item violates.
+
+### [g182] An item parked is lifted from the batch's workspace
+- [r182] While an item in a batch is `in-batch` and the workspace of the batch holds a requirement of the item, when a session parks the item, the batches service shall lift the item from the workspace of the batch.
+
+### [g183] An item the laying service has lifted is kept out in a change that cites it
+- [r183] When the laying service completes the request to lift an item from a workspace, the batches service shall keep a kept change that cites the item.
+
+### [g184] An item whose check the laying service completes is kept in a change that cites it
+- [r184] When the laying service completes the request to check an item in a workspace, the batches service shall keep a kept change that cites the item.
 

@@ -21,23 +21,6 @@ Feature: Batches
     Then the batches service returns the batch plan b2
     And the batches service does not ask a question
 
-  @g60 @r60
-  Scenario: An item parked has its lines taken out of the batch's workspace
-    Given an item i1
-    And a batch b1
-    And the batch b1 holds the item i1
-    And the status of the item i1 is `in-batch`
-    And a workspace w1
-    And the batch b1 has the workspace w1
-    And a requirement r1
-    And the item i1 has the requirement r1
-    And the workspace w1 holds the requirement r1
-    And a session s1
-    When the session s1 parks the item i1
-    Then the batches service keeps the workspace w2
-    And the batch b1 has the workspace w2
-    And the workspace w2 does not hold the requirement r1
-
   @g61 @r61
   Scenario: A task finishes while a parked item's scenario breaks
     Given an item i1
@@ -545,36 +528,6 @@ Feature: Batches
     And the batch b1 has the proposed change p1
     When the person merges the proposed change p1
     Then the batches service resolves the context request c1
-
-  @g106 @r106
-  Scenario: A ready item whose lines laid violate a rule is reopened
-    Given an item i1
-    And the status of the item i1 is `ready`
-    And the item i1 meets this readiness bar
-    And a requirement r1
-    And the item i1 has the requirement r1
-    And a rule r2
-    And the severity of the rule r2 is `error`
-    And the requirement r1 violates the rule r2
-    And a batch b1
-    When the person opens the batch b1
-    Then the batches service reopens the item i1
-    And the batches service names the rule r2
-
-  @g108 @r108
-  Scenario: A batch opened allocates each ready item within the review limit
-    Given an item i1
-    And the status of the item i1 is `ready`
-    And the item i1 meets this readiness bar
-    And the item i1 has no dependency
-    And the item i1 does not exceed the review limit
-    And a batch b1
-    When the person opens the batch b1
-    Then the batches service allocates the item i1
-    And the batches service keeps the batch b2
-    And the batch b2 holds the item i1
-    And the batches service keeps the batch plan b3
-    And the batch b2 has the batch plan b3
 
   @g109 @r109
   Scenario: A ready item whose new line's scenario passes on the lay is reopened
@@ -1554,3 +1507,84 @@ Feature: Batches
     When the person parks the item i1
     Then the batches service keeps the design-decision d2
     And the requirement r6 enforces the design-decision d2
+
+  @g179 @r179
+  Scenario: An item allocated to a batch is laid in the batch's workspace
+    Given an item i1
+    And the status of the item i1 is `ready`
+    And the item i1 meets this readiness bar
+    And the item i1 has no dependency
+    And the item i1 does not exceed the review limit
+    And a batch b1
+    When the person opens the batch b1
+    Then the batches service allocates the item i1
+    And the batches service keeps the batch b2
+    And the batch b2 holds the item i1
+    And the batches service keeps the batch plan b3
+    And the batch b2 has the batch plan b3
+    And the batches service lays the item i1 in the workspace w1
+    And the batch b2 has the workspace w1
+
+  @g180 @r180
+  Scenario: An item the laying service has laid is checked in the workspace
+    Given an item i1
+    And a workspace w1
+    And the batches service lays the item i1 in the workspace w1
+    When the laying service completes the request to lay the item i1 in the workspace w1
+    Then the batches service checks the item i1 in the workspace w1
+
+  @g181 @r181
+  Scenario: An item whose check the laying service fails is reopened naming the rules it violates
+    Given an item i1
+    And a workspace w1
+    And the batches service checks the item i1 in the workspace w1
+    And a rule r2
+    And a requirement r3
+    And the item i1 has the requirement r3
+    And the requirement r3 violates the rule r2
+    And a rule r4
+    And a requirement r5
+    And the item i1 has the requirement r5
+    And the requirement r5 violates the rule r4
+    And a rule r6
+    And a requirement r7
+    And the item i1 has the requirement r7
+    And the requirement r7 does not violate the rule r6
+    When the laying service fails the request to check the item i1 in the workspace w1
+    Then the batches service reopens the item i1
+    And the batches service names the rule r2
+    And the batches service names the rule r4
+    And the batches service does not name the rule r6
+
+  @g182 @r182
+  Scenario: An item parked is lifted from the batch's workspace
+    Given an item i1
+    And a batch b1
+    And the batch b1 holds the item i1
+    And the status of the item i1 is `in-batch`
+    And a workspace w1
+    And the batch b1 has the workspace w1
+    And a requirement r1
+    And the item i1 has the requirement r1
+    And the workspace w1 holds the requirement r1
+    And a session s1
+    When the session s1 parks the item i1
+    Then the batches service lifts the item i1 from the workspace w1
+
+  @g183 @r183
+  Scenario: An item the laying service has lifted is kept out in a change that cites it
+    Given an item i1
+    And a workspace w1
+    And the batches service lifts the item i1 from the workspace w1
+    When the laying service completes the request to lift the item i1 from the workspace w1
+    Then the batches service keeps the kept change k1
+    And the kept change k1 cites the item i1
+
+  @g184 @r184
+  Scenario: An item whose check the laying service completes is kept in a change that cites it
+    Given an item i1
+    And a workspace w1
+    And the batches service checks the item i1 in the workspace w1
+    When the laying service completes the request to check the item i1 in the workspace w1
+    Then the batches service keeps the kept change k1
+    And the kept change k1 cites the item i1
