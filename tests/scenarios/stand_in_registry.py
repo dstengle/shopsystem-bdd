@@ -8,7 +8,8 @@ in; `complete`, the deposit made of the shop-folder adapter and its completion r
 version asked, `version not deposited`, whatever the folder holds, and the deposit refused naming its version,
 `contract not deposited`, nothing written (b736, checking r134). A register (b735) is answered alike: unset, as the
 shop-folder adapter does; `complete`, completed without writing anything, its completion recorded; `refuse`, refused,
-`contract not registered`, naming the adapter spec, nothing written. Loaded by contract_registry from its path."""
+`contract not registered`, naming the adapter spec, nothing written. `$STAND_IN_REGISTRY_ON`, when set, names the
+one operation the reply is on, every other answered as the shop-folder adapter does. Loaded by contract_registry from its path."""
 import json
 import os
 
@@ -25,25 +26,26 @@ def _record(operation, context, version, contract=None, **more):
                               "contract": contract, **more}) + "\n")
 
 
-def _reply():
-    return os.environ.get("STAND_IN_REGISTRY_REPLY", "")
+def _reply(operation):
+    on = os.environ.get("STAND_IN_REGISTRY_ON", "")
+    return os.environ.get("STAND_IN_REGISTRY_REPLY", "") if on in ("", operation) else ""
 
 
 def deposit(root, contract, version):
     _record("deposit", None, version, contract)
-    if _reply() == "refuse":
+    if _reply("deposit") == "refuse":
         return Response("refused", errors=[error("contract not deposited", ["version:%s" % version])])
     done = FOLDER.deposit(root, contract, version)
-    if _reply() == "complete" and done.outcome == "done":
+    if _reply("deposit") == "complete" and done.outcome == "done":
         _record("completed", None, version)
     return done
 
 
 def retrieve(root, context=None, version=None):
     _record("retrieve", context, version)
-    if _reply() == "return":
+    if _reply("retrieve") == "return":
         return Response("returned", (version or "1.0.0", (CONTRACT % (version or "1.0.0")).encode()))
-    if _reply() == "refuse":
+    if _reply("retrieve") == "refuse":
         return Response("refused", errors=[error("version not deposited", ["version:%s" % version])])
     return FOLDER.retrieve(root, context, version)
 
@@ -51,9 +53,9 @@ def retrieve(root, context=None, version=None):
 def register(root, contract, adapter_spec, provider, version):
     _record("register", provider, version, contract.decode("utf-8"), **{"adapter spec": str(adapter_spec),
                                                                         "provider": provider})
-    if _reply() == "refuse":
+    if _reply("register") == "refuse":
         return contract_registry.unregistered(adapter_spec)
-    if _reply() == "complete":
+    if _reply("register") == "complete":
         _record("completed", provider, version)
         return contract_registry.completed({"kept": str(adapter_spec), "changed": True})
     return FOLDER.register(root, contract, adapter_spec, provider, version)
