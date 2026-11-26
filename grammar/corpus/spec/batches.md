@@ -1804,3 +1804,113 @@ shall [x8: agent the person (constant), x10: service the batches service (consta
     name(e3, subject: x10, object: x7)
     name(e4, subject: x10, object: x11)
 ```
+
+## r170
+From: b740 r170.
+
+```reading
+While an item in a batch is `in-batch` and a task of the item is `running` and the item holds a requirement and the workspace of the batch has a feature generator, when the person amends the item, the batches service shall keep a workspace of the batch that holds a feature of the feature generator.
+shall [x7: agent the person (constant), x8: service the batches service (constant)]
+  while [x1: item, x2: batch, x3: task, x4: requirement, x5: workspace, x6: feature generator]
+    in(x1, x2)
+    status(x1) = `in-batch`
+    of(x3, x1)
+    status(x3) = `running`
+    in(x4, x1)
+    of(x5, x2)
+    of(x6, x5)
+  when
+    request(e1, batches.amend, subject: x7, object: x1)
+  response [x9: workspace, x10: feature]
+    of(x9, x2)
+    of(x10, x6)
+    in(x10, x9)
+    keep(e2, subject: x8, object: x9)
+```
+
+## r171
+From: b740 r171.
+
+```reading
+While an item in a batch is `in-batch` and a review of the batch holds a review finding, when the person amends the item, the batches service shall keep a kept change for the review finding.
+shall [x5: agent the person (constant), x6: service the batches service (constant)]
+  while [x1: item, x2: batch, x3: review, x4: review finding]
+    in(x1, x2)
+    status(x1) = `in-batch`
+    of(x3, x2)
+    in(x4, x3)
+  when
+    request(e1, batches.amend, subject: x5, object: x1)
+  response [x7: kept change]
+    for(x7, x4)
+    keep(e2, subject: x6, object: x7)
+```
+
+## r172
+From: b740 r172.
+
+```reading
+While an item in a batch is `in-batch` and a task of the item is `running` and the item holds a requirement and this corpus holds the requirement, when the person amends the item, the batches service shall keep a corpus that conforms to the corpus form and keep a workspace of the batch that holds the corpus.
+shall [x5: corpus "the corpus of the bounded context the command runs in" (indexical), x6: agent the person (constant), x7: service the batches service (constant), x9: artifact the corpus form (constant)]
+  while [x1: item, x2: batch, x3: task, x4: requirement]
+    in(x1, x2)
+    status(x1) = `in-batch`
+    of(x3, x1)
+    status(x3) = `running`
+    in(x4, x1)
+    in(x4, x5)
+  when
+    request(e1, batches.amend, subject: x6, object: x1)
+  response [x8: corpus, x10: workspace]
+    conforms(x8, x9)
+    keep(e2, subject: x7, object: x8)
+    of(x10, x2)
+    in(x8, x10)
+    keep(e3, subject: x7, object: x10)
+```
+
+## r173
+From: b741 r173.
+
+```reading
+While an item is `ready` and the item meets the readiness bar and the item holds a requirement and the requirement retires the requirement id of a requirement that enforces a design-decision whose status is `accepted`, when the person opens a batch, the batches service shall set the status of the design-decision to `superseded`, keep a design-decision that supersedes the design-decision and name the design-decision.
+shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x7: agent the person (constant), x9: service the batches service (constant)]
+  while [x1: item, x3: requirement, x4: requirement, x5: design-decision, x6: requirement id]
+    status(x1) = `ready`
+    meet(subject: x1, object: x2)
+    in(x3, x1)
+    status(x5) = `accepted`
+    enforce(subject: x4, object: x5)
+    of(x6, x4)
+    retire(subject: x3, object: x6)
+  when [x8: batch]
+    request(e1, batches.open, subject: x7, object: x8)
+  response [x10: design-decision]
+    initiates(e2, subject: x9, status(x5) = `superseded`)
+    supersede(subject: x10, object: x5)
+    keep(e3, subject: x9, object: x10)
+    name(e4, subject: x9, object: x10)
+```
+
+## r174
+From: b741 r174.
+
+```reading
+While an item in a batch is `in-batch` and the item holds a requirement and the requirement retires the requirement id of a requirement that enforces a design-decision whose status is `superseded`, when the person parks the item, the batches service shall set the status of the design-decision to `accepted` and keep no design-decision that supersedes the design-decision.
+shall [x7: agent the person (constant), x8: service the batches service (constant)]
+  while [x1: item, x2: batch, x3: requirement, x4: requirement, x5: design-decision, x6: requirement id]
+    in(x1, x2)
+    status(x1) = `in-batch`
+    in(x3, x1)
+    status(x5) = `superseded`
+    enforce(subject: x4, object: x5)
+    of(x6, x4)
+    retire(subject: x3, object: x6)
+  when
+    request(e1, batches.park, subject: x7, object: x1)
+  response
+    initiates(e2, subject: x8, status(x5) = `accepted`)
+    not [x9: design-decision]
+      supersede(subject: x9, object: x5)
+      keep(e3, subject: x8, object: x9)
+```

@@ -630,3 +630,18 @@ Feature: Consistency
     And the requirement r1 has the translation t1
     When the person examines this specification with the capability c1
     Then the specification service returns the translation t1
+
+  @g45 @r45
+  Scenario: spec explain prints what a line on the trigger forces of a request with an oblique role and a parameter
+    Given a trigger t1
+    And a requirement r1
+    And the requirement r1 has the trigger t1
+    And a consequence c1
+    And the requirement r1 has the consequence c1
+    And a requirement r2
+    And the requirement r2 has the trigger t1
+    And the requirement r2 uses `response-request`
+    And the requirement r2 uses `oblique-role`
+    When the person explains the requirement r2
+    Then the language service returns the requirement r2
+    And the language service returns the consequence c1

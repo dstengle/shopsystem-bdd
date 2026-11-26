@@ -5,9 +5,7 @@ vocabulary, the packs, the index) or `spec/universal.md`, every service capabili
 prints differently given that form, its heading, trace and line kept. A capability the lay laid lines of is
 batch_start's own to generate; a feature that is not there, or that `features generate` refuses, is left as it is.
 """
-import contextlib
 import hashlib
-import io
 import re
 from pathlib import Path
 
@@ -30,19 +28,18 @@ def digest(tree):
 def features(tree, laid):
     """Each service capability's feature but those of `laid` written again where `features generate` now writes it
     differently; the paths changed."""
+    import batch_generator
     import features_generate
-    changed = []
+    changed, paths = [], []
     for path in sorted((Path(tree) / "spec" / "capabilities").glob("*.md")):
         feature = Path(tree) / "features" / ("%s.feature" % path.stem)
         if path.stem in laid or not feature.is_file() or features_generate.uncodified(tree, [path]) \
                 or spec_read.capability(path).frontmatter.get("group") == "guarantees":
             continue
-        try:
-            with contextlib.redirect_stderr(io.StringIO()):
-                text = features_generate.generate(tree, path)
-        except features_generate.GenerateError:
-            continue
-        if text != feature.read_text():
+        paths.append(path)
+    for path, text in batch_generator.generate_all(tree, paths).items():     # the tree's generator (b740)
+        feature = Path(tree) / "features" / ("%s.feature" % path.stem)
+        if text is not None and text != feature.read_text():
             feature.write_text(text)
             changed.append(feature.relative_to(tree).as_posix())
     return changed

@@ -1365,3 +1365,101 @@ Feature: Batches
     Then the batches service reopens the item i1
     And the batches service names the core line c1
     And the batches service names `v_m9`
+
+  @g170 @r170
+  Scenario: An in-batch item amended has its features written by the generator its batch's workspace holds
+    Given an item i1
+    And a batch b1
+    And the batch b1 holds the item i1
+    And the status of the item i1 is `in-batch`
+    And a task t1
+    And the item i1 has the task t1
+    And the status of the task t1 is `running`
+    And a requirement r1
+    And the item i1 holds the requirement r1
+    And a workspace w1
+    And the batch b1 has the workspace w1
+    And a feature generator f1
+    And the workspace w1 has the feature generator f1
+    And a feature f2
+    And a workspace w2
+    When the person amends the item i1
+    Then the feature generator f1 has the feature f2
+    And the batches service keeps the workspace w2
+    And the batch b1 has the workspace w2
+    And the workspace w2 holds the feature f2
+
+  @g171 @r171
+  Scenario: An in-batch item amended with no review finding given keeps a change for the review finding its batch holds open
+    Given an item i1
+    And a batch b1
+    And the batch b1 holds the item i1
+    And the status of the item i1 is `in-batch`
+    And a review r1
+    And the batch b1 has the review r1
+    And a review finding r2
+    And the review r1 holds the review finding r2
+    When the person amends the item i1
+    Then the batches service keeps the kept change k1
+    And the kept change k1 is for the review finding r2
+
+  @g172 @r172
+  Scenario: An in-batch item amended keeps a corpus that conforms to the corpus form
+    Given an item i1
+    And a batch b1
+    And the batch b1 holds the item i1
+    And the status of the item i1 is `in-batch`
+    And a task t1
+    And the item i1 has the task t1
+    And the status of the task t1 is `running`
+    And a requirement r1
+    And the item i1 holds the requirement r1
+    And this corpus holds the requirement r1
+    When the person amends the item i1
+    Then the batches service keeps the corpus c1
+    And the corpus c1 conforms to the corpus form
+    And the batches service keeps the workspace w1
+    And the batch b1 has the workspace w1
+    And the workspace w1 holds the corpus c1
+
+  @g173 @r173
+  Scenario: A batch opened supersedes each accepted decision a laid line's retirement leaves unenforced
+    Given an item i1
+    And the status of the item i1 is `ready`
+    And the item i1 meets this readiness bar
+    And a requirement r1
+    And the item i1 holds the requirement r1
+    And a design-decision d1
+    And the status of the design-decision d1 is `accepted`
+    And a requirement r2
+    And the requirement r2 enforces the design-decision d1
+    And a requirement id r3
+    And the requirement r2 has the requirement id r3
+    And the requirement r1 retires the requirement id r3
+    And a batch b1
+    When the person opens the batch b1
+    Then the batches service sets the status of the design-decision d1 to `superseded`
+    And the batches service keeps the design-decision d2
+    And the design-decision d2 supersedes the design-decision d1
+    And the batches service names the design-decision d2
+
+  @g174 @r174
+  Scenario: A parked item's superseding decision leaves the batch and the decision it superseded is accepted again
+    Given an item i1
+    And a batch b1
+    And the batch b1 holds the item i1
+    And the status of the item i1 is `in-batch`
+    And a requirement r1
+    And the item i1 holds the requirement r1
+    And a design-decision d1
+    And the status of the design-decision d1 is `superseded`
+    And a requirement r2
+    And the requirement r2 enforces the design-decision d1
+    And a requirement id r3
+    And the requirement r2 has the requirement id r3
+    And the requirement r1 retires the requirement id r3
+    And a design-decision d2
+    And the design-decision d2 supersedes the design-decision d1
+    When the person parks the item i1
+    Then the batches service sets the status of the design-decision d1 to `accepted`
+    And the batches service does not keep the design-decision d2

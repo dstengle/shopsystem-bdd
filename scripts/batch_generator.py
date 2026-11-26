@@ -1,0 +1,66 @@
+"""A feature written by the generator the tree holds (b740, batches r170): a tree that holds the plugin's own feature
+generator (`scripts/features` and `scripts/features_generate.py`: the repository is the plugin, and a batch's
+workspace may hold a newer generator than the checkout a command runs in) has its features written by that tree's
+`scripts/features generate --root <tree>`, run with this interpreter in a process of its own; any other tree (a
+consumer's, whose generator is the plugin's own) by features_generate in this process. Read by batch_start's lay and
+unlay and by batch_reached, so `work batch start`, `park` and `amend` all write with the tree's generator."""
+import contextlib
+import io
+import os
+import subprocess
+import sys
+import tempfile
+from pathlib import Path
+
+import features_generate
+
+TIMEOUT = 600
+
+
+def _program(tree):
+    """The tree's own `scripts/features`, or None when it holds no generator of its own."""
+    scripts = Path(tree) / "scripts"
+    found = scripts / "features"
+    return found if found.is_file() and (scripts / "features_generate.py").is_file() else None
+
+
+def _run(program, *args):
+    """The tree's `features` run with this interpreter, its own scripts first on its path (none inherited)."""
+    env = {k: v for k, v in os.environ.items() if k != "PYTHONPATH"}
+    return subprocess.run([sys.executable, str(program), *args], capture_output=True, text=True, env=env,
+                          timeout=TIMEOUT, stdin=subprocess.DEVNULL)
+
+
+def generate(tree, path):
+    """The feature of the capability file `path` as the tree's generator writes it; GenerateError when it refuses."""
+    program = _program(tree)
+    if program is None:
+        with contextlib.redirect_stderr(io.StringIO()):     # the groups it skips are the bar's to name
+            return features_generate.generate(tree, path)
+    done = _run(program, "generate", "--root", str(tree), "--preview", str(path))
+    if done.returncode != 0:
+        said = [line for line in done.stderr.splitlines() if line.strip() and "goes in the next release" not in line]
+        raise features_generate.GenerateError(said[-1] if said else "exit %d" % done.returncode)
+    return done.stdout
+
+
+def generate_all(tree, paths):
+    """{path: its feature, or None when the generator refuses it or writes none} of each capability file of `paths`:
+    one run of the tree's own generator for them all, each by itself when that run fails."""
+    program = _program(tree)
+    if program is not None and paths:
+        with tempfile.TemporaryDirectory() as out:
+            done = _run(program, "--dir", out, "generate", "--root", str(tree), *[Path(p).stem for p in paths])
+            if done.returncode == 0:
+                return {p: _read(Path(out) / ("%s.feature" % Path(p).stem)) for p in paths}
+    found = {}
+    for path in paths:
+        try:
+            found[path] = generate(tree, path)
+        except features_generate.GenerateError:
+            found[path] = None
+    return found
+
+
+def _read(path):
+    return path.read_text() if path.is_file() else None

@@ -199,3 +199,6 @@ The requirements examined together: contradictions, what a line adds over the ot
 ### [g44] A requirement whose trigger is a reply is translated
 - [r44] While a requirement of a capability uses `reply-trigger`, when the person examines this specification with the capability, the specification service shall return a translation of the requirement.
 
+### [g45] spec explain prints what a line on the trigger forces of a request with an oblique role and a parameter
+- [r45] While a requirement has a trigger and the requirement has a consequence and another requirement that has the trigger uses `response-request` and `oblique-role`, when the person explains the requirement, the language service shall return the requirement and the consequence.
+
