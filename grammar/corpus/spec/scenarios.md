@@ -822,3 +822,44 @@ shall [x4: thing `no-noun` (parameter), x5: thing `of-relation` (parameter), x7:
     use(subject: x10, object: x6)
     keep(e2, subject: x9, object: x10)
 ```
+
+## r46
+From: b728 r46.
+
+```reading
+While a requirement of a requirement group of a capability uses `reply-trigger` and the requirement has a requester, when the person generates the feature of the capability, the scenarios service shall complete the request and keep a given step that mentions the requester.
+shall [x4: thing `reply-trigger` (parameter), x6: agent the person (constant), x8: service the scenarios service (constant), x9: request "the request the trigger makes" (indexical)]
+  while [x1: requirement, x2: requirement group, x3: capability, x5: requester]
+    of(x2, x3)
+    of(x1, x2)
+    use(subject: x1, object: x4)
+    of(x5, x1)
+  when [x7: feature]
+    of(x7, x3)
+    request(e1, scenarios.generate, subject: x6, object: x7)
+  response [x10: given step]
+    complete(e2, subject: x8, object: x9)
+    mention(subject: x10, object: x5)
+    keep(e3, subject: x8, object: x10)
+```
+
+## r48
+From: b733 r48.
+
+```reading
+While a requirement of a requirement group of a capability uses `no-noun`, `rc-object` and `named`, when the person generates the feature of the capability, the scenarios service shall not keep a step that has an ambiguous text.
+shall [x4: thing `no-noun` (parameter), x5: thing `rc-object` (parameter), x6: thing `named` (parameter), x7: agent the person (constant), x9: service the scenarios service (constant)]
+  while [x1: requirement, x2: requirement group, x3: capability]
+    of(x2, x3)
+    of(x1, x2)
+    use(subject: x1, object: x4)
+    use(subject: x1, object: x5)
+    use(subject: x1, object: x6)
+  when [x8: feature]
+    of(x8, x3)
+    request(e1, scenarios.generate, subject: x7, object: x8)
+  response
+    not [x10: step, x11: ambiguous text]
+      of(x11, x10)
+      keep(e2, subject: x9, object: x10)
+```

@@ -61,6 +61,7 @@ object scenario kind of text
 
 object step kind of text
   relations: has → handler (many); asserts → act (many)
+  relations: has → ambiguous text (many)
 
 object fact
 

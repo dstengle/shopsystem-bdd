@@ -1343,3 +1343,25 @@ Feature: Batches
     And a batch b1
     When the person opens the batch b1
     Then the batches service allocates the item i1
+
+  @g169 @r169
+  Scenario: An item whose line performs another area's lifecycle transition is reopened at the opening
+    Given an item i1
+    And the status of the item i1 is `ready`
+    And a lifecycle l1
+    And an area a1
+    And the area a1 holds the lifecycle l1
+    And a transition t1
+    And the lifecycle l1 has the transition t1
+    And an operation o1
+    And the operation o1 performs the transition t1
+    And an area a2
+    And the area a2 holds the operation o1
+    And a core line c1
+    And the core line c1 uses the operation o1
+    And the item i1 holds the core line c1
+    And a batch b1
+    When the person opens the batch b1
+    Then the batches service reopens the item i1
+    And the batches service names the core line c1
+    And the batches service names `v_m9`

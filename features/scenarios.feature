@@ -758,3 +758,38 @@ Feature: Scenarios
     When the person generates the feature f1
     Then the scenarios service keeps the given step g1
     And the given step g1 uses the code c2
+
+  @g46 @r46
+  Scenario: generation names the requester of the request a reply trigger is on
+    Given a requirement group r2
+    And a capability c1
+    And the capability c1 has the requirement group r2
+    And a requirement r1
+    And the requirement group r2 has the requirement r1
+    And the requirement r1 uses `reply-trigger`
+    And a requester r3
+    And the requirement r1 has the requester r3
+    And a feature f1
+    And the capability c1 has the feature f1
+    When the person generates the feature f1
+    Then the scenarios service completes this request
+    And the scenarios service keeps the given step g1
+    And the given step g1 mentions the requester r3
+
+  @g48 @r48
+  Scenario: generation writes a step of one parse where a code names a thing
+    Given a requirement group r2
+    And a capability c1
+    And the capability c1 has the requirement group r2
+    And a requirement r1
+    And the requirement group r2 has the requirement r1
+    And the requirement r1 uses `no-noun`
+    And the requirement r1 uses `rc-object`
+    And the requirement r1 uses `named`
+    And a feature f1
+    And the capability c1 has the feature f1
+    And a step s1
+    And an ambiguous text a1
+    And the step s1 has the ambiguous text a1
+    When the person generates the feature f1
+    Then the scenarios service does not keep the step s1
