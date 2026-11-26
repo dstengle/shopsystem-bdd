@@ -7,7 +7,7 @@ area: laying
 specifies: service laying
 language: codified-2
 retired: [g1, r1]
-unbuilt: [r21, r6, r9, r10, r11, r12, r13, r14, r15, r16, r17, r18, r19, r20]
+unbuilt: [r6, r9, r10, r11, r12, r13, r14, r15, r16, r17, r18, r19, r20]
 ---
 
 # Laying

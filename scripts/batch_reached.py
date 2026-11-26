@@ -1,12 +1,14 @@
-"""What a lay's change of grammar 4's inputs reaches beyond the laid capabilities (b707, batches r157): when laying
+"""What a lay's change of grammar 4's inputs reaches beyond the laid capabilities (b707, laying r17, r18): when laying
 the picked items changed a file grammar 4's vocabulary is read from (spec_held's `inputs`: the domain model, the
 vocabulary, the packs, the index) or `spec/universal.md`, every service capability's feature written again where
 `features generate` now writes it differently, and every block of the spec corpus whose form `spec parse --form` now
 prints differently given that form, its heading, trace and line kept. A capability the lay laid lines of is
-batch_start's own to generate; a feature that is not there, or that `features generate` refuses, is left as it is.
+laying_inprocess's prepare's own to generate; a feature that is not there, or that `features generate` refuses, is left
+as it is. `prepared`: of a workspace whose items are laid uncommitted, the change told by git since its HEAD (b758).
 """
 import hashlib
 import re
+import subprocess
 from pathlib import Path
 
 import spec_corpus_write
@@ -62,6 +64,26 @@ def corpus(tree):
             path.write_text(text)
             changed.append(path.relative_to(tree).as_posix())
     return changed
+
+
+def reached(tree):
+    """Whether the workspace's change since its HEAD (uncommitted, untracked among it) touches what `digest` reads."""
+    spec = ["spec/index.md", "spec/universal.md", "spec/packs", "spec/model", "spec/vocabulary"]
+    if not (Path(tree) / "spec" / "model").is_dir():
+        spec.append("spec/capabilities")
+    done = subprocess.run(["git", "status", "--porcelain", "-z", "--untracked-files=all", "--", *spec,
+                           ":(glob)provider/**/contract.toml"], cwd=str(tree), capture_output=True, text=True,
+                          check=True)
+    return bool(done.stdout.strip("\0").strip())
+
+
+def prepared(tree, laid):
+    """The features and corpus blocks the workspace's laid items reached written again when its change since its HEAD
+    touches grammar 4's inputs (`reached`); the paths changed."""
+    if not reached(tree):
+        return []
+    with spec_held.held(tree):
+        return features(tree, laid) + corpus(tree)
 
 
 def regenerated(tree, before, laid):

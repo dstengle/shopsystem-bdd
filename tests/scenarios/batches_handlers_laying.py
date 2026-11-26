@@ -118,7 +118,7 @@ def _workspace(step):
 
 def _asked(step, operation):
     """The requests of `operation` of the item i1 in the batch's workspace the stand-in recorded, by their index."""
-    return [k for k, c in enumerate(calls(step)) if c["operation"] == operation and c["item"] == B.ident("i1")
+    return [k for k, c in enumerate(calls(step)) if c["operation"] == operation and c.get("item") == B.ident("i1")
             and str((step.repo / c["workspace"]).resolve()) == _workspace(step)]
 
 

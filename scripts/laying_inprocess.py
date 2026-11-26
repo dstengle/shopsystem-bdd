@@ -1,15 +1,17 @@
-"""The in-process adapter of the laying service (b611; decision 0125), the one wired in: today's lay, lift and check of
-an item in a workspace (a worktree of the batch, or of its task), each answered as laying's Response.
+"""The in-process adapter of the laying service (b611, b758; decision 0125), the one wired in: today's lay, prepare,
+lift and check of an item in a workspace (a worktree of the batch, or of its task), each answered as laying's Response.
 
-`lay`: the item's lines laid into the workspace's `spec/` (backlog_lines' `lay_onto`), their ids appended to
-`unbuilt:`, the feature of each service capability laid written again, and the bookkeeping of the lay (b333): the
-corpus's blocks (spec_corpus_write), the features and corpus blocks the lay's change of grammar 4's inputs reaches
-(batch_reached, b707), spec/index.md's Composition (spec_composition, b606), the adapter contracts annotated (b379),
-the catalogues (batch_catalogues) and each accepted decision a retirement leaves unenforced superseded
-(decision_successor, b741). `lift`: the reverse (`unlay_lines`). `check`: the rules of `model.lp` of severity error the
-item's requirements violate on the laid workspace (`violating`), past those of the workspace's committed state before
-the lay (readiness_bound's `before`, b725), kept by the first lay into a clean workspace, else read off a detached
-worktree of its HEAD; the solve of one state of the workspace made once for the checks of all the items laid in it."""
+`lay`: the item's lines laid into the workspace's `spec/` (backlog_lines' `lay_onto`) and their ids appended to
+`unbuilt:`, nothing else. `prepare`, once the items of a batch are laid, once for all of them: the feature of each
+service capability they laid written again, and the bookkeeping of the lay (b333): the corpus's blocks
+(spec_corpus_write), each accepted decision a retirement leaves unenforced superseded (decision_successor, b741), the
+features and corpus blocks the lay's change of grammar 4's inputs reaches (batch_reached, b707), spec/index.md's
+Composition (spec_composition, b606), the adapter contracts annotated (b379) and the catalogues (batch_catalogues), a
+catalogue problem named once. `lift`: the reverse (`unlay_lines`). `check`: the rules of `model.lp` of severity error
+the item's requirements violate on the laid workspace (`violating`), past those of the workspace's committed state
+before the lay (readiness_bound's `before`, b725), kept by the first lay into a clean workspace, else read off a
+detached worktree of its HEAD; the solve of one state of the workspace made once for the checks of all the items laid
+in it."""
 import hashlib
 import tempfile
 from pathlib import Path
@@ -38,8 +40,12 @@ def lay(item, workspace, command):
     clean = not git(workspace, "status", "--porcelain").stdout.strip()
     if clean:
         _BEFORE[_head(workspace)] = readiness_bound.before(workspace)
+    return laying.done(lay_item(workspace, item))
+
+
+def prepare(workspace, batch, items, command):
     unwritten, superseded = [], []
-    changed = lay_lines(workspace, [item], unwritten, command, superseded)
+    changed = prepared(workspace, items, unwritten, command, superseded)
     return laying.done(changed, unwritten=unwritten, superseded=superseded)
 
 
@@ -93,29 +99,50 @@ def _solved(tree):
     return _SOLVED[key]
 
 
-def lay_lines(tree, picked, unwritten=None, command="work batch start", superseded=None):
-    """Every picked item's lines laid into the worktree's `spec/` and the bookkeeping of the lay (the module's doc), a
-    catalogue that cannot be written added to `unwritten`, `(item, path, old id)` of each decision superseded added to
-    `superseded`; a refusal said as `command`'s (b486); the paths changed."""
-    ids, files, before = {}, [], batch_reached.digest(tree)
-    for item in picked:
-        backlog_lines.lay_onto(tree, item, files)
+def _ids(items):
+    """{capability: [requirement id, ...]} of the items' lines."""
+    ids = {}
+    for item in items:
         for block in backlog_lines.read(item, backlog_items.rel_of(item.name)):
             ids.setdefault(block.capability, []).extend(r for g in block.groups for r, _ in g.requirements)
+    return ids
+
+
+def lay_item(tree, item):
+    """The item's lines laid into the worktree's `spec/` and their ids into `unbuilt:`; the paths changed."""
+    files = []
+    backlog_lines.lay_onto(tree, item, files)
     changed = []
-    for capability, listed in ids.items():
+    for capability, listed in _ids([item]).items():
         path = backlog_lines.capability_file(tree, capability)
         path.write_text(spec_unbuilt.with_unbuilt(path.read_text(), listed))
+        changed.append(path.relative_to(tree).as_posix())
+    return list(dict.fromkeys(changed + files))
+
+
+def prepared(tree, items, unwritten=None, command="work batch start", superseded=None):
+    """The worktree, its `items` laid, made whole for their batch (the module's doc), a catalogue that cannot be
+    written added to `unwritten`, `(item, path, old id)` of each decision superseded added to `superseded`; a refusal
+    said as `command`'s (b486); the paths changed."""
+    ids, changed = _ids(items), []
+    for capability in ids:
         changed += _generated(tree, capability, command)
-    changed += spec_corpus_write.write(tree, picked)
-    changed += decision_successor.lay(tree, picked, superseded)
-    changed += batch_reached.regenerated(tree, before, set(ids))
+    changed += spec_corpus_write.write(tree, items)
+    changed += decision_successor.lay(tree, items, superseded)
+    changed += batch_reached.prepared(tree, set(ids))
     changed += spec_composition.write(tree)
     changed += _annotated(tree)
     catalogues, problems = batch_catalogues.write(tree, ["%s#%s" % (c, r) for c, rs in ids.items() for r in rs])
     if unwritten is not None:
         unwritten.extend(problems)
-    return list(dict.fromkeys(changed + files + catalogues))
+    return list(dict.fromkeys(changed + catalogues))
+
+
+def lay_lines(tree, picked, unwritten=None, command="work batch start", superseded=None):
+    """Every picked item laid (`lay_item`) and the worktree prepared for them (`prepared`), as `work batch start`
+    leaves its workspace; the paths changed."""
+    files = [p for item in picked for p in lay_item(tree, item)]
+    return list(dict.fromkeys(prepared(tree, picked, unwritten, command, superseded) + files))
 
 
 def _annotated(tree):

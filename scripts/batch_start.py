@@ -2,8 +2,9 @@
 branch `batch-<n>` made at the base's HEAD, and the batch file with the moved items committed on the base.
 
 On `batch-<n>`, in its own worktree, the batch's workspace, each picked item is laid by the laying service, a driven
-port (laying, b611: its lines into `spec/`, their ids into `unbuilt:`, the features written again), and once its lay
-is done checked there; one commit then keeps the lay, citing every item it carries. Then the
+port (laying, b611: its lines into `spec/`, their ids into `unbuilt:`), the workspace prepared for the batch once
+every lay is done (b758: the features written again, the corpus, the catalogues, the Composition), and each item
+checked there; one commit then keeps the lay, citing every item it carries. Then the
 base gets one commit: `plan.md` with a `pending` task for each item, the picked items `in-batch`, and the items the
 pick returned `shaped`. The base checkout's own `spec/` and `features/` are never written, and its branch never
 switched; a failure once the branch is made removes its worktree and the branch before it is raised again.
@@ -51,16 +52,17 @@ class _Broken(Exception):
     """The lay broke a rule: (item, reasons) of each picked item whose requirement violates one."""
 
 
-def _laid(tree, picked):
-    """Each picked item laid in the batch's workspace by the laying service (batches r179), and each whose lay it
-    completed checked there (r180): (the paths changed, the catalogues not written, the decisions superseded, (item,
-    reasons) of each item whose check it failed, naming each rule, r181)."""
-    changed, unwritten, superseded, broken = [], [], [], []
+def _laid(tree, name, picked):
+    """Each picked item laid in the batch's workspace by the laying service (batches r179), the workspace prepared for
+    the batch once every lay is done (r188), and each item checked there on prepare's reply (r180, r189: one check
+    answers both): (the paths changed, the catalogues not written, the decisions superseded, (item, reasons) of each
+    item whose check it failed, naming each rule, r181)."""
+    changed, broken = [], []
     for item in picked:
-        reply = laying.lay(item, tree)
-        changed += laying.changed(reply)
-        unwritten += reply.content.get("unwritten", [])
-        superseded += reply.content.get("superseded", [])
+        changed += laying.changed(laying.lay(item, tree))
+    reply = laying.prepare(tree, name, picked)
+    changed += laying.changed(reply)
+    unwritten, superseded = reply.content.get("unwritten", []), reply.content.get("superseded", [])
     for item in picked:
         reply = laying.check(item, tree)
         if reply.outcome == "failed":
@@ -78,7 +80,7 @@ def _build(root, base, picked, returned):
     tree = trees_dir(root) / name
     try:
         add_tree(root, tree, name, forked)
-        changed, unwritten, superseded, broken = _laid(tree, picked)
+        changed, unwritten, superseded, broken = _laid(tree, name, picked)
         broken = broken or batch_laid.passing(root, tree, picked)
         if broken:
             raise _Broken(broken)
