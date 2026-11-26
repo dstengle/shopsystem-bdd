@@ -7,7 +7,7 @@ area: specification
 specifies: service product
 language: codified-2
 retired: []
-unbuilt: []
+unbuilt: [r31]
 ---
 
 # Product
@@ -111,7 +111,7 @@ the job statement `j2` holds "When a change is wanted, reviewed and agreed, the 
 - [r30] If the person traces a job that no requirement group serves, then the product service shall refuse the request and name the job.
 
 ### [g31] A job whose trace makes a port request no line awaits is coordinated by a port request
-- [r31] While a requirement group serves a job and a requirement of the requirement group uses an operation and a port line governs the operation and no requirement handles an operation outcome of the operation, when the person traces the job, the product service shall return the job whose coordination is `port request`.
+- [r31] While a requirement group serves a job and a requirement of the requirement group uses an operation and a port line governs the operation and the operation has no property that refers to an operation and no requirement handles an operation outcome of the operation, when the person traces the job, the product service shall return the job whose coordination is `port request`.
 
 ### [g32] A job whose trace awaits a port's reply in a lifecycle is coordinated by a long-running process
 - [r32] While a requirement group serves a job and a requirement of the requirement group uses an operation and a port line governs the operation and a requirement that handles an operation outcome of the operation uses an operation that performs a transition, when the person traces the job, the product service shall return the job whose coordination is `long-running process`.

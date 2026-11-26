@@ -494,21 +494,24 @@ shall [x1: agent the person (constant), x4: service the product service (constan
 From: b680 r31.
 
 ```reading
-While a requirement group serves a job and a requirement of the requirement group uses an operation and a port line governs the operation and no requirement handles an operation outcome of the operation, when the person traces the job, the product service shall return the job whose coordination is `port request`.
-shall [x8: agent the person (constant), x9: service the product service (constant)]
+While a requirement group serves a job and a requirement of the requirement group uses an operation and a port line governs the operation and the operation has no property that refers to an operation and no requirement handles an operation outcome of the operation, when the person traces the job, the product service shall return the job whose coordination is `port request`.
+shall [x10: agent the person (constant), x11: service the product service (constant)]
   while [x1: requirement group, x2: job, x3: requirement, x4: operation, x5: port line]
     serve(subject: x1, object: x2)
     of(x3, x1)
     use(subject: x3, object: x4)
     govern(subject: x5, object: x4)
-    not [x6: requirement, x7: operation outcome]
-      of(x7, x4)
-      handle(subject: x6, object: x7)
+    not [x6: property, x7: operation]
+      refer#2(subject: x6, to: x7)
+      of(x6, x4)
+    not [x8: requirement, x9: operation outcome]
+      of(x9, x4)
+      handle(subject: x8, object: x9)
   when
-    request(e1, product.trace, subject: x8, object: x2)
+    request(e1, product.trace, subject: x10, object: x2)
   response
     coordination(x2) = `port request`
-    return(e2, subject: x9, object: x2)
+    return(e2, subject: x11, object: x2)
 ```
 
 ## r32
@@ -556,3 +559,4 @@ shall [x9: agent the person (constant), x10: service the product service (consta
     coordination(x2) = `saga`
     return(e2, subject: x10, object: x2)
 ```
+
