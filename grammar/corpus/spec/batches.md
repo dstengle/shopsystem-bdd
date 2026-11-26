@@ -222,42 +222,6 @@ shall [x10: service the batches service (constant)]
     initiates(e2, subject: x10, status(x1) = `done`)
 ```
 
-## r79
-From: b355 r79.
-
-```reading
-While an item is `ready` and the item meets the readiness bar and the item holds an operation table, when the person opens a batch, the batches service shall keep an adapter contract that holds the operation table.
-shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x4: agent the person (constant), x6: service the batches service (constant)]
-  while [x1: item, x3: operation table]
-    status(x1) = `ready`
-    meet(subject: x1, object: x2)
-    in(x3, x1)
-  when [x5: batch]
-    request(e1, batches.open, subject: x4, object: x5)
-  response [x7: adapter contract]
-    in(x3, x7)
-    keep(e2, subject: x6, object: x7)
-```
-
-## r80
-From: b355 r80.
-
-```reading
-While an item is `ready` and the item meets the readiness bar and the item holds an operation, when the person opens a batch, the batches service shall keep an adapter contract and keep no operation table of the operation.
-shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x4: agent the person (constant), x6: service the batches service (constant)]
-  while [x1: item, x3: operation]
-    status(x1) = `ready`
-    meet(subject: x1, object: x2)
-    in(x3, x1)
-  when [x5: batch]
-    request(e1, batches.open, subject: x4, object: x5)
-  response [x7: adapter contract]
-    keep(e2, subject: x6, object: x7)
-    not [x8: operation table]
-      of(x8, x3)
-      keep(e3, subject: x6, object: x8)
-```
-
 ## r81
 From: b460 r81.
 
@@ -345,27 +309,6 @@ shall [x1: agent the person (constant), x4: artifact the delivery settings form 
     name(e3, subject: x5, object: x3)
 ```
 
-## r87
-From: b463 r87.
-
-```reading
-While an item is `ready` and the item meets the readiness bar and the item holds a model line that restates an operation, when the person opens a batch, the batches service shall keep the model line in the domain model and keep a domain model that does not hold the operation.
-shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x5: agent the person (constant), x7: service the batches service (constant), x8: domain model "the domain model of this bounded context" (indexical)]
-  while [x1: item, x3: model line, x4: operation]
-    status(x1) = `ready`
-    meet(subject: x1, object: x2)
-    restate#2(subject: x3, object: x4)
-    in(x3, x1)
-  when [x6: batch]
-    request(e1, batches.open, subject: x5, object: x6)
-  response [x9: domain model]
-    in(x3, x8)
-    keep(e2, subject: x7, object: x3)
-    not
-      in(x4, x9)
-    keep(e3, subject: x7, object: x9)
-```
-
 ## r90
 Retires: r82. From: b466 r90.
 
@@ -414,30 +357,6 @@ shall [x5: domain model "the domain model of this bounded context" (indexical), 
   response [x8: domain model]
     in(x4, x8)
     keep(e2, subject: x7, object: x8)
-```
-
-## r92
-From: b489 r92.
-
-```reading
-While an item is `ready` and the item meets the readiness bar and the item holds a model line and the model line specifies an operation and the domain model does not hold the operation and the item holds no operation table of the operation, when the person opens a batch, the batches service shall keep an adapter contract that holds an operation table of the operation.
-shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x5: domain model "the domain model of this bounded context" (indexical), x7: agent the person (constant), x9: service the batches service (constant)]
-  while [x1: item, x3: model line, x4: operation]
-    status(x1) = `ready`
-    meet(subject: x1, object: x2)
-    in(x3, x1)
-    specify(subject: x3, object: x4)
-    not
-      in(x4, x5)
-    not [x6: operation table]
-      of(x6, x4)
-      in(x6, x1)
-  when [x8: batch]
-    request(e1, batches.open, subject: x7, object: x8)
-  response [x10: adapter contract, x11: operation table]
-    of(x11, x4)
-    in(x11, x10)
-    keep(e2, subject: x9, object: x10)
 ```
 
 ## r96
@@ -643,64 +562,6 @@ shall [x2: agent the person (constant), x3: service the batches service (constan
         restore(e3, subject: x3, object: x4)
 ```
 
-## r116
-From: b598 r116.
-
-```reading
-While an item is `ready` and the item meets the readiness bar and the item holds a model line that restates an element, when the person opens a batch, the batches service shall keep the model line in the domain model and keep a domain model that does not hold the element.
-shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x5: agent the person (constant), x7: service the batches service (constant), x8: domain model "the domain model of this bounded context" (indexical)]
-  while [x1: item, x3: model line, x4: element]
-    status(x1) = `ready`
-    meet(subject: x1, object: x2)
-    restate(subject: x3, object: x4)
-    in(x3, x1)
-  when [x6: batch]
-    request(e1, batches.open, subject: x5, object: x6)
-  response [x9: domain model]
-    in(x3, x8)
-    keep(e2, subject: x7, object: x3)
-    not
-      in(x4, x9)
-    keep(e3, subject: x7, object: x9)
-```
-
-## r117
-From: b607 r117.
-
-```reading
-While an item is `ready` and the item meets the readiness bar and the item holds a model line that moves to an area, when the person opens a batch, the batches service shall keep the area that holds the model line.
-shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x5: agent the person (constant), x7: service the batches service (constant)]
-  while [x1: item, x3: model line, x4: area]
-    status(x1) = `ready`
-    meet(subject: x1, object: x2)
-    move#3(subject: x3, to: x4)
-    in(x3, x1)
-  when [x6: batch]
-    request(e1, batches.open, subject: x5, object: x6)
-  response
-    in(x3, x4)
-    keep(e2, subject: x7, object: x4)
-```
-
-## r118
-From: b607 r118.
-
-```reading
-While an item is `ready` and the item meets the readiness bar and the item moves a term that means an element and an area holds the element, when the person opens a batch, the batches service shall keep the area that holds the term.
-shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x6: agent the person (constant), x8: service the batches service (constant)]
-  while [x1: item, x3: term, x4: element, x5: area]
-    status(x1) = `ready`
-    meet(subject: x1, object: x2)
-    mean(subject: x3, object: x4)
-    move#4(subject: x1, object: x3)
-    in(x4, x5)
-  when [x7: batch]
-    request(e1, batches.open, subject: x6, object: x7)
-  response
-    in(x3, x5)
-    keep(e2, subject: x8, object: x5)
-```
-
 ## r119
 From: b647 r119.
 
@@ -728,48 +589,6 @@ shall [x9: service the batches service (constant), x10: domain model "the domain
     keep(e3, subject: x9, object: x11)
 ```
 
-## r120
-From: b647 r120.
-
-```reading
-While an item is `ready` and the item meets the readiness bar and the item holds a model line that restates an event, when the person opens a batch, the batches service shall keep the model line in the domain model and keep a domain model that does not hold the event.
-shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x5: agent the person (constant), x7: service the batches service (constant), x8: domain model "the domain model of this bounded context" (indexical)]
-  while [x1: item, x3: model line, x4: event]
-    status(x1) = `ready`
-    meet(subject: x1, object: x2)
-    restate(subject: x3, object: x4)
-    in(x3, x1)
-  when [x6: batch]
-    request(e1, batches.open, subject: x5, object: x6)
-  response [x9: domain model]
-    in(x3, x8)
-    keep(e2, subject: x7, object: x3)
-    not
-      in(x4, x9)
-    keep(e3, subject: x7, object: x9)
-```
-
-## r121
-From: b647 r121.
-
-```reading
-While an item is `ready` and the item meets the readiness bar and the item holds a model line that restates an actor, when the person opens a batch, the batches service shall keep the model line in the domain model and keep a domain model that does not hold the actor.
-shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x5: agent the person (constant), x7: service the batches service (constant), x8: domain model "the domain model of this bounded context" (indexical)]
-  while [x1: item, x3: model line, x4: actor]
-    status(x1) = `ready`
-    meet(subject: x1, object: x2)
-    restate(subject: x3, object: x4)
-    in(x3, x1)
-  when [x6: batch]
-    request(e1, batches.open, subject: x5, object: x6)
-  response [x9: domain model]
-    in(x3, x8)
-    keep(e2, subject: x7, object: x3)
-    not
-      in(x4, x9)
-    keep(e3, subject: x7, object: x9)
-```
-
 ## r125
 From: b600 r125.
 
@@ -789,46 +608,6 @@ shall [x5: agent the person (constant), x6: service the batches service (constan
     keep(e2, subject: x6, object: x7)
 ```
 
-## r126
-From: b660 r126.
-
-```reading
-While an item is `ready` and the item meets the readiness bar and the item holds an operation table and a capability holds a requirement id that the item holds, when the person opens a batch, the batches service shall keep an adapter contract that holds the operation table.
-shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x6: agent the person (constant), x8: service the batches service (constant)]
-  while [x1: item, x3: operation table, x4: capability, x5: requirement id]
-    status(x1) = `ready`
-    meet(subject: x1, object: x2)
-    in(x3, x1)
-    in(x5, x1)
-    in(x5, x4)
-  when [x7: batch]
-    request(e1, batches.open, subject: x6, object: x7)
-  response [x9: adapter contract]
-    in(x3, x9)
-    keep(e2, subject: x8, object: x9)
-```
-
-## r127
-From: b660 r127.
-
-```reading
-While an item is `ready` and the item meets the readiness bar and the item moves a term that means an element and an area holds the element and a capability holds a requirement id that the item holds, when the person opens a batch, the batches service shall keep the area that holds the term.
-shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x8: agent the person (constant), x10: service the batches service (constant)]
-  while [x1: item, x3: term, x4: element, x5: area, x6: capability, x7: requirement id]
-    status(x1) = `ready`
-    meet(subject: x1, object: x2)
-    mean(subject: x3, object: x4)
-    move#4(subject: x1, object: x3)
-    in(x4, x5)
-    in(x7, x1)
-    in(x7, x6)
-  when [x9: batch]
-    request(e1, batches.open, subject: x8, object: x9)
-  response
-    in(x3, x5)
-    keep(e2, subject: x10, object: x5)
-```
-
 ## r131
 Retires: r107. From: b663 r131.
 
@@ -843,42 +622,6 @@ shall [x2: agent the review limit (constant), x3: agent the person (constant), x
   response
     not
       allocate(e2, subject: x5, object: x1)
-```
-
-## r133
-From: b672 r133.
-
-```reading
-While an item is `ready` and the item meets the readiness bar and the item retires a model line, when the person opens a batch, the batches service shall keep an area that does not hold the model line.
-shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x4: agent the person (constant), x6: service the batches service (constant)]
-  while [x1: item, x3: model line]
-    status(x1) = `ready`
-    meet(subject: x1, object: x2)
-    retire#4(subject: x1, object: x3)
-  when [x5: batch]
-    request(e1, batches.open, subject: x4, object: x5)
-  response [x7: area]
-    not
-      in(x3, x7)
-    keep(e2, subject: x6, object: x7)
-```
-
-## r134
-From: b672 r134.
-
-```reading
-While an item is `ready` and the item meets the readiness bar and the item retires a term, when the person opens a batch, the batches service shall keep an area that does not hold the term.
-shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x4: agent the person (constant), x6: service the batches service (constant)]
-  while [x1: item, x3: term]
-    status(x1) = `ready`
-    meet(subject: x1, object: x2)
-    retire#4(subject: x1, object: x3)
-  when [x5: batch]
-    request(e1, batches.open, subject: x4, object: x5)
-  response [x7: area]
-    not
-      in(x3, x7)
-    keep(e2, subject: x6, object: x7)
 ```
 
 ## r135
@@ -913,27 +656,6 @@ shall [x3: agent the driver (constant), x4: service the batches service (constan
   response [x5: batch step]
     instruction(x5) = `submit batch`
     return(e2, subject: x4, object: x5)
-```
-
-## r142
-From: b688 r142.
-
-```reading
-While an item is `ready` and the item meets the readiness bar and the item retires a model line that restates an element and the item retires a term that means the element, when the person opens a batch, the batches service shall keep an area that does not hold the term.
-shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x6: agent the person (constant), x8: service the batches service (constant)]
-  while [x1: item, x3: model line, x4: element, x5: term]
-    status(x1) = `ready`
-    meet(subject: x1, object: x2)
-    restate(subject: x3, object: x4)
-    retire#4(subject: x1, object: x3)
-    mean(subject: x5, object: x4)
-    retire#4(subject: x1, object: x5)
-  when [x7: batch]
-    request(e1, batches.open, subject: x6, object: x7)
-  response [x9: area]
-    not
-      in(x5, x9)
-    keep(e2, subject: x8, object: x9)
 ```
 
 ## r143
