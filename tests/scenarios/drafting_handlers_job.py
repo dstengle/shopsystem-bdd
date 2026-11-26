@@ -3,8 +3,9 @@ r93, b799), in readiness_world's codified spec. Each a `local` handler that take
 (`mine`) and returns False on any other. r92: this product kept in its product file holding the job `keep-notes`
 alone, the job j1 `no-such-job`, `work line <item> --serves work-queue#g1 no-such-job` run, and the Thens of the
 refusal (no usage error, the item left as it was, nothing committed) and the job it names. r93: no product file, the
-job j1 `start-work`, `work line <item> --into work-queue <line> --serves start-work` run, and the Thens of the item as
-committed holding the line and of what `work` printed: the requirement's id with its line, the group and the job."""
+job j1 `start-work`, `work line <item> --into work-queue --serves start-work <line>` run (--serves before the line,
+b839), and the Thens of the item as committed holding the line and of what `work` printed: the requirement's id with
+its line, the group and the job."""
 import re
 import sys
 
@@ -51,8 +52,8 @@ def _product(step):
 @local("WhenRuns")
 @local("WhenRequests")
 def dedicate(step):
-    """`work line <item> --serves work-queue#g1 no-such-job` (r92), `work line <item> --into work-queue <line>
-    --serves start-work` (r93); the request re-keyed by the CLI contract."""
+    """`work line <item> --serves work-queue#g1 no-such-job` (r92), `work line <item> --into work-queue --serves
+    start-work <line>` (r93, --serves before the line, b839); the request re-keyed by the CLI contract."""
     if not mine(step):
         return False
     world = _world(step)
@@ -67,7 +68,7 @@ def dedicate(step):
         B.run_work(step, "line", B.ident(item), "--serves", "%s#g1" % R.CAPABILITY, OUTSIDE, **R.NO_INPUT)
     else:
         world["job"] = SERVED
-        B.run_work(step, "line", B.ident(item), "--into", R.CAPABILITY, R.PASSING, "--serves", SERVED, **R.NO_INPUT)
+        B.run_work(step, "line", B.ident(item), "--into", R.CAPABILITY, "--serves", SERVED, R.PASSING, **R.NO_INPUT)
     return None
 
 

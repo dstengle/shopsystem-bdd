@@ -348,3 +348,9 @@ capabilities, retirements, rewordings and chores.
 ### [g106] A reworded requirement is kept and returned with its id
 - [r106] When the person rewords a requirement in an item, the drafting service shall keep a different requirement in the item and return the requirement id of the requirement and the requirement.
 
+### [g110] work line --term refuses a frame that text other than a frame follows in its entry, naming the frame
+- [r110] While a term has a frame that does not end the term, if the person writes the term into an item, then the drafting service shall refuse the request and name the frame.
+
+### [g111] work line --term refuses a slot of a frame that names no kind, no actor and no parameter, naming the slot
+- [r111] While a frame of a term has a slot and the slot refers to no term whose part of speech is `noun` and the slot refers to no term whose part of speech is `proper noun` and the slot refers to no parameter, if the person writes the term into an item, then the drafting service shall refuse the request and name the slot.
+

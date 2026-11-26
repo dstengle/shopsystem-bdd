@@ -1,6 +1,7 @@
 """A requirement group dedicated to a job on an item (decision 0140, b641; drafting r71, batches r124): `work line
 <item> --serves <capability>#g<n> <job>`, a live group of the capability or one of the item's own, and `work line
-<item> --into <capability> [--group <title>] <line> --serves <job>`, the group the line goes into, the requirement it
+<item> --into <capability> [--group <title>] --serves <job> <line>` (or the line before --serves), the group the line
+goes into (one argument, the job, read when the line follows it or --into is given: `_read`, b839), the requirement it
 added printed before the pair (drafting r93, b799); a job the product does not hold, while its product file is kept,
 refused naming the job (drafting r92, b799), a job held when the product holds one of its name, given by its name or
 its id, as `spec check` reads it, and a product file not of the product form checking nothing and named (drafting r96,
@@ -26,8 +27,8 @@ GROUP = re.compile(r"^(?P<cap>[a-z0-9]+(?:-[a-z0-9]+)*)#(?P<g>g[1-9]\d*)$")
 def add_arguments(p):
     p.add_argument("--serves", nargs="+", action="extend", metavar="CAP#gN JOB",
                    help="the requirement group `<capability>#g<n>` (a live one, or the item's own) and the job it "
-                        "serves, written into the item's block of the capability; with a requirement line, the job "
-                        "alone, which the group the line goes into serves")
+                        "serves, written into the item's block of the capability; with --into and a requirement line "
+                        "(before or after it), the job alone, which the group the line goes into serves")
 
 
 def given(args):
@@ -102,9 +103,23 @@ def dedicate(root, item, capability, gid, job):
     item.sections[SECTION] = render(blocks)
 
 
+def _read(args):
+    """The words `--serves` took, read as the CLI adapter means them (b839): two, `<capability>#g<n> <job>`, only when
+    the first has the group form; else one, the job, when a line follows or --into is given, a second word, which
+    argparse's nargs='+' takes from the line's place, the requirement line itself."""
+    words = list(args.serves)
+    if words and not GROUP.match(words[0]) and (args.into is not None or len(words) > 1):
+        if len(words) > 2 or (len(words) == 2 and args.text is not None):
+            raise Refused("work line: --serves takes one job beside a requirement line, not %s" % " ".join(words[1:]))
+        if len(words) == 2:
+            args.text = words[1]
+        args.serves = words[:1]
+
+
 def cmd(args):
     """`work line <item> --serves ...`: one commit of the item; what it printed."""
     item, added = find(args.root, args.name), None
+    _read(args)
     if len(args.serves) == 2 and args.text is None:
         m = GROUP.match(args.serves[0])
         if not m:

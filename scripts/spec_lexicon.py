@@ -53,6 +53,8 @@ class Term:
     frames: tuple = ()    # a verb's every `Frame:`: one meaning, one predicate
     written: tuple = ()   # of each of `frames`, the `Frame:` as its entry writes it, when it differs (`<actor>`, b796)
     slotless: tuple = ()  # of its `Frame:`s, each as written that takes no noun phrase (spec_vocabulary_terms, b811)
+    unended: tuple = ()   # of its `Frame:`s, (its sentence, the text after it) of each that does not end the entry (b840)
+    unslotted: tuple = ()  # (its `Frame:` as written, a slot) of each slot naming no kind, actor or parameter (b840)
     this: str = ""        # a kind's `This:`, the run's own thing of that kind
     schema: tuple = ()    # an artifact's `Schema:` as (schema type, file), stored, checked by nothing yet (b241)
     field_of: str = ""    # an attribute's `Field of:`, the artifact it is a field of, stored (b241)
@@ -71,6 +73,17 @@ class Term:
 def _fields(text, name):
     """Every value of the field `name` (one of FIELDS, its pattern compiled once) in an entry's text, in order."""
     return tuple(" ".join(m.group(1).split()) for m in PATTERNS[name].finditer(text))
+
+
+def unended(frames):
+    """(its first sentence, the text after it) of each frame that text other than a frame follows in its entry (b840):
+    a `Frame:` reads up to the next field, so a sentence after it that starts no field is read into it."""
+    out = []
+    for frame in frames:
+        at = re.search(r"\.\s+(?=\S)", re.sub(r"`[^`]*`|\"[^\"]*\"", lambda m: "x" * len(m.group()), frame))
+        if at:
+            out.append((frame[:at.start()], frame[at.end():]))
+    return tuple(out)
 
 
 def _field(text, name):
@@ -141,7 +154,7 @@ def entry(bullet, where):
                 values=_list(_field(text, "Values")) + tuple(v for v, _ in kinds_of), transitions=tuple(transitions),
                 forms=_list(_field(text, "Forms")), plural=_field(text, "Plural"), nots=_list(_field(text, "Not")),
                 resource=resource, supertype=_field(text, "Kind of") or ("artifact" if label == "artifact" else ""), frame=_field(text, "Frame"), label=label,
-                aspect=aspect, frames=_fields(text, "Frame"), this=_field(text, "This"),
+                aspect=aspect, frames=_fields(text, "Frame"), unended=unended(_fields(text, "Frame")), this=_field(text, "This"),
                 schema=schema.groups() if schema else (), field_of=_field(text, "Field of"),
                 order=_field(text, "Order"), type=_field(text, "Type").lower())
 

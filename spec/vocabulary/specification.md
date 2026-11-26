@@ -346,3 +346,6 @@ area: specification
 - **the product actor form** (proper noun) → object product actor form. `the` and a noun, as `the writer`, the name a product actor is declared by.
 - **the subdomain id form** (proper noun) → object subdomain id form. Lower-case words joined by hyphens, as `note-keeping`, the id a subdomain is declared with.
 - **fit** (verb, state) → relation term.fits. The part of speech of a term is one that an element of its kind takes: a noun an object or a value, a proper noun a service or an actor, an adjective a value, an attribute an attribute, a verb of action an operation and a verb of state a relation. Forms: fits, fitted. Frame: <term> fits <element>.
+- **slot** (noun) → object slot. A word in angle brackets of a frame, which names the kind, the actor or the parameter that the frame takes there. Plural: slots.
+- **end** (verb, state) → relation frame.ends. A frame is among the last sentences of its term's entry, so that no text but another frame follows it there. Forms: ends, ended. Frame: <frame> ends <term>.
+- **refer** (verb, state) → relation slot.refers to. A slot of a frame names a term or a parameter between its angle brackets. Forms: refers, referred. Frame: <slot> refers to <term>. Frame: <slot> refers to <parameter>.

@@ -443,6 +443,12 @@ Restates: design-model-check#r13@0.29.
 ### [g157] A term whose part of speech does not fit the element it means fails the check
 - [r157] While a term means an element that the term does not fit, if the person validates this specification, then the specification service shall fail the check and name the term.
 
+### [g158] the check fails on a frame that text other than a frame follows in its entry, naming the frame
+- [r158] While a term has a frame that does not end the term, if the person validates this specification, then the specification service shall fail the check and name the frame.
+
+### [g159] the check fails on a slot of a frame that names no kind, no actor and no parameter, naming the slot
+- [r159] While a frame of a term has a slot and the slot refers to no term whose part of speech is `noun` and the slot refers to no term whose part of speech is `proper noun` and the slot refers to no parameter, if the person validates this specification, then the specification service shall fail the check and name the slot.
+
 ## Dropped
 - design-model-check#r2@0.29: retired with checking#r4 by b370.
 - design-model-check#r3@0.29: retired with checking#r4 by b370.

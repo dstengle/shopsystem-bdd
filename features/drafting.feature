@@ -1230,3 +1230,28 @@ Feature: Drafting
     When the person rewords the term t1 in the item i1
     Then the drafting service refuses this request
     And the drafting service names the term t1
+
+  @g110 @r110
+  Scenario: work line --term refuses a frame that text other than a frame follows in its entry, naming the frame
+    Given a frame f1
+    And a term t1
+    And the frame f1 does not end the term t1
+    And the term t1 has the frame f1
+    And an item i1
+    When the person writes the term t1 into the item i1
+    Then the drafting service refuses this request
+    And the drafting service names the frame f1
+
+  @g111 @r111
+  Scenario: work line --term refuses a slot of a frame that names no kind, no actor and no parameter, naming the slot
+    Given a frame f1
+    And a term t1
+    And the term t1 has the frame f1
+    And a slot s1
+    And the frame f1 has the slot s1
+    And the slot s1 refers to no term
+    And the slot s1 refers to no parameter
+    And an item i1
+    When the person writes the term t1 into the item i1
+    Then the drafting service refuses this request
+    And the drafting service names the slot s1

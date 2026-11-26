@@ -62,3 +62,26 @@ def test_serves_refuses_a_pair_another_open_item_holds(ready_repo):
     assert done.returncode == 1, done.stdout
     assert "%s#g1" % CAP in done.stderr and "start-work" in done.stderr and "b1" in done.stderr, done.stderr
     assert state(ready_repo) == before
+
+
+LINE = ("While an initiative is `started`, when the person runs `work abandon` on the initiative, `work` shall set "
+        "the status of the initiative to `abandoned`.")
+
+
+def test_serves_before_the_line_takes_the_job(ready_repo):
+    """`--serves <job>` given before the line's text (b839): one argument, the job, the line the requirement added."""
+    write_item(ready_repo, "b1", status="shaped")
+    done = work(ready_repo, "line", "b1", "--into", CAP, "--group", "Abandoning", "--serves", "start-work", LINE)
+    assert done.returncode == 0, (done.stdout, done.stderr)
+    assert LINE in done.stdout and "serves start-work" in done.stdout, done.stdout
+    text = (ready_repo / ".shop" / "backlog" / "b1.md").read_text()
+    assert LINE in text and "start-work" in text, text
+
+
+def test_serves_before_the_line_with_a_group_and_a_line_refused(ready_repo):
+    """`--serves <cap>#g<n> <job>` takes two arguments; a line after them is refused, the item left as it was."""
+    write_item(ready_repo, "b1", status="shaped")
+    before = state(ready_repo)
+    done = work(ready_repo, "line", "b1", "--into", CAP, "--serves", "%s#g1" % CAP, "start-work", LINE)
+    assert done.returncode == 1 and "usage:" not in done.stderr, (done.stdout, done.stderr)
+    assert state(ready_repo) == before
