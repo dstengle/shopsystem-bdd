@@ -63,3 +63,14 @@ def test_the_bridge_is_the_definition_of_refuse_an_imported_pack_gives():
     assert spec_entail.refuse_defined(FIXTURES / "codified-2")
     assert not spec_entail.refuse_defined(FROZEN)      # it imports the request pack
     assert not spec_entail.refuse_defined(FIXTURES / "glossary")      # it imports no pack
+
+
+def test_a_nested_pair_is_a_compound_of_its_parts_never_one_quoted_string():
+    """b742: a request's object with its recipient and a thing parameter, `pair(pair(x4,x1),x2)`, split by its
+    balanced parentheses; a pair of other parts stays apart from it."""
+    from spec_entail_rules import _pair, _parts
+    term = "t(%s)".__mod__
+    assert _pair("pair(pair(x4,x1),x2)", term) == "pair(pair(t(x4),t(x1)),t(x2))"
+    assert _parts("pair(pair(x4,x1),x2)") == {"x4", "x1", "x2"}
+    assert _pair("pair(x4,x1)", term) == "pair(t(x4),t(x1))" and _pair("x4", term) is None
+    assert _pair("pair(a,b(c))", term) is None and _parts("pair(a)") == set()
