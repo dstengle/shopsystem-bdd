@@ -113,13 +113,14 @@ def outside(chore, paths):
     return [p for p in paths if not chore.covers(p)]
 
 
-def run(chore, tree):
-    """The chore's check run in `tree` by the shell in the environment a task's tests run in (b771): the plugin's
-    scripts on PYTHONPATH, its leading `python3` (or `python`) the `.venv/bin/python` of `tree` when it holds one
-    (batch_tasks' `run_tests`): (exit code, its output's last lines)."""
+def run(chore, tree, workspace=None, root=None):
+    """The chore's check run in `tree` by the shell in the environment a task's tests run in (b771, b784): the
+    plugin's scripts on PYTHONPATH, its leading `python3` (or `python`) the `.venv/bin/python` of `tree`, else of
+    `workspace`, else of `root`, when one holds one, by batch_tasks' `interpreter` as `run_tests` picks it: (exit
+    code, its output's last lines)."""
     from batch_git import scripts_env
     from batch_tasks import interpreter
-    check, python = chore.check, interpreter(tree)
+    check, python = chore.check, interpreter(tree, workspace, root)
     word = check.split(None, 1)[0] if check.strip() else ""
     if python and word in ("python3", "python"):
         check = shlex.quote(str(python)) + check.lstrip()[len(word):]
@@ -183,12 +184,13 @@ def in_scope(root, since, branch, item, said_as):
             said_as, branch, ", ".join(found), name(item, chore)))
 
 
-def passes(item, tree, said_as):
-    """`work batch done`'s refusal of a chore item while its check exits non-zero in `tree`, naming the chore."""
+def passes(item, tree, said_as, workspace=None, root=None):
+    """`work batch done`'s refusal of a chore item while its check exits non-zero in `tree` (with the interpreter
+    `run_tests` gets of `tree`, `workspace` and `root`), naming the chore."""
     chore = read(item)
     if chore is None:
         return
-    code, tail = run(chore, tree)
+    code, tail = run(chore, tree, workspace, root)
     if code != 0:
         raise Refused("%s: %s fails in %s (exit %d):\n%s" % (said_as, name(item, chore), tree, code, tail))
 
