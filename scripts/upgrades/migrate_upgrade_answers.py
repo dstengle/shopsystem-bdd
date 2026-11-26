@@ -4,7 +4,7 @@ in every work-item's file and in every status field of every initiative's log, a
 import json
 import re
 
-from migrate_upgrade_ids import Changes, initiatives, work_items
+from upgrades.migrate_upgrade_ids import Changes, initiatives, work_items
 
 OLD, NEW = "awaiting-ruling", "awaiting-answer"
 

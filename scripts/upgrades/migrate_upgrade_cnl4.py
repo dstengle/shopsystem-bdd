@@ -12,12 +12,13 @@ import shutil
 import tempfile
 from pathlib import Path
 
-import migrate_upgrade_cnl4_report as report
 import spec_frames
 import spec_lexicon
 import spec_packs
-from migrate_upgrade_frames import LABEL, sources
-from migrate_upgrade_ids import Changes
+
+from upgrades import migrate_upgrade_cnl4_report as report
+from upgrades.migrate_upgrade_frames import LABEL, sources
+from upgrades.migrate_upgrade_ids import Changes
 
 NAME = report.NAME
 OLD, NEW = "language: codified-1", "language: codified-2"

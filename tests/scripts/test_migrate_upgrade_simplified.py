@@ -14,11 +14,11 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 sys.path.insert(0, str(ROOT / "tests" / "scripts"))
 
-import migrate_upgrade
-import migrate_upgrade_simplified as step
 import model_report
 from request_testing import hosted
 from test_migrate_upgrade_codified import git, repository
+from upgrades import migrate_upgrade
+from upgrades import migrate_upgrade_simplified as step
 
 INDEX = (ROOT / "tests/scripts/fixtures/glossary/spec/index.md").read_text()
 CTX = "example.org/fixture/glossary"

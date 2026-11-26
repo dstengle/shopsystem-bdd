@@ -1,4 +1,4 @@
-"""Tests of the 0.25.0 upgrade step (scripts/migrate_upgrade_answers.py) on trees the r29 scenario does not build."""
+"""Tests of the 0.25.0 upgrade step (scripts/upgrades/migrate_upgrade_answers.py) on trees the r29 scenario does not build."""
 import json
 import sys
 import tempfile
@@ -7,7 +7,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts"))
 
-import migrate_upgrade_answers as answers
+from upgrades import migrate_upgrade_answers as answers
 
 ITEM = "---\nid: work-item/x/%s\nkind: work-item\nstatus: %s\n---\n\n# %s\n\n%s\n"
 

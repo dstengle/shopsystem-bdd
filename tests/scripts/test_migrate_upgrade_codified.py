@@ -15,8 +15,8 @@ from pathlib import Path
 SCRIPTS = Path(__file__).resolve().parents[2] / "scripts"
 sys.path.insert(0, str(SCRIPTS))
 
-import migrate_upgrade
-import migrate_upgrade_codified as step
+from upgrades import migrate_upgrade
+from upgrades import migrate_upgrade_codified as step
 
 FROZEN = "96818f71"
 CTX = "example.org/acme/shop"

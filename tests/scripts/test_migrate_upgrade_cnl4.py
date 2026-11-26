@@ -8,8 +8,8 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 sys.path.insert(0, str(ROOT / "tests"))
 
-import migrate_upgrade_cnl4 as step
 import toolchain
+from upgrades import migrate_upgrade_cnl4 as step
 
 # b161's given block, with what each report needs
 INDEX = """---

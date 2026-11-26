@@ -3,8 +3,8 @@ declares neither adjective nor noun values, and each line that says one of its v
 import pathlib
 import shutil
 
-import migrate_upgrade_values
 import toolchain
+from upgrades import migrate_upgrade_values
 
 FIXTURE = pathlib.Path(__file__).parent / "fixtures" / "codified-2"
 CAPABILITY = """---

@@ -8,8 +8,8 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 sys.path.insert(0, str(ROOT / "tests"))
 
-import migrate_upgrade_frames as step
 import toolchain
+from upgrades import migrate_upgrade_frames as step
 
 INDEX = ("---\nid: bounded-context/example.org/acme/shop\ntitle: shop\nlanguage: codified-1\n---\n# shop\n## Glossary\n"
          "- **cart** (kind): the goods a shopper picks.\n- **shopper** (kind): a person who buys.\n"

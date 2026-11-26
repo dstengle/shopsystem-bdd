@@ -80,7 +80,7 @@ def obtain(root, context, version=None):
     `version`, else the published one), each reply acted on; an id out
     of the context id form (migrate init's) refused before anything is read, then an upstream no upstream entry
     identifies, one GitHub does not serve or one failing (r132, r89, r133), and only then one no adapter spec has as its provider (checking r88, r89 before r103: review f1, b601)."""
-    from migrate_init import FORM
+    from upgrades.migrate_init import FORM
     if not FORM.fullmatch(context):
         raise Refused("the id {names} is refused: id not in the context id form bounded-context/<domain>/<path>",
                       reason="id not in the context id form", names=["id:%s" % context])

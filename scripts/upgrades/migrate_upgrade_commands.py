@@ -11,7 +11,7 @@ no command of the old name, so the rewrite is idempotent."""
 import re
 import subprocess
 
-from migrate_upgrade_ids import Changes
+from upgrades.migrate_upgrade_ids import Changes
 
 NAMES = ("work", "spec", "model", "measure", "migrate", "tools", "features")
 SETTINGS, CLAUDE, DELIVERY = ".claude/settings.json", "CLAUDE.md", ".shop/delivery.toml"
