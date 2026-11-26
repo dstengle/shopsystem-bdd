@@ -4,8 +4,8 @@ two folders up. Its id conforms to the adapter spec id form, the parent's id fol
 the id's path after `bounded-context/`, else a file problem naming the id), its `<name>` the folder that keeps it
 (b595, checking r92, else a file problem naming the id); each id under its `realises:` is a live requirement
 `<capability>#r<n>` of the parent's spec (`unrealised`); each provider under its `providers:`
-(`<bounded context id>[@<version>]`) has its contract held, `provider/<id's path>/<version>/contract.toml` where
-`spec obtain` keeps it (contract_obtain's `place`), any version when none is named, a version that does not conform
+(`<bounded context id>[@<version>]`) has its contract held, as the contract registry's adapter keeps one `spec obtain`
+registers for the adapter spec (contract_registry's `held`, b735), any version when none is named, a version that does not conform
 to the version form (contract_publish's `VERSION`) a file problem naming it, never matched as a pattern (b595,
 checking r93) (`uncontracted`); adapter_provider's problems of its providers' words and assumed descriptions
 (b550); adapter_uses' problems of the provider operations each port operation it realises uses (b637). Its `adr/`, the adapter decisions, is accepted as it is; nothing here reads it further."""
@@ -13,7 +13,7 @@ import re
 
 import adapter_provider
 import adapter_uses
-import contract_obtain
+import contract_registry
 import contract_publish
 import spec_read
 from model_parse import as_list, frontmatter
@@ -87,8 +87,7 @@ def uncontracted(root, providers):
             out.append(f"spec/index.md: the provider {m.group('id')} has the version {m.group('version')!r}, which "
                        "does not conform to the version form")
             continue
-        kept = contract_obtain.place(m.group("id"), m.group("version") or "*")
-        if not any(root.glob(kept.as_posix())):
-            out.append(f"spec/index.md: the provider {m.group('id')} has no contract the adapter spec holds under "
-                       f"{kept.parent.as_posix()}/")
+        if not contract_registry.held(root, m.group("id"), m.group("version")):
+            at = f" at {m.group('version')}" if m.group("version") else ""
+            out.append(f"spec/index.md: the provider {m.group('id')} has no contract the adapter spec holds{at}")
     return out

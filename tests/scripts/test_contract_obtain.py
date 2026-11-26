@@ -1,5 +1,5 @@
 """contract_obtain: an upstream's contract kept under the provider/ of each adapter spec of its provider (b587, checking
-r81; b593, r91), obtained again over a contract kept there already (review f1): the upstream's bytes written again and
+r81; b593, b735, r137), obtained again over a contract kept there already (review f1): the upstream's bytes written again and
 committed, the same bytes left as they are; a gh failure the bounded context unreachable and an id out of the context
 id form refused (b591); an upstream no adapter spec has as its provider refused, nothing kept at the root (b593)."""
 import shutil
@@ -134,8 +134,8 @@ def test_a_crlf_contract_is_kept_byte_for_byte(tmp_path, monkeypatch, capsys):
 
 
 def test_each_adapter_spec_of_the_provider_holds_the_contract(tmp_path, monkeypatch, capsys):
-    """b593, checking r91: every adapter spec whose providers: name the upstream, at any version, holds it, in one
-    commit; one of another provider, or a spec that is no adapter spec, holds nothing, and nothing is kept at the
+    """b593, checking r137 (b735): every adapter spec whose providers: name the upstream, at any version, holds it,
+    each registration committed by the registry's adapter; one of another provider, or a spec that is no adapter spec, holds nothing, and nothing is kept at the
     root."""
     repo = _context(tmp_path, monkeypatch)
     _adapter(repo, "stock-other", UPSTREAM)
@@ -143,9 +143,10 @@ def test_each_adapter_spec_of_the_provider_holds_the_contract(tmp_path, monkeypa
     _adapter(repo, "plain", UPSTREAM, kind="bounded context")
     _git(repo, "add", "-A")
     _git(repo, "commit", "-q", "-m", "adapters")
+    head = _git(repo, "rev-parse", "HEAD").strip()
     assert contract_obtain.obtain(repo, UPSTREAM) == 0
     other = KEPT.replace("stock-inventory", "stock-other")
-    assert {KEPT, other} <= set(_git(repo, "show", "--name-only", "--format=", "HEAD").split())
+    assert {KEPT, other} <= set(_git(repo, "log", "--name-only", "--format=", head + "..HEAD").split())
     assert (repo / other).read_text() == CONTRACT
     assert not list((repo / "adapters" / "unrelated").rglob("contract.toml"))
     assert not list((repo / "adapters" / "plain").rglob("contract.toml"))
