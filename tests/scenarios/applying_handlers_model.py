@@ -71,14 +71,15 @@ def colliding(text):
 
 def _tabled(step):
     """The item's `### cli adapter` block of the table o1; of g13 after the PASSING line under colliding ids, on the
-    codified spec alone (no model, which the request pack would not read the line in) with a contract of no table."""
+    codified spec alone (no model, which the request pack would not read the line in) with a contract holding the table
+    o2, which the item's replaces."""
     block = "### cli adapter\n\n```toml\n%s\n```" % table("o1")
     if group(step) != "g13":
         A.fixture(step)
         return block
     contract = step.repo / CONTRACT
     contract.parent.mkdir(parents=True, exist_ok=True)
-    contract.write_text('[programs]\nnotes = "notes.py"\n')
+    contract.write_text('[programs]\nnotes = "notes.py"\n\n%s\n' % table("o2"))   # the item's table replaces it
     return colliding(R().block("Title of i1", R().PASSING) + "\n\n" + block)
 
 
