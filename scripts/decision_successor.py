@@ -18,6 +18,7 @@ from pathlib import Path
 
 import backlog_items
 import backlog_lines
+import backlog_retires
 import decision_write
 from model_parse import DECISIONS, as_list, decision_files, frontmatter
 from plumbing import shop_files
@@ -38,7 +39,8 @@ def retiring(item):
         for rid in block.retired:
             found.setdefault("%s#%s" % (block.capability, rid), [])
         for line, rid in block.retires:
-            found.setdefault("%s#%s" % (block.capability, rid), []).append("%s#%s" % (block.capability, line))
+            found.setdefault("%s#%s" % (block.capability, rid), []).append(
+                backlog_retires.ident_of(block.capability, line))      # a line of another capability's (b882)
     return found
 
 
