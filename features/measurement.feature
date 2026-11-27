@@ -179,8 +179,8 @@ Feature: Measurement
     And the measurement service returns the total row t2
     And the measurement service returns the ratio r1
 
-  @g12 @r12
-  Scenario: A merged batch measured keeps its time, tokens, cost, test runs and opening time
+  @g13 @r13
+  Scenario: A batch's opening time is kept by phase
     Given a batch b1
     And the status of the batch b1 is `merged`
     And a wall time w1
@@ -197,6 +197,10 @@ Feature: Measurement
     And the measurement m1 has the test run t2
     And a test run t3
     And the measurement m1 has the test run t3
+    And an opening phase o2
+    And the measurement m1 has the opening phase o2
+    And an opening phase o3
+    And the measurement m1 has the opening phase o3
     When the person measures the batch b1
     Then the measurement service keeps the measurement m1
     And the batch b1 has the measurement m1
@@ -213,3 +217,7 @@ Feature: Measurement
     And the test run t3 has the duration d2
     And the measurement service returns the opening time o1
     And the measurement m1 has the opening time o1
+    And the measurement service returns the duration d3
+    And the opening phase o2 has the duration d3
+    And the measurement service returns the duration d4
+    And the opening phase o3 has the duration d4

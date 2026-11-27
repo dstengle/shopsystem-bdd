@@ -157,11 +157,11 @@ shall [x1: agent the person (constant), x4: service the measurement service (con
     return(e4, subject: x4, object: x7)
 ```
 
-## r12
-Retires: r1. From: b73 r12.
+## r13
+Retires: r12. From: b876 r13.
 
 ```reading
-While a batch is `merged`, when the person measures the batch, the measurement service shall keep a measurement of the batch and return the wall time of the batch, the session time of the batch, the tokens of the batch, the cost of every role of the batch, the duration of every test run of the measurement and the opening time of the measurement.
+While a batch is `merged`, when the person measures the batch, the measurement service shall keep a measurement of the batch and return the wall time of the batch, the session time of the batch, the tokens of the batch, the cost of every role of the batch, the duration of every test run of the measurement, the opening time of the measurement and the duration of every opening phase of the measurement.
 shall [x2: agent the person (constant), x3: service the measurement service (constant)]
   while [x1: batch]
     status(x1) = `merged`
@@ -188,4 +188,9 @@ shall [x2: agent the person (constant), x3: service the measurement service (con
         return(e7, subject: x3, object: x11)
     of(x12, x4)
     return(e8, subject: x3, object: x12)
+    every [x13: opening phase]
+      of(x13, x4)
+      scope [x14: duration]
+        of(x14, x13)
+        return(e9, subject: x3, object: x14)
 ```

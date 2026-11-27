@@ -38,3 +38,4 @@ area: measurement
 - **trial** (noun) → object trial. One run by the `trial-runner` of a plugin tool or `work run` on a real target or a fixture repository, measuring what its input names.
 - **target** (noun) → object target. The real target or the fixture repository a trial runs on, with the plugin's scripts.
 - **`trial-runner`** (proper noun) → object trial-runner. The agent that conducts a trial.
+- **opening phase** (noun) → object opening phase. One part of the time `work` takes to open a batch: the pick of its items with their readiness checks, the compile of grammar 4, the parse of the lines, the lay, the features and corpus written again, the catalogues and the Composition, the check of each item, the run of the laid scenarios, or the worktree and the commit.

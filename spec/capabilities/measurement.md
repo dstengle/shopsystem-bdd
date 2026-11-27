@@ -6,8 +6,8 @@ group: service
 area: measurement
 specifies: service measurement
 language: codified-2
-retired: [g4, r4, g8, r8, g1, r1]
-unbuilt: []
+retired: [g4, r4, g8, r8, g1, r1, g12, r12]
+unbuilt: [r13]
 ---
 
 # Measurement
@@ -78,8 +78,8 @@ the measurement `m3` holds:
   {"stages": [], "work_items": [], "totals": {"stages": 0, "sessions": 0}, "sessions": [{"session": "s-9", "started": null, "dispatched_by": null, "output_tokens": 9000, "new_input_tokens": 4000, "cache_read_tokens": 80000, "round_trips": 6, "tool_uses": {"Bash": 2}, "dispatched": ["s-11"], "compactions": 1}]}
 ```
 
-### [g12] A merged batch measured keeps its time, tokens, cost, test runs and opening time
-- [r12] While a batch is `merged`, when the person measures the batch, the measurement service shall keep a measurement of the batch and return the wall time of the batch, the session time of the batch, the tokens of the batch, the cost of every role of the batch, the duration of every test run of the measurement and the opening time of the measurement.
+### [g13] A batch's opening time is kept by phase
+- [r13] While a batch is `merged`, when the person measures the batch, the measurement service shall keep a measurement of the batch and return the wall time of the batch, the session time of the batch, the tokens of the batch, the cost of every role of the batch, the duration of every test run of the measurement, the opening time of the measurement and the duration of every opening phase of the measurement.
 
 ## Dropped
 - batch-measurement#r45@0.29: retired with measurement#r8 by b420.
