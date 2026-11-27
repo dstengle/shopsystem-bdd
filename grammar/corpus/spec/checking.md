@@ -2309,3 +2309,107 @@ shall [x2: pack `request` (constant), x3: rule `v_t15` (parameter), x4: agent th
     name(e3, subject: x6, object: x1)
     name(e4, subject: x6, object: x2)
 ```
+
+## r164
+From: b871 r164.
+
+```reading
+While an item holds no requirement that violates a rule whose severity is `error`, when the person validates this specification with the item, the specification service shall complete the request.
+shall [x4: agent the person (constant), x5: specification "the specification of this bounded context" (indexical), x6: service the specification service (constant), x7: request "the request the trigger makes" (indexical)]
+  while [x1: item]
+    not [x2: requirement, x3: rule]
+      severity(x3) = `error`
+      violate(subject: x2, object: x3)
+      in(x2, x1)
+  when
+    request(e1, specification.check, subject: x4, object: x5)
+    param(e1, item, x1)
+  response
+    complete(e2, subject: x6, object: x7)
+```
+
+## r165
+From: b871 r165.
+
+```reading
+While an item holds a port line that governs an operation and every port line that governs the operation is in the item and the operation has an operation outcome and no core line handles the operation outcome and no port line excludes the operation outcome, if the person validates this specification with the item, then the specification service shall fail the check and name the operation outcome.
+shall [x8: agent the person (constant), x9: specification "the specification of this bounded context" (indexical), x10: service the specification service (constant), x11: check "the check the trigger makes" (indexical)]
+  while [x1: item, x2: port line, x3: operation, x5: operation outcome]
+    govern(subject: x2, object: x3)
+    in(x2, x1)
+    every [x4: port line]
+      govern(subject: x4, object: x3)
+      scope
+        in(x4, x1)
+    of(x5, x3)
+    not [x6: core line]
+      handle(subject: x6, object: x5)
+    not [x7: port line]
+      exclude(subject: x7, object: x5)
+  if
+    request(e1, specification.check, subject: x8, object: x9)
+    param(e1, item, x1)
+  response
+    fail(e2, subject: x10, object: x11)
+    name(e3, subject: x10, object: x5)
+```
+
+## r166
+From: b871 r166.
+
+```reading
+While an area holds a lifecycle and the lifecycle has a transition and another area holds an operation that performs the transition and an item holds a core line that uses the operation, if the person validates this specification with the item, then the specification service shall fail the check and name the core line and `v_m9`.
+shall [x8: agent the person (constant), x9: specification "the specification of this bounded context" (indexical), x10: service the specification service (constant), x11: check "the check the trigger makes" (indexical), x12: thing `v_m9` (parameter)]
+  while [x1: area, x2: lifecycle, x3: transition, x4: area, x5: operation, x6: item, x7: core line]
+    in(x2, x1)
+    of(x3, x2)
+    distinct(x4, x1)
+    perform(subject: x5, object: x3)
+    in(x5, x4)
+    use(subject: x7, object: x5)
+    in(x7, x6)
+  if
+    request(e1, specification.check, subject: x8, object: x9)
+    param(e1, item, x6)
+  response
+    fail(e2, subject: x10, object: x11)
+    name(e3, subject: x10, object: x7)
+    name(e4, subject: x10, object: x12)
+```
+
+## r167
+From: b871 r167.
+
+```reading
+While this specification holds a requirement that violates a rule whose severity is `error` and no item holds the requirement, when the person validates this specification with an item, the specification service shall not return the requirement.
+shall [x1: specification "the specification of this bounded context" (indexical), x5: agent the person (constant), x7: service the specification service (constant)]
+  while [x2: requirement, x3: rule]
+    severity(x3) = `error`
+    violate(subject: x2, object: x3)
+    in(x2, x1)
+    not [x4: item]
+      in(x2, x4)
+  when [x6: item]
+    request(e1, specification.check, subject: x5, object: x1)
+    param(e1, item, x6)
+  response
+    not
+      return(e2, subject: x7, object: x2)
+```
+
+## r168
+From: b871 r168.
+
+```reading
+While a workspace has a specification and the workspace has a feature generator and the feature generator is `unresponsive`, if the batches service applies an item to the specification, then the specification service shall refuse the request and name the feature generator.
+shall [x4: service the batches service (constant), x6: service the specification service (constant), x7: request "the request the trigger makes" (indexical)]
+  while [x1: workspace, x2: specification, x3: feature generator]
+    of(x2, x1)
+    of(x3, x1)
+    responsiveness(x3) = `unresponsive`
+  if [x5: item]
+    request(e1, specification.apply, subject: x4, object: x5, to: x2)
+  response
+    refuse(e2, subject: x6, object: x7)
+    name(e3, subject: x6, object: x3)
+```

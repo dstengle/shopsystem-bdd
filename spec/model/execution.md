@@ -23,6 +23,7 @@ object review finding kind of text
 object workspace
   relations: holds → file | repository | kept change | requirement (many); has → workspace name | shared workspace (many)
   relations: has → feature generator (one)
+  relations: has → specification (one)
 
 object kept change
   relations: for → review finding (many); touches → file (many); cites → item (many)

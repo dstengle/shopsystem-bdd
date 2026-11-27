@@ -351,3 +351,4 @@ area: specification
 - **refer** (verb, state) → relation slot.refers to. A slot of a frame names a term or a parameter between its angle brackets. Forms: refers, referred. Frame: <slot> refers to <term>. Frame: <slot> refers to <parameter>.
 - **specify** (verb, state) → relation capability.specifies. A capability is about the service whose operations its requirements request, as its frontmatter's specifies: names it. Forms: specifies, specified. Frame: <capability> specifies <service>.
 - **0.45.0** (noun) → value repository.release 0.45.0.
+- **apply** (verb, action) → operation specification.apply. Someone has an item's lines, model lines, terms and other pieces taken into a specification and the specification made whole for them. Forms: applies, applied. Frame: <actor> applies <item> to <specification>.

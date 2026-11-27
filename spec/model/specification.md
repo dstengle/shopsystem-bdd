@@ -270,6 +270,7 @@ object L8
 object no findings kind of text
 
 object specification
+  relations: holds → requirement | capability | feature | corpus | index file | adapter contract (many)
 service language
   operation parse(text, logical form (flag))
     outcomes: returned → the reading | refused: requirement not in the language, requirement of more than one logical form, reading rule broken, construct with no catalogue entry, fragment
@@ -296,6 +297,7 @@ service specification
   operation obtain(contract, bounded context, version) by the person
     outcomes: done → the contract | refused: bounded context with no contract, id not in the context id form, bounded context unreachable, bounded context failing, bounded context not an upstream
   operation report coupling(shop)  outcomes: returned → every coupling
+  operation apply(item, specification)  outcomes: done → the specification | refused: feature generator unresponsive
 
 service decisions
   operation enter(design-decision, title, summary, tier, wording, route, supersedes)

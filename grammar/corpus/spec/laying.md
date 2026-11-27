@@ -17,40 +17,6 @@ shall [x4: service the batches service (constant), x5: service the laying servic
     keep(e2, subject: x5, object: x6)
 ```
 
-## r3
-From: b611 r3.
-
-```reading
-While a requirement of an item violates a rule whose severity is `error`, when the batches service checks the item in a workspace, the laying service shall fail the request and name the rule.
-shall [x4: service the batches service (constant), x6: service the laying service (constant), x7: request "the request the trigger makes" (indexical)]
-  while [x1: requirement, x2: item, x3: rule]
-    of(x1, x2)
-    severity(x3) = `error`
-    violate(subject: x1, object: x3)
-  when [x5: workspace]
-    request(e1, laying.check, subject: x4, object: x2, in: x5)
-  response
-    fail(e2, subject: x6, object: x7)
-    name(e3, subject: x6, object: x3)
-```
-
-## r4
-From: b611 r4.
-
-```reading
-While an item holds no requirement that violates a rule whose severity is `error`, when the batches service checks the item in a workspace, the laying service shall complete the request.
-shall [x4: service the batches service (constant), x6: service the laying service (constant), x7: request "the request the trigger makes" (indexical)]
-  while [x1: item]
-    not [x2: requirement, x3: rule]
-      severity(x3) = `error`
-      violate(subject: x2, object: x3)
-      in(x2, x1)
-  when [x5: workspace]
-    request(e1, laying.check, subject: x4, object: x1, in: x5)
-  response
-    complete(e2, subject: x6, object: x7)
-```
-
 ## r5
 From: b755 r5.
 
@@ -312,53 +278,6 @@ shall [x8: service the batches service (constant), x10: service the laying servi
     in(x5, x11)
     of(x12, x5)
     keep(e2, subject: x10, object: x12)
-```
-
-## r19
-From: b758 r19.
-
-```reading
-While an item holds a port line that governs an operation and every port line that governs the operation is in the item and the operation has an operation outcome and no core line handles the operation outcome and no port line excludes the operation outcome, when the batches service checks the item in a workspace, the laying service shall fail the request and name the operation outcome.
-shall [x8: service the batches service (constant), x10: service the laying service (constant), x11: request "the request the trigger makes" (indexical)]
-  while [x1: item, x2: port line, x3: operation, x5: operation outcome]
-    govern(subject: x2, object: x3)
-    in(x2, x1)
-    every [x4: port line]
-      govern(subject: x4, object: x3)
-      scope
-        in(x4, x1)
-    of(x5, x3)
-    not [x6: core line]
-      handle(subject: x6, object: x5)
-    not [x7: port line]
-      exclude(subject: x7, object: x5)
-  when [x9: workspace]
-    request(e1, laying.check, subject: x8, object: x1, in: x9)
-  response
-    fail(e2, subject: x10, object: x11)
-    name(e3, subject: x10, object: x5)
-```
-
-## r20
-From: b758 r20.
-
-```reading
-While an area holds a lifecycle and the lifecycle has a transition and another area holds an operation that performs the transition and an item holds a core line that uses the operation, when the batches service checks the item in a workspace, the laying service shall fail the request and name the core line and `v_m9`.
-shall [x8: service the batches service (constant), x10: service the laying service (constant), x11: request "the request the trigger makes" (indexical), x12: thing `v_m9` (parameter)]
-  while [x1: area, x2: lifecycle, x3: transition, x4: area, x5: operation, x6: item, x7: core line]
-    in(x2, x1)
-    of(x3, x2)
-    distinct(x4, x1)
-    perform(subject: x5, object: x3)
-    in(x5, x4)
-    use(subject: x7, object: x5)
-    in(x7, x6)
-  when [x9: workspace]
-    request(e1, laying.check, subject: x8, object: x6, in: x9)
-  response
-    fail(e2, subject: x10, object: x11)
-    name(e3, subject: x10, object: x7)
-    name(e4, subject: x10, object: x12)
 ```
 
 ## r21
