@@ -28,6 +28,7 @@ import spec_corpus_write
 import spec_held
 import spec_read
 import spec_unbuilt
+from plumbing import phases
 from plumbing.domain_envelope import Response, error
 from plumbing.shop_files import Refused
 
@@ -73,9 +74,10 @@ def prepare(tree, items, unwritten=None, command=COMMAND, superseded=None):
     changed += spec_corpus_write.write(tree, items)
     changed += decision_successor.lay(tree, items, superseded)
     changed += batch_reached.prepared(tree, set(laid))
-    changed += spec_composition.write(tree)
-    changed += _annotated(tree)
-    catalogues, problems = batch_catalogues.write(tree, ["%s#%s" % (c, r) for c, rs in laid.items() for r in rs])
+    with phases.phase(phases.CATALOGUES):         # timed apart from the features and corpus (b876)
+        changed += spec_composition.write(tree)
+        changed += _annotated(tree)
+        catalogues, problems = batch_catalogues.write(tree, ["%s#%s" % (c, r) for c, rs in laid.items() for r in rs])
     if unwritten is not None:
         unwritten.extend(problems)
     return list(dict.fromkeys(changed + catalogues))

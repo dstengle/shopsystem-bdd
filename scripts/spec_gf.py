@@ -17,6 +17,7 @@ import tempfile
 from pathlib import Path
 
 import tools_grammar
+from plumbing import phases
 
 GRAMMARS = Path(__file__).resolve().parent.parent / "grammar"
 PLACEHOLDER = "\ue000"   # a space inside one token (a backticked or quoted span) as GF is given it
@@ -106,7 +107,12 @@ def _reused(tmp, srcs, reuse):
 
 def compile(srcs, sha, grammar, reuse=None):
     """`<grammar>.pgf` of the sources {file name: text}, written under the cache's folder `sha`; the modules
-    compiled in the folder `reuse` read from their .gfo."""
+    compiled in the folder `reuse` read from their .gfo; timed as the phase of grammar 4's compile (b876)."""
+    with phases.phase(phases.COMPILE):
+        _compile(srcs, sha, grammar, reuse)
+
+
+def _compile(srcs, sha, grammar, reuse):
     gf = tools_grammar.gf_binary()
     if not gf:
         raise GrammarError("no gf: run `python3 scripts/shop tools install`, or set $SHOPSYSTEM_GF")

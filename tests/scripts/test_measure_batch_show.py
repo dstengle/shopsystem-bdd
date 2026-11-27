@@ -129,3 +129,12 @@ def ok_compare(repo):
     done = measure(repo, "compare", "batch-2", "batch-3")
     assert done.returncode == 0, done.stderr
     return done.stdout
+
+
+def test_show_prints_each_opening_phase_with_its_duration():
+    """b876, measurement r13: the opening's phases, each with its duration, in a table of their own."""
+    figures = dict(FIGURES, opening_phases=[{"phase": "lay", "seconds": 12, "duration": "12 seconds"},
+                                            {"phase": "line parse", "seconds": 40}])
+    out = measure_batch_show.summary(figures)
+    table = out.split("opening phases\n", 1)[1].split("\n\n", 1)[0]
+    assert "lay        | 12 seconds" in table and "line parse | 40 seconds" in table, table
