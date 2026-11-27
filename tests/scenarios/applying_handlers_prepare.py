@@ -1,26 +1,24 @@
-"""Handlers of laying's scenarios of a workspace prepared for a batch (r6, r9-r18, b758),
-`work_queue_world.local`s tried before laying_handlers' own, each taking only a step of a scenario of one of their
-groups (`mine`). A scenario's world is its group's (`WORLDS`: this module's for g6 and g9-g16, laying_handlers_reached's
-for g17, g18), built on readiness_world's codified spec at the When, so the Givens of these groups record nothing: the
-item i1 (`b1`) holding readiness_world's PASSING line as `work-queue#r5` (g6, g14-g16), beside a corpus
-(`grammar/corpus/spec/`, g9), retiring `work-queue#r4` whose block the corpus holds (g10), with a line citing a rule's
-code (`v15k`, g11) or using a construct (`order-by`, the spec pack imported, g12), or one of a value that spells a
-construct's code and uses none, no construct catalogue in the repository (g13); the index given a Composition naming
-`work-queue` and `shelved`, a capability every line of which is retired (g15, g16). The When commits the world, makes
-the workspace w1 a worktree of it, lays the item there and prepares the workspace for the batch `batch-1` with the
-item (`laying.prepare`), and keeps the laying service's reply.
-The Thens read the reply's changed paths and the workspace's files."""
+"""Handlers of applying's scenarios of what an apply prepares in the specification (r38-r47, b873; laying's r9-r18 of
+a workspace prepared for a batch before, b758), `work_queue_world.local`s tried before applying_handlers' own, each
+taking only a step of a scenario of one of their groups (`mine`). A scenario's world is its group's (`WORLDS`: this
+module's for g38-g45, applying_handlers_reached's for g46, g47), built on readiness_world's codified spec at the When
+(applying_handlers' `applied`), so the Givens record nothing: the item i1 (`b1`) holding readiness_world's PASSING
+line as `work-queue#r5` (g43-g45) beside a corpus (`grammar/corpus/spec/`, g38), retiring `work-queue#r4` whose block
+the corpus holds (g39), with a line citing a rule's code (`v15k`, g40) or using a construct (`order-by`, the spec pack
+imported, g41), or one of a value that spells a construct's code and uses none, no construct catalogue in the
+repository (g42); the index given a Composition naming `work-queue` and `shelved`, a capability every line of which is
+retired (g44, g45). The When applies the item to the specification s1 and keeps the specification service's reply.
+The Thens read the reply's changed paths and the specification's files."""
 import re
 import subprocess
 import sys
 from pathlib import Path
 
-L = next(m for m in list(sys.modules.values())
-         if str(getattr(m, "__file__", "") or "").endswith("/laying_handlers.py"))   # loaded before this, by name
-R, W, world = L.R, L.W, L.world
-B = sys.modules["shop_backlog_world"]
+A = next(m for m in list(sys.modules.values())
+         if str(getattr(m, "__file__", "") or "").endswith("/applying_handlers.py"))   # loaded before this, by name
+R, W, world, kept = A.R, A.W, A.world, A.kept
 SCRIPTS = Path(__file__).resolve().parents[2] / "scripts"
-OWN = {"g6", "g9", "g10", "g11", "g12", "g13", "g14", "g15", "g16"}
+OWN = {"g38", "g39", "g40", "g41", "g42", "g43", "g44", "g45"}
 CORPUS = "grammar/corpus/spec/work-queue.md"
 RULES, CONSTRUCTS, INDEX = "grammar/rules.md", "grammar/constructs.md", "spec/index.md"
 RETIRED = "r4"         # the fixture's work-queue#r4, whose group g3 holds no other line
@@ -38,10 +36,7 @@ WORLDS = {}
 
 
 def group(step):
-    found = sys.modules["vocab"].vocab4.requested.scenario(step.request.node)
-    if found is None or Path(found.feature.filename).stem != "laying":
-        return None
-    return next((t for t in found.tags if t in WORLDS), None)
+    return A.group(step, WORLDS)
 
 
 def mine(step):
@@ -71,23 +66,22 @@ def _world(step, text, corpus=None, composed=False, imports=None, block=None):
         index = step.repo / INDEX
         index.write_text(index.read_text().replace("imports: [cli]", "imports: [%s]" % imports, 1))
     if block is not None:
-        B.write_item(step, "i1", sections={"Requirements": block})
-    else:
-        R().give_lines(step, "i1", text)
+        return block            # applying_handlers' `applied` writes it as the item's `## Requirements`
+    R().give_lines(step, "i1", text)
+    return None
 
 
 WORLDS.update({
-    "g6": lambda step: _world(step, R().PASSING),
-    "g9": lambda step: _world(step, R().PASSING, corpus=""),
-    "g10": lambda step: _world(step, None, corpus="\n## %s\nKept.\n\n```reading\nthe retired line\nshall []\n```\n"
-                               % RETIRED, block="### work-queue\n\nretired: [%s]\n\n#### [g4] Retiring\n- [r5] %s"
-                               % (RETIRED, R().PASSING)),
-    "g11": lambda step: _world(step, CITING),
-    "g12": lambda step: _world(step, USING, imports="cli, spec"),
-    "g13": lambda step: _world(step, VALUED),
-    "g14": lambda step: _world(step, R().PASSING),
-    "g15": lambda step: _world(step, R().PASSING, composed=True),
-    "g16": lambda step: _world(step, R().PASSING, composed=True),
+    "g38": lambda step: _world(step, R().PASSING, corpus=""),
+    "g39": lambda step: _world(step, None, corpus="\n## %s\nKept.\n\n```reading\nthe retired line\nshall []\n```\n"
+                                % RETIRED, block="### work-queue\n\nretired: [%s]\n\n#### [g4] Retiring\n- [r5] %s"
+                                % (RETIRED, R().PASSING)),
+    "g40": lambda step: _world(step, CITING),
+    "g41": lambda step: _world(step, USING, imports="cli, spec"),
+    "g42": lambda step: _world(step, VALUED),
+    "g43": lambda step: _world(step, R().PASSING),
+    "g44": lambda step: _world(step, R().PASSING, composed=True),
+    "g45": lambda step: _world(step, R().PASSING, composed=True),
 })
 
 
@@ -99,34 +93,10 @@ def given(step):
 
 
 def requests(step):
-    """`the batches service prepares the workspace w1 for the batch b1`: the world built, the item laid and the
-    workspace prepared for `batch-1`; the reply kept."""
+    """`the batches service applies the item i1 to the specification s1`: the world built, the item applied."""
     if not mine(step) or step.template != "WhenRequests":
         return False
-    import backlog_items
-    import laying
-    w = world(step)
-    WORLDS[group(step)](step)
-    W.init(step.repo)
-    W.git(step.repo, "add", "-A")
-    W.git(step.repo, "commit", "-q", "--allow-empty", "-m", "the world")
-    tree = step.request.getfixturevalue("tmp_path_factory").mktemp("laying") / "w1"
-    W.git(step.repo, "worktree", "add", "-q", "-b", "workspace", str(tree))
-    item = backlog_items.find(step.repo, "b1")
-    w["tree"], w["item"] = tree, item
-    laid = laying.lay(item, tree)
-    assert laid.outcome == "done", laid
-    w["prepared"] = laying.prepare(tree, "batch-1", [item])
-    assert w["prepared"].outcome == "done", w["prepared"]
-    w["response"] = w["prepared"]
-
-
-def kept(step, rel):
-    """The workspace's file `rel`, which the prepare done changed."""
-    w = world(step)
-    assert w["prepared"].outcome == "done" and rel in w["prepared"].content["changed"], (
-        step.text, rel, w["prepared"])
-    return (w["tree"] / rel).read_text()
+    A.applied(step, WORLDS[group(step)])
 
 
 def _line(step):
@@ -174,37 +144,36 @@ def index_problems(tree, text):
 
 
 def then(step):
-    """The Thens of g9-g16: the corpus holding the line's block with its form (kept: the corpus changed) or no longer
+    """The Thens of g38-g45: the corpus holding the line's block with its form (kept: the corpus changed) or no longer
     the retired id's; the rule catalogue's entry of `v15k` citing the line; the construct catalogue kept, or none; the
-    index file kept, of the index form, holding `work-queue` and not `shelved` (g15) or naming `supervision` (g16).
-    g6's are laying_handlers'."""
+    index file kept, of the index form, holding `work-queue` and not `shelved` (g44) or naming `supervision` (g45)."""
     tag = group(step)
-    if tag not in OWN or tag == "g6" or "tree" not in world(step):
+    if tag not in OWN or "response" not in world(step):
         return False
     w, text, negated = world(step), step.text, step.template.endswith("Not")
-    if tag in ("g9", "g10"):
+    if tag in ("g38", "g39"):
         corpus = kept(step, CORPUS)
-        if tag == "g9" and text.startswith("this corpus holds"):
+        if tag == "g38" and text.startswith("this corpus holds"):
             rid, line = _line(step)
             want = "## %s\nFrom: %s %s.\n\n```reading\n%s\n%s\n```\n" % (rid, "b1", rid, line, form(w["tree"], line))
             assert want in corpus, (want, corpus)
-        elif tag == "g10" and "does not hold" in text:
+        elif tag == "g39" and "does not hold" in text:
             assert "## %s\n" % RETIRED not in corpus, corpus
-    elif tag == "g11":
+    elif tag == "g40":
         entry = kept(step, RULES).split("\n## v15k\n", 1)[1].split("\n## ", 1)[0]
         assert "work-queue#%s" % _line(step)[0] in entry, entry
-    elif tag == "g12":
+    elif tag == "g41":
         kept(step, CONSTRUCTS)
-    elif tag == "g13":
-        assert negated and w["prepared"].outcome == "done", (step.text, w["prepared"])
-        assert not (w["tree"] / CONSTRUCTS).exists() and CONSTRUCTS not in w["prepared"].content["changed"], text
+    elif tag == "g42":
+        assert negated and w["response"].outcome == "done", (step.text, w["response"])
+        assert not (w["tree"] / CONSTRUCTS).exists() and CONSTRUCTS not in w["response"].content["changed"], text
     else:
         index = kept(step, INDEX)
         if "conforms" in text:
             assert not index_problems(w["tree"], index), (index_problems(w["tree"], index), index)
-        elif tag == "g15" and negated:
+        elif tag == "g44" and negated:
             assert not re.search(r"(?<![\w-])shelved(?![\w-])", index), index
-        elif tag == "g16" and not negated and "holds" in text:
+        elif tag == "g45" and not negated and "holds" in text:
             assert any("supervision" in named(c) for c in rows(index) or []), index
     return None
 
