@@ -9,8 +9,9 @@ and is refused naming the words that read two ways when they do not (spec_meanin
 I9, I11a).
 
 Its sources, their sha and the vocabulary are computed once a process for one state of the context's spec files, the
-plugin's packs and the base grammar's files that its vocabulary reads (`_context`, spec_held); its parses are kept on disk by spec_parse_cache, keyed by
-that sha, the lexicon's words and the text (b239).
+plugin's packs and the base grammar's files that its vocabulary reads (`_context`, spec_held); its parses are kept on
+disk by spec_parse_cache, keyed by the line's footprint in those sources (spec_footprint, b877), and the grammar is
+compiled and loaded only when a parse is not kept or a refusal linearises a tree (`_Lazy`).
 """
 import difflib
 import hashlib
@@ -40,7 +41,7 @@ MARKER = "codified-2"
 GRAMMAR = "Context"
 BASE = ("Base.gf", "BaseEng.gf", "Time.gf", "TimeEng.gf")
 LIMIT = 50
-_loaded, _contexts, _rgls = {}, {}, {}
+_loaded, _contexts, _rgls, _sources = {}, {}, {}, {}
 
 
 @dataclass
@@ -84,8 +85,28 @@ def _context(root):
         out.update(spec_rgl.modules(vocab, spec_rgl_np.noun_phrases, _clauses))
         if len(_contexts) >= 16:
             _contexts.clear()
+            _sources.clear()
         hit = _contexts[key] = (state, (vocab, out, sha(out)))
+        _sources[hit[1][2]] = out
     return hit[1]
+
+
+class _Lazy:
+    """The compiled grammar of `root`, loaded at its first use (`languages`)."""
+
+    def __init__(self, root):
+        self.root, self.gram = root, None
+
+    @property
+    def languages(self):
+        if self.gram is None:
+            self.gram = _named(self.root)[1]
+        return self.gram.languages
+
+
+def _words_of(vocab):
+    """The vocabulary's words as GF's tokens, which the literal slot refuses."""
+    return {w.replace(" ", spec_rgl.TOKEN) for w in vocab.words}
 
 
 def _clauses(w, vocab, states):
@@ -135,33 +156,35 @@ def _literal(words, text):
 
 def _trees(gram, words, tokens, name=None):
     """(the distinct trees of a parse, or [] and the index of the token GF stopped at); kept in spec_parse_cache
-    under the sources' sha `name` when one is given."""
+    by the line's footprint in the sources named `name` when one is given (b877)."""
     if name is None:
-        return _gf_trees(gram, words, tokens)
-    digest = spec_parse_cache.key(name, GRAMMAR, spec_gf.gf_text(tokens), words, LIMIT)
-    hit = spec_parse_cache.get(name, GRAMMAR, digest)
+        return _gf_trees(gram, words, tokens)[:2]
+    slot, hit = spec_parse_cache.lookup(name, _sources.get(name), GRAMMAR, spec_gf.gf_text(tokens), words, LIMIT)
     if hit is None:
         with phases.phase(phases.PARSE):      # a parse of grammar 4's, timed (b876)
-            hit = _gf_trees(gram, words, tokens)
-        spec_parse_cache.put(name, GRAMMAR, digest, *hit)
+            found = _gf_trees(gram, words, tokens)
+        spec_parse_cache.keep(name, GRAMMAR, slot, *found)
+        hit = found[:2]
     return list(hit[0]), hit[1]
 
 
 def _gf_trees(gram, words, tokens):
-    """GF's parse of `tokens`, as `_trees` gives it."""
+    """GF's parse of `tokens`, as `_trees` gives it, and whether it holds every tree (fewer than LIMIT); its trees
+    shortest first, then by their text, not in GF's order, which the grammar's other functions change."""
     import pgf
     text = spec_gf.gf_text(tokens)
     try:
-        parses = islice(gram.languages[GRAMMAR + "Eng"].parse(
-            text, callbacks=[("String", _literal(words, text))]), LIMIT)
-        return list(dict.fromkeys(str(e) for _, e in parses)), None
+        parses = list(islice(gram.languages[GRAMMAR + "Eng"].parse(
+            text, callbacks=[("String", _literal(words, text))]), LIMIT))
+        trees = sorted({str(e) for _, e in parses}, key=lambda t: (len(t), t))
+        return trees, None, len(parses) < LIMIT
     except pgf.ParseError as err:
-        return [], (len(tokens) if err.incomplete else spec_gf.position(tokens, err.offset))
+        return [], (len(tokens) if err.incomplete else spec_gf.position(tokens, err.offset)), True
 
 
 def disagreeing(gram, vocab, tokens, at, name=None):
     """The verb whose form at token `at` would parse in the other number: its term, or None."""
-    words = {w.replace(" ", spec_rgl.TOKEN) for w in vocab.words}
+    words = _words_of(vocab)
     for v in vocab.verbs:
         singular, plural = spec_rgl.spec_frames.s3(v.term), v.term.term
         other = {singular: plural, plural: singular}.get(tokens[at] if at < len(tokens) else None)
@@ -199,9 +222,8 @@ def parse(root, line):
 
 
 def _parse(root, line):
-    vocab, gram, name = _named(root)
-    tokens = spec_gf.tokenise(line)
-    words = {w.replace(" ", spec_rgl.TOKEN) for w in vocab.words}
+    (vocab, _, name), gram = _context(root), _Lazy(root)
+    tokens, words = spec_gf.tokenise(line), _words_of(vocab)
     trees, at = _trees(gram, words, tokens, name)
     several = {t: spec_one_thing.plural(vocab, spec_meaning.read(t)) for t in trees}     # b420, decision 0111
     if trees and all(several.values()):
@@ -262,9 +284,8 @@ def linearise(root, tree):
 def hint(root, line):
     """For a refused line: the longest prefix that parsed, the vocabulary's words nearest the token after it, and the
     terms that may follow the prefix (GF's completion, spec_follow4)."""
-    vocab, gram, name = _named(root)
-    tokens = spec_gf.tokenise(line)
-    words = {w.replace(" ", spec_rgl.TOKEN) for w in vocab.words}
+    (vocab, _, name), gram = _context(root), _Lazy(root)
+    tokens, words = spec_gf.tokenise(line), _words_of(vocab)
     _, at = _trees(gram, words, tokens, name)
     if at is None:
         return {"prefix": spec_gf.normalise(line), "near": [], "follow": []}

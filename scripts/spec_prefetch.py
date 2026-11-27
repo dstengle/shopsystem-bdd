@@ -1,7 +1,8 @@
 """A state's parse misses parsed side by side (b430): the lines of a context's codified-2 capabilities and universal
-conditions (`texts`) that spec_parse_cache does not hold for its grammar 4 (`misses`, keyed exactly as spec_grammar4's
-parse keys them) parsed by a pool of processes and kept in the cache (`prefetch`), so that the readers after it (the
-model facts, `spec logic`, `features generate`) only read the cache. The pool is at most min(8, cpus // 4) processes
+conditions (`texts`) that spec_parse_cache does not hold for its grammar 4 (`misses`, looked up by their footprint
+exactly as spec_grammar4's parse looks them up, b877; the grammar compiled only when there is one) parsed by a pool
+of processes and kept in the cache (`prefetch`), so that the readers after it (the model facts,
+`spec logic`, `features generate`) only read the cache. The pool is at most min(8, cpus // 4) processes
 (`workers`), each a fresh interpreter (the parent has loaded clingo and pgf; nothing of the caller's runs again in it)
 that loads the compiled grammar once; a pool that fails leaves the misses to be parsed one by one, as before."""
 import json
@@ -14,7 +15,6 @@ import spec_gf
 import spec_grammar4
 import spec_parse_cache
 import spec_read
-import spec_rgl
 from plumbing import phases
 
 
@@ -38,29 +38,32 @@ def texts(root):
 
 
 def _keyed(root, lines):
-    """(sha, words, [(line, gf text, cache key)]) of `lines` in the grammar 4 of `root`."""
-    vocab, _, name = spec_grammar4._named(root)
-    words = {w.replace(" ", spec_rgl.TOKEN) for w in vocab.words}
+    """(sha, words, [(line, its slot)]) of the lines of `lines` whose parse the cache does not hold, in the grammar 4
+    of `root`."""
+    vocab, srcs, name = spec_grammar4._context(root)
+    words = spec_grammar4._words_of(vocab)
     out = []
     for line in lines:
-        text = spec_gf.gf_text(spec_gf.tokenise(line))
-        out.append((line, text, spec_parse_cache.key(name, spec_grammar4.GRAMMAR, text, words, spec_grammar4.LIMIT)))
+        slot, hit = spec_parse_cache.lookup(name, srcs, spec_grammar4.GRAMMAR, spec_gf.gf_text(spec_gf.tokenise(line)),
+                                            words, spec_grammar4.LIMIT)
+        if hit is None:
+            out.append((line, slot))
     return name, words, out
 
 
 def misses(root, lines):
     """The lines of `lines` whose parse the cache does not hold, in order."""
-    name, _, keyed = _keyed(root, lines)
-    return [line for line, _, digest in keyed if spec_parse_cache.get(name, spec_grammar4.GRAMMAR, digest) is None]
+    return [line for line, _ in _keyed(root, lines)[2]]
 
 
 def _work(order):
-    """A worker's lines (`order`: the PGF's path, the sha, the words and [(line, key)]) parsed and kept in the cache."""
+    """A worker's lines (`order`: the PGF's path, the sha, the words and [(line, slot)]) parsed and kept in the
+    cache."""
     import pgf
     gram, words = pgf.readPGF(order["pgf"]), set(order["words"])
-    for line, digest in order["jobs"]:
+    for line, slot in order["jobs"]:
         found = spec_grammar4._gf_trees(gram, words, spec_gf.tokenise(line))
-        spec_parse_cache.put(order["sha"], spec_grammar4.GRAMMAR, digest, *found)
+        spec_parse_cache.keep(order["sha"], spec_grammar4.GRAMMAR, slot, *found)
 
 
 def prefetch(root, lines, processes=None):
@@ -76,8 +79,13 @@ def _prefetch(root, lines, processes):
         name, words, keyed = _keyed(root, lines)
     except (ImportError, spec_gf.GrammarError):        # no grammar: the readers after it say so
         return
-    jobs = [(name, line, digest) for line, _, digest in keyed
-            if spec_parse_cache.get(name, spec_grammar4.GRAMMAR, digest) is None]
+    jobs = [(name, line, slot) for line, slot in keyed]
+    if not jobs:
+        return
+    try:
+        spec_grammar4._named(root)          # the grammar compiled, for the misses alone
+    except (ImportError, spec_gf.GrammarError):
+        return
     processes = min(workers() if processes is None else processes, len(jobs))
     if processes > 1:
         try:
@@ -86,8 +94,7 @@ def _prefetch(root, lines, processes):
         except (OSError, RuntimeError, ImportError, EOFError):     # the serial parse below, as before
             pass
     for job in jobs:
-        if spec_parse_cache.get(name, spec_grammar4.GRAMMAR, job[2]) is None:
-            spec_grammar4._trees(spec_grammar4._named(root)[1], words, spec_gf.tokenise(job[1]), name)
+        spec_grammar4._trees(spec_grammar4._named(root)[1], words, spec_gf.tokenise(job[1]), name)
 
 
 def _pool(jobs, processes, pgf_path, words):
@@ -98,7 +105,7 @@ def _pool(jobs, processes, pgf_path, words):
                                 stderr=subprocess.DEVNULL, text=True) for _ in range(processes)]
     for k, worker in enumerate(workers):
         order = {"pgf": pgf_path, "sha": name, "words": sorted(words),
-                 "jobs": [(line, digest) for _, line, digest in jobs[k::processes]]}
+                 "jobs": [(line, slot) for _, line, slot in jobs[k::processes]]}
         worker.stdin.write(json.dumps(order))
         worker.stdin.close()
     failed = [code for code in (w.wait() for w in workers) if code != 0]

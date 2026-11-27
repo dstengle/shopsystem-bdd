@@ -87,8 +87,9 @@ def test_a_line_parsed_twice_is_read_the_second_time_from_the_parse_cache(ctx, t
 
 def test_a_changed_lexicon_misses_the_parse_cache(ctx, monkeypatch):
     spec_grammar4.parse(ctx, LINE)
-    index = ctx / "spec" / "index.md"
-    index.write_text(index.read_text() + "- **ledger** (noun): a record of the work kept in a file.\n")
+    index = ctx / "spec" / "index.md"     # a frame of a verb the line holds (b877: a term it does not use keeps it)
+    index.write_text(index.read_text().replace("Frame: agent writes file.", "Frame: agent writes file. "
+                                               "Frame: agent writes stage."))
     calls, real = [], spec_grammar4._gf_trees
     monkeypatch.setattr(spec_grammar4, "_gf_trees", lambda *a: calls.append(a) or real(*a))
     assert spec_grammar4.parse(ctx, LINE).tree and calls
