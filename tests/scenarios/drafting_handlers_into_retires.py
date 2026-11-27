@@ -11,6 +11,7 @@ import sys
 W = sys.modules["shop_work_queue_world"]
 B = sys.modules["shop_backlog_world"]
 R = sys.modules["shop_readiness_world"]
+four = sys.modules["shop_world_four"].four
 local = W.local
 IDENT = "work-queue#r1"
 INTO = "review"
@@ -94,3 +95,7 @@ def then_does(step):
     if step.term in ("has", "have", "hold", "holds"):
         _new_id(text)
     return None
+
+
+for _verb in ("retire", "retires"):     # a chain of the key, which `features vocab` finds
+    four("ThenDoes", _verb, "drafting")(then_does)
