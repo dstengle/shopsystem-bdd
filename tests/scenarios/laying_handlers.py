@@ -1,11 +1,12 @@
-"""Handlers of features/laying.feature (r1, r2, b611), each a `work_queue_world.local` that takes only a step of its
-scenarios (`mine`): the requests of the laying service, a driven port, made in process of scripts/laying.py with the
-adapter wired in, the in-process one, on readiness_world's codified spec (committed on `main`) with the item i1
-holding readiness_world's PASSING line as `work-queue#r5`. The workspace w1 is a worktree of the repository beside it
-on a branch of its own (`workspace`). The When lays the item there, or lifts it once its lay is committed there (r2),
-and keeps the laying service's reply, a domain_envelope Response. The Thens read the reply and the workspace: its
-capability file holding the line or not, its feature holding a scenario tagged with the requirement's id. A check of
-an item is the specification service's (checking r164-r167, b871). The prepare of a workspace for a batch and a check after it are
+"""Handlers of features/laying.feature (r2, r6, b611; what an apply keeps is applying_handlers', b872), each a
+`work_queue_world.local` that takes only a step of its scenarios (`mine`): the requests of the laying service, a
+driven port, made in process of scripts/laying.py with the adapter wired in, the in-process one, on
+readiness_world's codified spec (committed on `main`) with the item i1 holding readiness_world's PASSING line as
+`work-queue#r5`. The workspace w1 is a worktree of the repository beside it on a branch of its own (`workspace`).
+The When lifts the item once its lay is committed there (r2), and keeps the laying service's reply, a
+domain_envelope Response. The Thens read the reply and the workspace: its capability file holding the line or not,
+its feature holding a scenario tagged with the requirement's id. A check of an item is the specification service's
+(checking r164-r167, b871). The prepare of a workspace for a batch and a check after it are
 laying_handlers_prepare's and laying_handlers_reached's (b758)."""
 import sys
 from pathlib import Path
@@ -48,18 +49,11 @@ def given_state(step):
 
 
 def build(step):
-    """The repository's codified spec with the item i1's line, committed, and the workspace a worktree of it."""
-    import backlog_items
-    w = world(step)
-    R().codify(step)
-    R().give_lines(step, "i1", R().PASSING)
-    W.init(step.repo)
-    W.git(step.repo, "add", "-A")
-    W.git(step.repo, "commit", "-q", "--allow-empty", "-m", "the world")
-    tree = step.request.getfixturevalue("tmp_path_factory").mktemp("laying") / "w1"
-    W.git(step.repo, "worktree", "add", "-q", "-b", "workspace", str(tree))
-    w["tree"], w["item"] = tree, backlog_items.find(step.repo, "b1")
-    return tree, w["item"]
+    """The repository's codified spec with the item i1's line, committed, and the workspace a worktree of it
+    (applying_handlers' `build`)."""
+    applying = next(m for m in list(sys.modules.values())
+                    if str(getattr(m, "__file__", "") or "").endswith("/applying_handlers.py"))
+    return applying.build(step, world(step))
 
 
 def requests(step):

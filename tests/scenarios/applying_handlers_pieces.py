@@ -1,27 +1,24 @@
-"""Handlers of laying's scenarios of what a lay keeps of an item's spec pieces (r7, r8, r22-r27, b745), moved from
-batches' (r64, r76, r95, r124, r128, r129, r132, r151), `work_queue_world.local`s tried before laying_handlers' own,
-each taking only a step of a scenario of one of their groups (`mine`). A scenario's world is its group's (`WORLDS`),
-built on readiness_world's codified spec at the When, so the Givens record nothing: the item i1 (`b1`) holding a
-universal condition, spec/universal.md taken out (g22); a capability new to the spec, `shelf`, its one group the
-PASSING line (g23), its block saying `area: tracking` (g8); the PASSING line's group serving the job `start-work`
-(g7); the driven port `stock` the item makes, beside the domain-model fixture (g24); a term of the context's own pack
-`household` (g25), under ids `g1` and `r1` that work-queue holds already (g26); an import of the plugin's pack `time`
-(g27); the capability `shelf` in the fixture's area `notes`, whose model declares the service `notes` (g49). The
-When commits the world, makes the workspace w1 a worktree of it and lays the item there; the Thens read the reply's
-changed paths and the workspace's files."""
+"""Handlers of applying's scenarios of what an apply keeps of an item's spec pieces (r2-r9, r25; laying's r7, r8,
+r22-r27, r49 before b872, b745), `work_queue_world.local`s tried before applying_handlers' own, each taking only a
+step of a scenario of one of their groups (`mine`). A scenario's world is its group's (`WORLDS`), built on
+readiness_world's codified spec at the When (applying_handlers' `applied`), so the Givens record nothing: the item
+i1 (`b1`) holding a universal condition, spec/universal.md taken out (g2); a capability new to the spec, `shelf`,
+its one group the PASSING line (g3), its block saying `area: tracking` (g5); the PASSING line's group serving the
+job `start-work` (g4); the driven port `stock` the item makes, beside the domain-model fixture (g6); a term of the
+context's own pack `household` (g7), under ids `g1` and `r1` that work-queue holds already (g8); an import of the
+plugin's pack `time` (g9); the capability `shelf` in the fixture's area `notes`, whose model declares the service
+`notes` (g25). The Thens read the reply's changed paths and the specification's files."""
 import re
-import shutil
 import sys
-from pathlib import Path
 
-L = next(m for m in list(sys.modules.values())
-         if str(getattr(m, "__file__", "") or "").endswith("/laying_handlers.py"))   # loaded before this, by name
-R, W, world = L.R, L.W, L.world
-B, parts = sys.modules["shop_backlog_world"], sys.modules["shop_world_four"].parts
-FIXTURE = Path(__file__).resolve().parents[1] / "scripts" / "fixtures" / "domain-model" / "spec"
+A = next(m for m in list(sys.modules.values())
+         if str(getattr(m, "__file__", "") or "").endswith("/applying_handlers.py"))   # loaded before this, by name
+R, W, world, kept = A.R, A.W, A.world, A.kept
+parts = sys.modules["shop_world_four"].parts
 JOB, AREA, PACK, PLUGIN_PACK, PORT, PORTED = "start-work", "tracking", "household", "time", "stock", "stock-port"
-SERVICE = "notes"      # the fixture's area, and the service its model declares (g49)
+SERVICE = "notes"      # the fixture's area, and the service its model declares (g25)
 UNIVERSAL, INDEX, SHELF = "spec/universal.md", "spec/index.md", "spec/capabilities/shelf.md"
+NOTED = "When the person adds a note, the notes service shall keep the note."   # a line of notes' words (g25)
 TERM = "- **pantry** (noun): a cupboard food is kept in."
 NEW = ("### shelf\n\nnarrator: a person shelving things\ngroup: service\npurpose: Things kept on a shelf, each found "
        "by its name.%s\n\n#### [g1] Shelving\n- [r1] %s")
@@ -61,10 +58,7 @@ WORLDS = {}
 
 
 def group(step):
-    found = sys.modules["vocab"].vocab4.requested.scenario(step.request.node)
-    if found is None or Path(found.feature.filename).stem != "laying":
-        return None
-    return next((t for t in found.tags if t in WORLDS), None)
+    return A.group(step, WORLDS)
 
 
 def mine(step):
@@ -85,14 +79,8 @@ def _new(step, area=""):
 
 
 def _ported(step):
-    """The domain-model fixture's model, vocabulary, CLI contract and notebook beside the codified spec, the index
-    importing the request pack."""
-    spec = step.repo / "spec"
-    for folder in ("model", "vocabulary", "adapters"):
-        shutil.copytree(FIXTURE / folder, spec / folder, dirs_exist_ok=True)
-    shutil.copy(FIXTURE / "capabilities" / "notebook.md", spec / "capabilities" / "notebook.md")
-    index = spec / "index.md"
-    index.write_text(index.read_text().replace("imports: [cli]", "imports: [request]"))
+    """The domain-model fixture beside the codified spec (applying_handlers' `fixture`) and the driven port's block."""
+    A.fixture(step)
     return PORT_BLOCK
 
 
@@ -100,7 +88,7 @@ def _specified(step):
     """The capability `shelf` new to the spec in the area `notes` of the domain-model fixture, whose model declares
     the service `notes`."""
     _ported(step)
-    return _new(step, "\narea: %s" % SERVICE)
+    return _new(step, "\narea: %s" % SERVICE).replace(R().PASSING, NOTED)
 
 
 def _colliding(step):
@@ -110,16 +98,16 @@ def _colliding(step):
 
 
 WORLDS.update({
-    "g22": lambda step: ((step.repo / UNIVERSAL).unlink(missing_ok=True)
+    "g2": lambda step: ((step.repo / UNIVERSAL).unlink(missing_ok=True)
                          or R().give_universal(step, "i1", R().TRANSLATED_U)),
-    "g23": _new,
-    "g7": lambda step: _passing(step).replace("\n\n####", "\n\nserves: [g4 %s]\n\n####" % JOB, 1),
-    "g8": lambda step: _new(step, "\narea: %s" % AREA),
-    "g24": _ported,
-    "g25": lambda step: _passing(step) + "\n\n### %s pack\n\n%s" % (PACK, TERM),
-    "g26": _colliding,
-    "g27": lambda step: _passing(step) + "\n\n### imports\n\n- pack `%s`" % PLUGIN_PACK,
-    "g49": _specified,
+    "g3": _new,
+    "g4": lambda step: _passing(step).replace("\n\n####", "\n\nserves: [g4 %s]\n\n####" % JOB, 1),
+    "g5": lambda step: _new(step, "\narea: %s" % AREA),
+    "g6": _ported,
+    "g7": lambda step: _passing(step) + "\n\n### %s pack\n\n%s" % (PACK, TERM),
+    "g8": _colliding,
+    "g9": lambda step: _passing(step) + "\n\n### imports\n\n- pack `%s`" % PLUGIN_PACK,
+    "g25": _specified,
 })
 
 
@@ -131,30 +119,10 @@ def given(step):
 
 
 def requests(step):
-    """`the batches service lays the item i1 in the workspace w1`: the world built, the item laid; the reply kept."""
+    """`the batches service applies the item i1 to the specification s1`: the world built, the item applied."""
     if not mine(step) or step.template != "WhenRequests":
         return False
-    import backlog_items
-    import laying
-    w = world(step)
-    R().codify(step)
-    block = WORLDS[group(step)](step)
-    if block is not None:
-        B.write_item(step, "i1", sections={"Requirements": block})
-    W.init(step.repo)
-    W.git(step.repo, "add", "-A")
-    W.git(step.repo, "commit", "-q", "--allow-empty", "-m", "the world")
-    tree = step.request.getfixturevalue("tmp_path_factory").mktemp("laying") / "w1"
-    W.git(step.repo, "worktree", "add", "-q", "-b", "workspace", str(tree))
-    w["tree"], w["item"] = tree, backlog_items.find(step.repo, "b1")
-    w["response"] = laying.lay(w["item"], tree)
-
-
-def kept(step, rel):
-    """The workspace's file `rel`, which the lay done changed."""
-    w = world(step)
-    assert w["response"].outcome == "done" and rel in w["response"].content["changed"], (step.text, rel, w["response"])
-    return (w["tree"] / rel).read_text()
+    A.applied(step, WORLDS[group(step)])
 
 
 def empty_sections(text):
@@ -190,34 +158,34 @@ def _group(step):
 
 
 def _keeps(step, tag):
-    """`the laying service keeps X`: the file the lay changed of each group's X."""
-    if tag == "g22":
+    """`the specification service keeps X`: the file the apply changed of each group's X."""
+    if tag == "g2":
         kept(step, UNIVERSAL)
-    elif tag in ("g23", "g8", "g49"):
+    elif tag in ("g3", "g5", "g25"):
         kept(step, SHELF)
-    elif tag == "g7":
+    elif tag == "g4":
         _group(step)
-    elif tag == "g24":
+    elif tag == "g6":
         model = kept(step, "spec/model/%s.md" % PORT)
         assert re.search(r"(?m)^kind: port$", model) and _imports(model) == ["notes"], model
         assert PORT in _imports(kept(step, "spec/model/notes.md")), step.text
         contract = (world(step)["tree"] / "spec/adapters/cli.toml").read_text()
         assert '[operations."%s.reserve"]' % PORT not in contract, contract
-    elif tag in ("g25", "g26"):
+    elif tag in ("g7", "g8"):
         kept(step, "spec/packs/%s.md" % PACK)
     else:
         assert PLUGIN_PACK in _imports(kept(step, INDEX)), kept(step, INDEX)
 
 
 def then(step):
-    """The Thens of these groups: what the lay kept (`_keeps`); the language of `universal` its marker; the capability
+    """The Thens of these groups: what the apply kept (`_keeps`); the language of `universal` its marker; the capability
     of the capability form; the group's `serves:` line naming the job, in work-queue; the capability in its area (its
     `area:`, the area's Composition row naming it) or in the driven port (of kind `port`, its model of kind `port`);
     the pack's `## Glossary` holding the term, and the index importing the pack."""
     tag = group(step)
     if tag is None or "tree" not in world(step):
         return False
-    term = "keep" if step.term in L.KEEPS else step.term
+    term = "keep" if step.term in A.KEEPS else step.term
     kinds = [k for k, _ in parts(step)]
     if term == "keep":
         _keeps(step, tag)
@@ -246,9 +214,9 @@ def then(step):
         text = kept(step, "spec/packs/%s.md" % PACK)
         assert "## Glossary" in text and text.index("## Glossary") < text.index(TERM), text
     elif term in ("import", "imports"):
-        assert (PACK if tag == "g25" else PLUGIN_PACK) in _imports(kept(step, INDEX)), kept(step, INDEX)
+        assert (PACK if tag == "g7" else PLUGIN_PACK) in _imports(kept(step, INDEX)), kept(step, INDEX)
     else:
-        raise AssertionError("laying_handlers_pieces takes no Then %s %s: %s" % (step.template, step.term, step.text))
+        raise AssertionError("applying_handlers_pieces takes no Then %s %s: %s" % (step.template, step.term, step.text))
 
 
 for _template in ("GivenK", "GivenK_A", "GivenDoes", "GivenDoesNot"):
@@ -257,4 +225,4 @@ W.local("WhenRequests")(requests)
 for _template in ("ThenDoes", "ThenDoesNot"):
     W.local(_template)(then)
 for _key in (("ThenDoes", "serve"), ("ThenDoes", "import"), ("ThenDoes", "specify")):   # `features vocab --check`
-    sys.modules["vocab"].handler(*_key)(L.untaken)
+    sys.modules["vocab"].handler(*_key)(A.untaken)

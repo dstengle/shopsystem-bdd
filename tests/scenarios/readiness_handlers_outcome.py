@@ -2,7 +2,7 @@
 context with a domain model: tests/scripts/fixtures/domain-model/'s spec, the item making the driven port: the new
 capability `stock-port` of the new area `stock` of kind `port`, whose port line governs the stock service's `reserve`
 and excludes its refusal ("shall not refuse the request"), its `### stock model` block declaring the operation with
-the outcomes `done` and `refused: no stock`, and notebook's core line whose response requests it (laying_handlers_pieces'
+the outcomes `done` and `refused: no stock`, and notebook's core line whose response requests it (applying_handlers_pieces'
 lines, less the core line on its completion). So no core line handles the outcome `stock.reserve done` and no port
 line excludes it: the lay brings v_pb2 of it. What `work ready` names the outcome by is its name in the bound check."""
 import importlib.util
