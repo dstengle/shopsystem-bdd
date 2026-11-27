@@ -6,7 +6,7 @@ group: service
 area: laying
 specifies: service laying
 language: codified-2
-retired: [g1, r1, g42, r42, g3, r3, g4, r4, g19, r19, g20, r20, g7, r7, g8, r8, g21, r21, g22, r22, g23, r23, g24, r24, g25, r25, g26, r26, g27, r27, g28, r28, g29, r29, g30, r30, g31, r31, g32, r32, g33, r33, g34, r34, g35, r35, g36, r36, g37, r37, g38, r38, g39, r39, g40, r40, g41, r41, g48, r48, g49, r49]
+retired: [g1, r1, g42, r42, g3, r3, g4, r4, g19, r19, g20, r20, g7, r7, g8, r8, g21, r21, g22, r22, g23, r23, g24, r24, g25, r25, g26, r26, g27, r27, g28, r28, g29, r29, g30, r30, g31, r31, g32, r32, g33, r33, g34, r34, g35, r35, g36, r36, g37, r37, g38, r38, g39, r39, g40, r40, g41, r41, g48, r48, g49, r49, g6, r6, g9, r9, g10, r10, g11, r11, g12, r12, g13, r13, g14, r14, g15, r15, g16, r16, g17, r17, g18, r18]
 unbuilt: []
 ---
 
@@ -23,50 +23,6 @@ Relied on by: batches#r182
 ### [g5] A lift of an item keeps out a requirement of the same group that another requirement in the workspace retires
 - [r5] While an item holds a requirement that retires the requirement id of a requirement of a requirement group and a workspace holds another requirement that retires the requirement id of another requirement of the requirement group, when the batches service lifts the item from the workspace, the laying service shall keep a workspace that does not hold the requirement.
 Relied on by: batches#r182
-
-### [g6] A workspace prepared for a batch holds a scenario of each requirement of its items
-- [r6] While a batch holds an item and the item holds a requirement, when the batches service prepares a workspace for the batch, the laying service shall keep a scenario that refers to the requirement id of the requirement.
-Relied on by: batches#r188
-
-### [g9] A workspace prepared for a batch keeps the logical form of each requirement of its items in the corpus
-- [r9] While a batch holds an item and a requirement of the item has a logical form, when the batches service prepares a workspace for the batch, the laying service shall keep the logical form in the corpus.
-Relied on by: batches#r188
-
-### [g10] A workspace prepared for a batch keeps no corpus block of a requirement id its items retire
-- [r10] While a batch holds an item and a requirement id is in the item and a requirement in the corpus has the requirement id, when the batches service prepares a workspace for the batch, the laying service shall keep a corpus that does not hold the requirement.
-Relied on by: batches#r188
-
-### [g11] A workspace prepared for a batch keeps the catalogue entry of a rule its items use
-- [r11] While a batch holds an item and a requirement of the item uses a rule, when the batches service prepares a workspace for the batch, the laying service shall keep the catalogue entry of the rule.
-Relied on by: batches#r188
-
-### [g12] A workspace prepared for a batch keeps the construct catalogue when its items use a construct
-- [r12] While a batch holds an item and a requirement of the item uses a construct, when the batches service prepares a workspace for the batch, the laying service shall keep the construct catalogue.
-Relied on by: batches#r188
-
-### [g13] A workspace prepared for a batch whose items use no construct keeps no construct catalogue
-- [r13] While a batch holds an item and no requirement of an item that the batch holds uses a construct and no construct catalogue exists, when the batches service prepares a workspace for the batch, the laying service shall keep no construct catalogue.
-Relied on by: batches#r188
-
-### [g14] A workspace prepared for a batch keeps an index file of the index form
-- [r14] While a batch holds an item, when the batches service prepares a workspace for the batch, the laying service shall keep an index file that conforms to the index form.
-Relied on by: batches#r188
-
-### [g15] A workspace prepared for a batch keeps a capability with no requirement out of the index file
-- [r15] While a capability has no requirement and a batch holds an item, when the batches service prepares a workspace for the batch, the laying service shall keep an index file that does not hold the capability.
-Relied on by: batches#r188
-
-### [g16] A workspace prepared for a batch keeps a capability with a requirement in the index file
-- [r16] While a capability has a requirement and a batch holds an item, when the batches service prepares a workspace for the batch, the laying service shall keep an index file that holds the capability.
-Relied on by: batches#r188
-
-### [g17] A workspace prepared for a batch generates the feature of a capability whose operation its items' model lines specify
-- [r17] While a batch holds an item and the item holds a model line that specifies an operation and a requirement of a capability governs the operation and the item holds no requirement id that is in the capability, when the batches service prepares a workspace for the batch, the laying service shall generate the feature of the capability and keep the logical form of the requirement in the corpus.
-Relied on by: batches#r188
-
-### [g18] A workspace prepared for a batch keeps in the corpus the logical form of a requirement that uses a verb its items give a sense
-- [r18] While a batch holds an item and the item holds a verb that has a sense and a requirement of a capability uses the verb and the item holds no requirement id that is in the capability, when the batches service prepares a workspace for the batch, the laying service shall keep the logical form of the requirement in the corpus.
-Relied on by: batches#r188
 
 ### [g43] A lift of an item whose model line restates an operation keeps the operation in the domain model
 - [r43] While an item holds a model line that restates an operation and the domain model holds the model line, when the batches service lifts the item from a workspace, the laying service shall keep a domain model that holds the operation.
