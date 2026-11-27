@@ -1,6 +1,6 @@
 """Handlers of checking's apply of an item refused for an unresponsive feature generator (r168, b871), each a
 `work_queue_world.local` taking only a step of a scenario of g168 (`mine`). The Givens are taken as said; the world is
-built at the When as laying_handlers' `build` builds it: readiness_world's codified spec with the item i1 holding its
+built at the When as applying_handlers' `build` builds it: readiness_world's codified spec with the item i1 holding its
 PASSING line, committed, and the workspace w1 a worktree of it; the workspace given a feature generator of its own
 (batches_handlers_generator's stand-in `scripts/features` beside a `scripts/features_generate.py`), committed there,
 that sleeps past its time limit, `$SHOPSYSTEM_GENERATE_TIMEOUT` one second. The When applies the item to the
@@ -49,7 +49,7 @@ def applies(step):
     if not mine(step) or step.template != "WhenRequests":
         return False
     import spec_apply
-    tree, item = _module("laying_handlers").build(step)
+    tree, item = _module("applying_handlers").build(step)
     _generator(tree)
     step.request.getfixturevalue("monkeypatch").setenv("SHOPSYSTEM_GENERATE_TIMEOUT", "1")
     head = W.git(tree, "rev-parse", "HEAD").strip()

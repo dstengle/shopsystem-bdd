@@ -2,8 +2,8 @@
 start`'s pick renumbers them (batches r190-r192, b764), `work_queue_world.local`s each taking only a step of a scenario
 of one of their groups (`mine`). A scenario's world is its group's (`WORLDS`), written before `work batch start`
 (batches_world's BEFORE_START), so the Givens record nothing: the item i1 `ready`, its group and requirement ids `g1`
-and `r1`, which its capability holds already (laying_handlers_model's `colliding`), beside a term of the context's own
-pack `household` (g190, laying_handlers_pieces' block, readiness_world's passing line in work-queue), a table of
+and `r1`, which its capability holds already (applying_handlers_model's `colliding`), beside a term of the context's own
+pack `household` (g190, applying_handlers_pieces' block, readiness_world's passing line in work-queue), a table of
 `notes.archive` (g191, the same line, the contract holding another table of it before, as no model declares it on the
 codified spec, which the request pack would not read the line in) or the term `the person` moved from shared to notes
 (g192, notebook's line). The Thens read the batch's branch: the item's line laid under an id the pick gave it, in place
@@ -23,12 +23,12 @@ GROUPS = ("g190", "g191", "g192")
 
 
 def _module(name):
-    """A laying handler module, loaded after this one by the conftest's glob."""
+    """An applying handler module, loaded after this one by the conftest's glob."""
     return next(m for m in list(sys.modules.values()) if (getattr(m, "__file__", None) or "").endswith("/" + name))
 
 
 def _model():
-    return _module("laying_handlers_model.py")
+    return _module("applying_handlers_model.py")
 
 
 def group(step):
@@ -48,14 +48,14 @@ def _block(step, tag):
     the domain-model fixture beside the spec of g192."""
     M = _model()
     if tag == "g190":
-        pieces = _module("laying_handlers_pieces.py")
+        pieces = _module("applying_handlers_pieces.py")
         return M.colliding(_passing() + "\n\n### %s pack\n\n%s" % (pieces.PACK, pieces.TERM))
     if tag == "g191":
         contract = step.repo / CONTRACT
         contract.parent.mkdir(parents=True, exist_ok=True)
         contract.write_text('[programs]\nnotes = "notes.py"\n\n%s\n' % M.table("o2"))
         return M.colliding(_passing() + "\n\n### cli adapter\n\n```toml\n%s\n```" % M.table("o1"))
-    M._fixture(step)
+    M.A.fixture(step)
     return M.colliding(M.NOTEBOOK % MOVED)
 
 
@@ -116,7 +116,7 @@ def renumbered(step, tag):
 
 
 def _pack(step):
-    pieces = _module("laying_handlers_pieces.py")
+    pieces = _module("applying_handlers_pieces.py")
     text = _branch(step, PACK)
     assert "## Glossary" in text and text.index("## Glossary") < text.index(pieces.TERM), text
 
