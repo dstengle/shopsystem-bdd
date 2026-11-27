@@ -3,9 +3,10 @@ scenarios (`mine`), tried after applying_handlers_*'s, which take the steps of t
 specification by the specification service's apply, made in process of spec_apply, on readiness_world's codified spec
 (committed on `main`). The specification s1 is the spec of a worktree of the repository beside it on a branch of its
 own (`workspace`), as a batch's is. The When builds the group's world (`applied`: the item i1, `b1`, holding the
-`## Requirements` its group's world gives; of g1 readiness_world's PASSING line as `work-queue#r5`), applies the item
-there and keeps the specification service's reply, a domain_envelope Response; the Thens read the reply and the
-specification's files (`kept`, a file the apply done changed). `build` is the world of the laying port's lift and of
+`## Requirements` its group's world gives; of g37, this module's own group, readiness_world's PASSING line as
+`work-queue#r5`), applies the item there and keeps the specification service's reply, a domain_envelope Response; the
+Thens read the reply and the specification's files (`kept`, a file the apply done changed): of g37 the capability file
+holding the line under its id and work-queue's feature a scenario tagged with it. `build` is the world of the laying port's lift and of
 checking's apply refused (laying_handlers, checking_handlers_apply)."""
 import shutil
 import sys
@@ -15,6 +16,8 @@ W = sys.modules["shop_work_queue_world"]
 FIXTURE = Path(__file__).resolve().parents[1] / "scripts" / "fixtures" / "domain-model" / "spec"
 ID = "r5"                       # readiness_world's `block` gives the item's line this id in work-queue
 CAP = "spec/capabilities/work-queue.md"
+FEATURE = "features/work-queue.feature"
+OWN = {"g37"}
 KEEPS = ("keep", "write", "commit", "make")
 
 
@@ -95,27 +98,32 @@ def kept(step, rel):
 
 
 def given(step):
-    """A Given of g1: what its world builds at the When."""
-    if not mine(step):
+    """A Given of g37: what its world builds at the When."""
+    if group(step, OWN) is None:
         return False
     world(step)
 
 
 def requests(step):
     """`the batches service applies the item i1 to the specification s1`: the item holding the PASSING line."""
-    if not mine(step) or step.template != "WhenRequests":
+    if group(step, OWN) is None or step.template != "WhenRequests":
         return False
     applied(step, lambda s: R().give_lines(s, "i1", R().PASSING))
 
 
 def then(step):
-    """`the specification s1 holds the requirement r1`: its line in the capability file under its id; `the
-    specification service keeps the specification s1`: the apply done."""
-    if not mine(step) or "response" not in world(step):
+    """`the specification s1 holds the requirement r1`, `the requirement r1 has the requirement id r2`: its line in
+    the capability file under its id; `the specification service keeps the specification s1`: the apply done; `the
+    specification service keeps the scenario s2`, `the scenario s2 refers to the requirement id r2`: the capability's
+    feature, which the apply wrote again, holds a scenario tagged with the id."""
+    if group(step, OWN) is None or "response" not in world(step):
         return False
-    if step.term in KEEPS:
+    kinds = [k for k, _ in sys.modules["shop_world_four"].parts(step)]
+    if step.term in ("refer", "refers") or (step.term in KEEPS and kinds[-1] == "scenario"):
+        assert "@%s" % ID in kept(step, FEATURE).split(), kept(step, FEATURE)[-400:]
+    elif step.term in KEEPS:
         assert world(step)["response"].outcome == "done", world(step)["response"]
-    elif step.term == "holds":
+    elif step.term in ("holds", "has"):
         assert "- [%s] %s" % (ID, R().PASSING) in kept(step, CAP), kept(step, CAP)
     else:
         raise AssertionError("applying_handlers takes no Then %s %s: %s" % (step.template, step.term, step.text))
@@ -134,3 +142,4 @@ def untaken(step):
     raise AssertionError("no handler of this scenario's feature took the step: %s" % step.text)
 
 
+sys.modules["vocab"].handler("ThenDoes", "refer")(untaken)     # `features vocab --check`
