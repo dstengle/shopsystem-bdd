@@ -1053,3 +1053,30 @@ Feature: Batches
     When the person opens the batch b1
     Then the area a1 holds the term t1
     And the batches service keeps the area a1
+
+  @g193 @r193
+  Scenario: A ready item whose line retires a requirement of another capability is not reopened when its scenario passes on the lay
+    Given an item i1
+    And the status of the item i1 is `ready`
+    And the item i1 meets this readiness bar
+    And a requirement r1
+    And a capability c1
+    And the capability c1 has the requirement r1
+    And the item i1 holds the requirement r1
+    And a scenario s1
+    And the item i1 has the scenario s1
+    And a requirement id r2
+    And the requirement r1 has the requirement id r2
+    And the scenario s1 refers to the requirement id r2
+    And a workspace w1
+    And a batch b1
+    And the batch b1 has the workspace w1
+    And the scenario s1 succeeds in the workspace w1
+    And a requirement r3
+    And a capability c2
+    And the capability c2 has the requirement r3
+    And a requirement id r4
+    And the requirement r3 has the requirement id r4
+    And the requirement r1 retires the requirement id r4
+    When the person opens the batch b1
+    Then the batches service does not reopen the item i1

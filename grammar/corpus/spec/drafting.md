@@ -1713,3 +1713,23 @@ shall [x2: rule `v_t6` (parameter), x3: agent the person (constant), x5: service
     name(e3, subject: x5, object: x2)
     complete(e4, subject: x5, object: x6)
 ```
+
+## r113
+From: b882 r113.
+
+```reading
+When the person drafts an item with the requirement id of a requirement of a capability and another capability, the drafting service shall keep an item that holds a requirement of the capability that retires the requirement id.
+shall [x1: agent the person (constant), x7: service the drafting service (constant)]
+  when [x2: item, x3: requirement, x4: capability, x5: requirement id, x6: capability]
+    of(x3, x4)
+    of(x5, x3)
+    distinct(x6, x4)
+    request(e1, drafting.draft, subject: x1, object: x2)
+    param(e1, requirement id, x5)
+    param(e1, capability, x6)
+  response [x8: item, x9: requirement]
+    of(x9, x6)
+    retire(subject: x9, object: x5)
+    in(x9, x8)
+    keep(e2, subject: x7, object: x8)
+```

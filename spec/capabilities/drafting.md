@@ -7,7 +7,7 @@ area: tracking
 specifies: service drafting
 language: codified-2
 retired: [g99, r99, g100, r100, g49, r49, g14, r14]
-unbuilt: []
+unbuilt: [r113]
 ---
 
 # Drafting
@@ -356,4 +356,7 @@ capabilities, retirements, rewordings and chores.
 
 ### [g112] spec check --item reports the item's lexicon problems as work ready does, and --reword-term warns as --term does
 - [r112] While a term violates `v_t6`, when the person rewords the term in an item, the drafting service shall keep the term in the item, name `v_t6` and complete the request.
+
+### [g113] A line drafted into one capability that retires a requirement of another is kept in the item
+- [r113] When the person drafts an item with the requirement id of a requirement of a capability and another capability, the drafting service shall keep an item that holds a requirement of the capability that retires the requirement id.
 

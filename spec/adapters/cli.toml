@@ -560,6 +560,7 @@ requirements = [
   "drafting#r87: If the person drafts an item with a requirement that supports a requirement id that no requirement has, then the drafting service shall refuse the request and name the requirement id.",
   "drafting#r88: While a requirement supports a requirement id, when the person drafts an item with the requirement and a different requirement id, the drafting service shall keep the requirement in the item and keep the requirement id in the item.",
   "drafting#r98: When the person drafts an item with a requirement, the drafting service shall return the requirement id of the requirement and the requirement.",
+  "drafting#r113: When the person drafts an item with the requirement id of a requirement of a capability and another capability, the drafting service shall keep an item that holds a requirement of the capability that retires the requirement id.",
 ]
 [operations."drafting.draft".parameters]
 item = { positional = 1 }
@@ -931,6 +932,7 @@ requirements = [
   "batches#r190: While an item is `ready` and the item meets the readiness bar and the item holds a term of a pack and a capability holds a requirement id that the item holds, when the person opens a batch, the batches service shall keep the pack that has the term.",
   "batches#r191: While an item is `ready` and the item meets the readiness bar and the item holds an operation table and a capability holds a requirement id that the item holds, when the person opens a batch, the batches service shall keep an adapter contract that holds the operation table.",
   "batches#r192: While an item is `ready` and the item meets the readiness bar and the item moves a term that means an element and an area holds the element and a capability holds a requirement id that the item holds, when the person opens a batch, the batches service shall keep the area that holds the term.",
+  "batches#r193: While an item is `ready` and the item meets the readiness bar and the item holds a requirement of a capability and a scenario of the item refers to the requirement id of the requirement and the scenario succeeds in a workspace of a batch and the requirement retires the requirement id of a requirement of another capability, when the person opens the batch, the batches service shall not reopen the item.",
 ]
 
 [operations."batches.resume"]
