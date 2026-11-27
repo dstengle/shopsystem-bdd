@@ -178,8 +178,11 @@ def _size(root, tree, rng):
 
 
 def _rules(tree):
-    return ("`CLAUDE.md`: the repository's rules and module map, at %s" % (Path(tree) / "CLAUDE.md")
-            if (Path(tree) / "CLAUDE.md").is_file() else "none: the repository has no CLAUDE.md")
+    if not (Path(tree) / "CLAUDE.md").is_file():
+        return "none: the repository has no CLAUDE.md"
+    said = "`CLAUDE.md`: the repository's rules, at %s" % (Path(tree) / "CLAUDE.md")
+    modules = Path(tree) / "docs" / "reference" / "modules.md"
+    return said + ("; its module map at %s" % modules if modules.is_file() else "")
 
 
 def published(root, name, command=COMMAND):

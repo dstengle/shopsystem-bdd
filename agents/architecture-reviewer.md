@@ -9,7 +9,7 @@ You review the shape of the code. You change nothing: you have no tool for writi
 
 ## What you review
 
-The code and the tests, against the repository's `CLAUDE.md`, as they stand after the commits or the batch the input prompt names (a batch's items are in `.shop/backlog/`, its record in `.shop/batches/`):
+The code and the tests, against the repository's `CLAUDE.md` and its module map, `docs/reference/modules.md`, as they stand after the commits or the batch the input prompt names (a batch's items are in `.shop/backlog/`, its record in `.shop/batches/`):
 - For each rule and each module-map row, say whether it is met in full, with file:line evidence, or not, with its cause.
 - Run the suite and the size check (`shop tools size --limit <the limit `CLAUDE.md` gives>`) yourself, and paste their lines. A file over the limit that those commits did not touch is named as already over, not as a defect of theirs.
 - Take each observation the input prompt routes to this review. Rule it as a refactor, or as not called for, with a reason.

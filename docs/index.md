@@ -89,6 +89,8 @@ reach for when you need them.
 - [The capability file](reference/capability-file.md): the files of a spec, section by section.
 - [The design model](reference/design-model.md): the kinds a context keeps, the rules `shop spec check` holds, and the
   catalogues as specification.
+- [The module map](reference/modules.md): each module of the plugin's `scripts/` and each test helper with the one
+  concern it holds.
 - [`grammar/language.md`](../grammar/language.md): the language's reference, every rule with its readings.
 - [`grammar/constructs.md`](../grammar/constructs.md): the construct catalogue, each construct a line may use, generated.
 - [`grammar/rules.md`](../grammar/rules.md): the rule catalogue, each rule `shop spec check` holds, generated.

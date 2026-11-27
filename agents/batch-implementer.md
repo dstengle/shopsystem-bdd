@@ -20,7 +20,7 @@ Your prompt is the task's brief. It gives:
 
 ## What you read
 
-The repository's `CLAUDE.md` in your worktree: its rules and its module map are binding. The `tier: judgement` design-decisions (`grep -l '^tier: judgement' spec/decisions/*.md`): follow each in what you write. For each requirement id, before building it: `python3 <scripts>/shop spec explain <cap>#r<n>` (the line, what it also means through a universal condition, and the If lines that take precedence over it) and `python3 <scripts>/shop spec parse --form "<line>"` (its logical form). A code marked `(parameter)` is example data the group's `given` block binds (a path, a message text, a sample value), never a constant to hard-code; a command or an option is a constant. A `# entailed: <U or definition>` comment in a scenario is a Then no step builds: the check after every scenario holds it.
+The repository's `CLAUDE.md` in your worktree and its module map, `docs/reference/modules.md` (read it when placing a module): its rules and the map are binding. The `tier: judgement` design-decisions (`grep -l '^tier: judgement' spec/decisions/*.md`): follow each in what you write. For each requirement id, before building it: `python3 <scripts>/shop spec explain <cap>#r<n>` (the line, what it also means through a universal condition, and the If lines that take precedence over it) and `python3 <scripts>/shop spec parse --form "<line>"` (its logical form). A code marked `(parameter)` is example data the group's `given` block binds (a path, a message text, a sample value), never a constant to hard-code; a command or an option is a constant. A `# entailed: <U or definition>` comment in a scenario is a Then no step builds: the check after every scenario holds it.
 
 Never read another repository on this machine, a worktree of another or an earlier batch, or `.claude/worktrees/`: your worktree's branch is the only reference.
 
@@ -32,7 +32,7 @@ Never read another repository on this machine, a worktree of another or an earli
 - **A chore item**: build it until its check passes in your worktree. Its commits touch only the chore's files and directories; `shop work batch done` refuses a commit of the item that touches another path, naming it, and refuses while the check fails.
 - **Never edit a `.feature` file**: `shop features generate` writes them. An existing test is changed only in its setup; never remove or weaken a test.
 - **Never `git stash`**: every worktree shares one stash list, so two tasks' stashes swap. To see a test red, put files back with `git checkout <commit> -- <path>` or a scratch copy.
-- Keep each tracked Python file at the line limit `CLAUDE.md` gives; a new concern gets a new module and a row in its module map.
+- Keep each tracked Python file at the line limit `CLAUDE.md` gives; a new concern gets a new module and a row in the module map, `docs/reference/modules.md`.
 
 ## What you change
 

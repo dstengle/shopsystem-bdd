@@ -88,11 +88,11 @@ def test_the_marketplace_describes_the_plugin_as_plugin_json_does():
 
 
 def test_the_module_map_is_whole():
-    """CLAUDE.md's module map (plan 9, Task 8): each backticked scripts/ or tests/ path or glob of its table names a
+    """The module map, docs/reference/modules.md (plan 9, Task 8): each backticked scripts/ or tests/ path or glob of its table names a
     tracked file (a `<placeholder>` read as `*`), and each tracked scripts/*.py and extensionless script in scripts/ is named by some row."""
     import fnmatch
     tracked = subprocess.run(["git", "ls-files"], cwd=REPO, capture_output=True, text=True, check=True).stdout.split()
-    rows = [line for line in (REPO / "CLAUDE.md").read_text(encoding="utf-8").splitlines() if line.startswith("| `")]
+    rows = [line for line in (REPO / "docs" / "reference" / "modules.md").read_text(encoding="utf-8").splitlines() if line.startswith("| `")]
     named = [re.sub(r"<[^>]+>", "*", p.rstrip("/")) for row in rows
              for p in re.findall(r"`((?:scripts|tests)/[^`\s]*)`", row.split(" | ")[0])]
     missing = [p for p in named if not any(fnmatch.fnmatch(t, p) or t.startswith(p + "/") for t in tracked)]
