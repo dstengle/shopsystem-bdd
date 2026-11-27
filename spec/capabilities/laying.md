@@ -6,7 +6,7 @@ group: service
 area: laying
 specifies: service laying
 language: codified-2
-retired: [g1, r1, g42, r42, g3, r3, g4, r4, g19, r19, g20, r20]
+retired: [g1, r1, g42, r42, g3, r3, g4, r4, g19, r19, g20, r20, g7, r7, g8, r8, g21, r21, g22, r22, g23, r23, g24, r24, g25, r25, g26, r26, g27, r27, g28, r28, g29, r29, g30, r30, g31, r31, g32, r32, g33, r33, g34, r34, g35, r35, g36, r36, g37, r37, g38, r38, g39, r39, g40, r40, g41, r41, g48, r48, g49, r49]
 unbuilt: []
 ---
 
@@ -23,10 +23,6 @@ Relied on by: batches#r182
 ### [g5] A lift of an item keeps out a requirement of the same group that another requirement in the workspace retires
 - [r5] While an item holds a requirement that retires the requirement id of a requirement of a requirement group and a workspace holds another requirement that retires the requirement id of another requirement of the requirement group, when the batches service lifts the item from the workspace, the laying service shall keep a workspace that does not hold the requirement.
 Relied on by: batches#r182
-
-### [g21] An item laid is held by the workspace before its batch is prepared
-- [r21] While an item holds a requirement, when the batches service lays the item in a workspace, the laying service shall keep the workspace that holds the requirement.
-Relied on by: batches#r179
 
 ### [g6] A workspace prepared for a batch holds a scenario of each requirement of its items
 - [r6] While a batch holds an item and the item holds a requirement, when the batches service prepares a workspace for the batch, the laying service shall keep a scenario that refers to the requirement id of the requirement.
@@ -72,94 +68,6 @@ Relied on by: batches#r188
 - [r18] While a batch holds an item and the item holds a verb that has a sense and a requirement of a capability uses the verb and the item holds no requirement id that is in the capability, when the batches service prepares a workspace for the batch, the laying service shall keep the logical form of the requirement in the corpus.
 Relied on by: batches#r188
 
-### [g22] An item laid that holds a universal condition where none exists keeps universal in the new language
-- [r22] While `universal` does not exist and a universal condition is in an item, when the batches service lays the item in a workspace, the laying service shall keep `universal` and set the language of `universal` to `codified-2`.
-Relied on by: batches#r179
-
-### [g23] An item laid that holds a capability keeps the capability of the capability form
-- [r23] While an item holds a capability, when the batches service lays the item in a workspace, the laying service shall keep the capability that conforms to the capability form.
-Relied on by: batches#r179
-
-### [g7] An item laid that holds a requirement group serving a job keeps the group serving the job
-- [r7] While an item holds a requirement group that serves a job, when the batches service lays the item in a workspace, the laying service shall keep a capability that has a requirement group that serves the job.
-Relied on by: batches#r179
-
-### [g8] An item laid that holds a capability in an area keeps the capability in the area
-- [r8] While an item holds a capability and the item holds an area that holds the capability, when the batches service lays the item in a workspace, the laying service shall keep the capability that the area holds.
-Relied on by: batches#r179
-
-### [g24] An item laid that holds a capability in a driven port keeps the capability in the driven port
-- [r24] While an item holds a capability and the item holds a driven port that holds the capability, when the batches service lays the item in a workspace, the laying service shall keep the driven port that holds the capability.
-Relied on by: batches#r179
-
-### [g25] An item laid that holds a term of a pack keeps the pack with the term and imports it
-- [r25] While an item holds a term of a pack, when the batches service lays the item in a workspace, the laying service shall keep the pack that has the term and keep the pack that this bounded context imports.
-Relied on by: batches#r179
-
-### [g26] An item laid that holds a term of a pack beside its requirements keeps the pack with the term
-- [r26] While an item holds a term of a pack and a capability holds a requirement id that the item holds, when the batches service lays the item in a workspace, the laying service shall keep the pack that has the term.
-Relied on by: batches#r179
-
-### [g27] An item laid that imports a pack keeps the pack imported
-- [r27] While an item imports a pack, when the batches service lays the item in a workspace, the laying service shall keep the pack that this bounded context imports.
-Relied on by: batches#r179
-
-### [g28] An item laid that holds an operation table keeps it in the adapter contract
-- [r28] While an item holds an operation table, when the batches service lays the item in a workspace, the laying service shall keep an adapter contract that holds the operation table.
-Relied on by: batches#r179
-
-### [g29] An item laid that holds an operation keeps no operation table of it
-- [r29] While an item holds an operation, when the batches service lays the item in a workspace, the laying service shall keep an adapter contract and keep no operation table of the operation.
-Relied on by: batches#r179
-
-### [g30] An item laid whose model line specifies a new operation with no table keeps a table of it
-- [r30] While an item holds a model line and the model line specifies an operation and the domain model does not hold the operation and the item holds no operation table of the operation, when the batches service lays the item in a workspace, the laying service shall keep an adapter contract that holds an operation table of the operation.
-Relied on by: batches#r179
-
-### [g31] An item laid that holds an operation table beside its requirements keeps it in the adapter contract
-- [r31] While an item holds an operation table and a capability holds a requirement id that the item holds, when the batches service lays the item in a workspace, the laying service shall keep an adapter contract that holds the operation table.
-Relied on by: batches#r179
-
-### [g32] An item laid whose model line restates an operation keeps the model line in place of the operation
-- [r32] While an item holds a model line that restates an operation, when the batches service lays the item in a workspace, the laying service shall keep the model line in the domain model and keep a domain model that does not hold the operation.
-Relied on by: batches#r179
-
-### [g33] An item laid whose model line restates an element keeps the model line in place of the element
-- [r33] While an item holds a model line that restates an element, when the batches service lays the item in a workspace, the laying service shall keep the model line in the domain model and keep a domain model that does not hold the element.
-Relied on by: batches#r179
-
-### [g34] An item laid whose model line restates an event keeps the model line in place of the event
-- [r34] While an item holds a model line that restates an event, when the batches service lays the item in a workspace, the laying service shall keep the model line in the domain model and keep a domain model that does not hold the event.
-Relied on by: batches#r179
-
-### [g35] An item laid whose model line restates an actor keeps the model line in place of the actor
-- [r35] While an item holds a model line that restates an actor, when the batches service lays the item in a workspace, the laying service shall keep the model line in the domain model and keep a domain model that does not hold the actor.
-Relied on by: batches#r179
-
-### [g36] An item laid whose model line moves to an area keeps the area holding the model line
-- [r36] While an item holds a model line that moves to an area, when the batches service lays the item in a workspace, the laying service shall keep the area that holds the model line.
-Relied on by: batches#r179
-
-### [g37] An item laid that moves a term keeps the term in the area of its element
-- [r37] While an item moves a term that means an element and an area holds the element, when the batches service lays the item in a workspace, the laying service shall keep the area that holds the term.
-Relied on by: batches#r179
-
-### [g38] An item laid that moves a term beside its requirements keeps the term in the area of its element
-- [r38] While an item moves a term that means an element and an area holds the element and a capability holds a requirement id that the item holds, when the batches service lays the item in a workspace, the laying service shall keep the area that holds the term.
-Relied on by: batches#r179
-
-### [g39] An item laid that retires a model line keeps an area without it
-- [r39] While an item retires a model line, when the batches service lays the item in a workspace, the laying service shall keep an area that does not hold the model line.
-Relied on by: batches#r179
-
-### [g40] An item laid that retires a term keeps an area without it
-- [r40] While an item retires a term, when the batches service lays the item in a workspace, the laying service shall keep an area that does not hold the term.
-Relied on by: batches#r179
-
-### [g41] An item laid that retires an element and a term meaning it keeps an area without the term
-- [r41] While an item retires a model line that restates an element and the item retires a term that means the element, when the batches service lays the item in a workspace, the laying service shall keep an area that does not hold the term.
-Relied on by: batches#r179
-
 ### [g43] A lift of an item whose model line restates an operation keeps the operation in the domain model
 - [r43] While an item holds a model line that restates an operation and the domain model holds the model line, when the batches service lifts the item from a workspace, the laying service shall keep a domain model that holds the operation.
 Relied on by: batches#r182, batches#r185
@@ -179,12 +87,4 @@ Relied on by: batches#r182, batches#r185
 ### [g47] A lift that puts back a group leaves out the Relied on by of a line another requirement in the workspace retires
 - [r47] While an item holds a requirement that retires the requirement id of a requirement of a requirement group and a workspace holds another requirement that retires the requirement id of another requirement of the requirement group and the requirement supports a requirement id, when the batches service lifts the item from the workspace, the laying service shall keep a requirement of the requirement group that does not support the requirement id.
 Relied on by: batches#r182
-
-### [g48] An item laid that makes two areas imports into one the other whose term its requirement uses
-- [r48] While an item holds the `watering` area and the item holds the `plots` area and the `plots` area holds a term and the `watering` area holds a capability and a requirement of the capability uses the term, when the batches service lays the item in a workspace, the laying service shall keep the `watering` area and keep an area that imports the `plots` area.
-Relied on by: batches#r179
-
-### [g49] An item laid that holds a capability keeps the capability specifying the service its area holds
-- [r49] While an item holds a capability and an area holds the capability, when the batches service lays the item in a workspace, the laying service shall keep the capability that specifies the service of the area.
-Relied on by: batches#r179
 
