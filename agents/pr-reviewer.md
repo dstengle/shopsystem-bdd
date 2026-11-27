@@ -34,7 +34,7 @@ Then its sections, in order:
 
 Read every requirement the brief's `## Items` gives and every commit its `## Commits` lists, with their change in `change.diff`; read no other commit. Each commit's own change is the patch its line names (`patch: <path>`): read it to see what that commit did, and `change.diff` for the range's net change. You have no shell: a commit the brief does not give is outside the batch, and you do not read it. The base branch's own commits after the batch forked (`shop work batch start`, `done`, `review`) are not the batch's, and the brief leaves them out.
 
-Read every design-decision the brief's `## Judgement decisions` lists, and check the change against each. Read `CLAUDE.md` when `## Rules` names it: its rules and its module map are binding. Read the capability files the requirement lines are in (`spec/capabilities/<capability>.md` in the `Tree:`) for their Purpose, terms and Implementation section.
+Read every design-decision the brief's `## Judgement decisions` lists, and check the change against each. Read `CLAUDE.md` when `## Rules` names it, and the module map `docs/reference/modules.md` beside it when the change adds, moves or splits a module: its rules and the map are binding. Read the capability files the requirement lines are in (`spec/capabilities/<capability>.md` in the `Tree:`) for their Purpose, terms and Implementation section.
 
 On a re-review, read every commit the brief lists under each finding of `## Earlier findings`, and write `fixed` or `not fixed: <why>` for each. Read the re-review's `## Commits` and `change.diff` too: they are only what changed since the last review, the fixes and their merges, and any commit that took a parked item's lines out.
 
@@ -52,7 +52,7 @@ Nothing. The worktree, the base checkout, every branch and the pull request are 
 - **Code no line asks for**: code whose observable behaviour (an output, a file written, a status, a refusal) no line of the batch asks for, and no capability's Implementation section gives.
 - **Tests removed or weakened**: a deleted test, a case dropped from a parametrize list, an assertion removed or loosened, a skip or xfail added, a test rewritten to assert something else.
 - **A `.feature` file changed** other than by `shop features generate`: the run of `shop features generate --check` in `## Runs` shows it; a scenario written by hand is a finding.
-- **`CLAUDE.md`'s rules and module map**: each rule and each module-map row the change touches, met or not, with its file and line.
+- **`CLAUDE.md`'s rules and the module map (`docs/reference/modules.md`)**: each rule and each module-map row the change touches, met or not, with its file and line.
 - **The judgement decisions**: each one the change goes against, naming the decision.
 - **The size**: a change over the limit `## Size` gives is a `Minor` `observation` naming the items that make most of it.
 - **The runs**: a check that exited other than 0 at `Head:` and 0 at the base (`Exit code: 1 (base: 0)`) is a finding, with the lines of its output that show why; one that exited other than 0 at the base too is not the batch's, and is at most an `observation`.

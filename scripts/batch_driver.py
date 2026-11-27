@@ -24,7 +24,8 @@ from plumbing.shop_files import Refused
 SKILL = "shopsystem-bdd:building-a-batch"
 
 RULES = (
-    ("Read the repository's CLAUDE.md in its worktree and follow it; the `tier: judgement` design-decisions "
+    ("Read the repository's CLAUDE.md in its worktree and follow it, and its module map (docs/reference/modules.md, "
+     "where it keeps one) when placing a module; the `tier: judgement` design-decisions "
      "(`grep -l '^tier: judgement' spec/decisions/*.md`) are followed in the code it writes."),
     "One scenario at a time, red first: see it fail on its Then line before writing its handler or code.",
     "Never edit a `.feature` file; an existing test is changed only in its setup.",

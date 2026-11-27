@@ -92,8 +92,8 @@ def test_no_commits_step():
 
 
 def test_every_script_module_has_a_map_row():
-    """Point 7: every `scripts/*.py` is named in CLAUDE.md's module map, by name or by a `<prefix>*` row."""
-    text = (ROOT / "CLAUDE.md").read_text()
+    """Point 7: every `scripts/*.py` is named in the module map, docs/reference/modules.md, by name or by a `<prefix>*` row."""
+    text = (ROOT / "docs" / "reference" / "modules.md").read_text()
     missing = [p.name for p in sorted(SCRIPTS.glob("*.py"))
                if p.name not in text and "%s*" % p.name.split("_")[0] not in text]
     assert missing == []
