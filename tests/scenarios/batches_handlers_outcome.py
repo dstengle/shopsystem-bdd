@@ -1,6 +1,6 @@
 """A ready item whose port outcome no line handles reopened at the batch's opening (batches r160, b721): beside
 readiness_world's codified spec, the domain-model fixture's model, vocabulary, CLI contract and notebook (the index
-importing the request pack), as laying_handlers_pieces' world of a driven port; the item holds
+importing the request pack), as applying_handlers_pieces' world of a driven port; the item holds
 readiness_handlers_outcome's BLOCK, the driven port `stock-port` whose port line governs `stock.reserve` and excludes
 its refusal, its model line, and notebook's core line requesting it, no core line on its completion, so the outcome
 `stock.reserve done` no line handles. The Then of the outcome named reads `work batch start`'s output for its name in

@@ -1,40 +1,41 @@
-"""The Thens of laying's scenarios of what a lay keeps of an item's model lines, terms and operation tables (r28-r41,
-b746), moved from batches' (batches_handlers_adapter's, _new_op's, _restate's, _element's, _lone's, _move's,
-_retire's and _retire_both's checks), `work_queue_world.local`s tried before laying_handlers' own, over
-laying_handlers_model's worlds: each Then by its own polarity, verb and kinds (`THENS`, b764; one of no entry refused),
-reading a file of the workspace the lay done changed (`kept`). The adapter contract
-holding the item's table once, or no table of the operation withheld and it under `[unexposed]`, or the table of
-`notes.pin` written from the model; notes' model holding the restating line once in place of the element it restates;
-labels' model holding `object tag` and notes' importing labels; notes' layer holding the moved term and shared's not;
-the area's file without what the item retires."""
+"""The Thens of applying's scenarios of what an apply keeps of an item's model lines, terms and operation tables
+(r10-r23; laying's r28-r41 before b872, b746), `work_queue_world.local`s tried before applying_handlers' own, over
+applying_handlers_model's worlds: each Then by its own polarity, verb and kinds (`THENS`, b764; one of no entry
+refused), reading a file of the specification the apply done changed (`kept`). The adapter contract holding the
+item's table once, or no table of the operation withheld and it under `[unexposed]`, or the table of `notes.pin`
+written from the model; notes' model holding the restating line once in place of the element it restates; labels'
+model holding `object tag` and notes' importing labels; notes' layer holding the moved term and shared's not; the
+area's file without what the item retires."""
 import re
 import sys
+import tomllib
 
 M = next(m for m in list(sys.modules.values())
-         if str(getattr(m, "__file__", "") or "").endswith("/laying_handlers_model.py"))   # loaded before this
+         if str(getattr(m, "__file__", "") or "").endswith("/applying_handlers_model.py"))   # loaded before this
 L, world, parts = M.L, M.world, sys.modules["shop_world_four"].parts
 
 
 def kept(step, rel):
-    """The lines of the workspace's file `rel`, which the lay done changed."""
-    w = world(step)
-    assert w["response"].outcome == "done" and rel in w["response"].content["changed"], (step.text, rel, w["response"])
-    return (w["tree"] / rel).read_text().split("\n")
+    """The lines of the specification's file `rel`, which the apply done changed."""
+    return L.kept(step, rel).split("\n")
 
 
 def _contract(step, tag):
-    """The adapter contract holds the item's table once (g28, g31), or the table of `notes.pin` written from the model
-    (g30)."""
+    """The adapter contract holds the item's table once (g10, g13), or the table of `notes.pin` written from the model
+    (g12)."""
     text = "\n".join(kept(step, M.CONTRACT))
-    if tag == "g30":
+    if tag == "g12":
         assert text.count('[operations."notes.pin"]') == 1, text
         assert 'command = "notes pin"' in text and '[operations."notes.pin".parameters]' in text, text
     else:
-        assert M.table("o1") in text and text.count('[operations."%s"]' % M.OPERATION) == 1, text
+        operation = tomllib.loads(text)["operations"][M.OPERATION]                      # annotated by the apply
+        note = operation["parameters"]["note"]
+        assert operation["command"] == "notes archive" and note["positional"] == 1, text
+        assert note["example"] == "o1" and text.count('[operations."%s"]' % M.OPERATION) == 1, text
 
 
 def _withheld(step, tag):
-    """No table of the withheld operation, which the contract lists under `[unexposed]` (g29)."""
+    """No table of the withheld operation, which the contract lists under `[unexposed]` (g11)."""
     text = "\n".join(kept(step, M.CONTRACT))
     assert '[operations."%s"' % M.OPERATION not in text, text
     assert re.search(r'(?ms)^\[unexposed\].*"%s"' % re.escape(M.OPERATION), text), text
@@ -43,21 +44,21 @@ def _withheld(step, tag):
 def _restated(step, tag):
     """notes' model holds the item's line once in place of the element it restates."""
     lines = kept(step, M.MODEL)
-    if tag == "g32":
+    if tag == "g14":
         assert [x for x in lines if x.startswith("  operation archive(")] == [M.ARCHIVED[1]], lines
-    elif tag == "g33":
+    elif tag == "g15":
         at = lines.index(M.HEADER)
         end = next((i for i in range(at + 1, len(lines)) if not lines[i].startswith(" ")), len(lines))
         assert lines.count(M.HEADER) == 1 and tuple(lines[at:end]) == M.NOTE and M.NOTE_OLD not in lines, lines
     else:
         old, new = M.LONE[tag]
-        head = old.partition(":")[0] if tag == "g34" else "actor the person"
+        head = old.partition(":")[0] if tag == "g16" else "actor the person"
         assert [x for x in lines if x.startswith(head)] == [new] and old not in lines, lines
 
 
 def _moved(step, tag):
     """The area holds what the item moves there, and the area it moved from does not."""
-    if tag == "g36":
+    if tag == "g18":
         target, source = kept(step, M.LABELS), kept(step, M.MODEL)
         assert target.count("object tag") == 1 and "  relations: of → note (one)" in target, target
         assert "object tag" not in source and "imports: [labels]" in source, source
@@ -73,11 +74,11 @@ def _retired(step, tag):
 
 
 def _area(step, tag):
-    """The area kept: holding what the item moves (g36-g38), or without what it retires (g39-g41)."""
-    (_moved if tag in ("g36", "g37", "g38") else _retired)(step, tag)
+    """The area kept: holding what the item moves (g18-g20), or without what it retires (g21-g23)."""
+    (_moved if tag in ("g18", "g19", "g20") else _retired)(step, tag)
 
 
-# Each Then of these groups by its polarity, its verb (`keep` of any of laying_handlers' KEEPS) and the kinds of its
+# Each Then of these groups by its polarity, its verb (`keep` of any of applying_handlers' KEEPS) and the kinds of its
 # things (a keep's object alone, its subject re-keyed to its program): what it reads.
 THENS = {(True, "keep", "adapter contract"): lambda step, tag: kept(step, M.CONTRACT),
          (False, "keep", "operation table"): _withheld,
@@ -104,7 +105,7 @@ def then(step):
     verb = "keep" if step.term in L.KEEPS else {"have": "has", "hold": "holds"}.get(step.term, step.term)
     key = (step.template == "ThenDoes", verb, kinds[-1] if verb == "keep" else kinds)
     if key not in THENS:
-        raise AssertionError("laying_handlers_model_then takes no Then %s: %s" % (key, step.text))
+        raise AssertionError("applying_handlers_model_then takes no Then %s: %s" % (key, step.text))
     THENS[key](step, tag)
 
 
