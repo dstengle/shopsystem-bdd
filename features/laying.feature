@@ -13,27 +13,6 @@ Feature: Laying
     Then the laying service keeps the workspace w2
     And the workspace w2 does not hold the requirement r1
 
-  @g3 @r3
-  Scenario: A check of an item that violates a rule of severity error fails naming the rule
-    Given a requirement r1
-    And an item i1
-    And the item i1 has the requirement r1
-    And a rule r2
-    And the severity of the rule r2 is `error`
-    And the requirement r1 violates the rule r2
-    And a workspace w1
-    When the batches service checks the item i1 in the workspace w1
-    Then the laying service fails this request
-    And the laying service names the rule r2
-
-  @g4 @r4
-  Scenario: A check of an item that violates no rule of severity error completes
-    Given an item i1
-    And no requirement in the item i1 violates a rule whose severity is `error`
-    And a workspace w1
-    When the batches service checks the item i1 in the workspace w1
-    Then the laying service completes this request
-
   @g5 @r5
   Scenario: A lift of an item keeps out a requirement of the same group that another requirement in the workspace retires
     Given a requirement r2
@@ -239,43 +218,6 @@ Feature: Laying
     Then this corpus holds the requirement r1
     And the laying service keeps the logical form l1
     And the requirement r1 has the logical form l1
-
-  @g19 @r19
-  Scenario: A check of an item whose port line leaves an operation outcome unhandled fails naming the outcome
-    Given a port line p1
-    And an operation o1
-    And the port line p1 governs the operation o1
-    And an item i1
-    And the item i1 holds the port line p1
-    And an operation outcome o2
-    And the operation o1 has the operation outcome o2
-    And no core line handles the operation outcome o2
-    And no port line excludes the operation outcome o2
-    And a workspace w1
-    When the batches service checks the item i1 in the workspace w1
-    Then the laying service fails this request
-    And the laying service names the operation outcome o2
-
-  @g20 @r20
-  Scenario: A check of an item whose core line uses another area's operation that performs a transition fails naming the line and v_m9
-    Given a lifecycle l1
-    And an area a1
-    And the area a1 holds the lifecycle l1
-    And a transition t1
-    And the lifecycle l1 has the transition t1
-    And an operation o1
-    And the operation o1 performs the transition t1
-    And an area a2
-    And the area a2 holds the operation o1
-    And a core line c1
-    And the core line c1 uses the operation o1
-    And an item i1
-    And the item i1 holds the core line c1
-    And a workspace w1
-    When the batches service checks the item i1 in the workspace w1
-    Then the laying service fails this request
-    And the laying service names the core line c1
-    And the laying service names `v_m9`
 
   @g21 @r21
   Scenario: An item laid is held by the workspace before its batch is prepared

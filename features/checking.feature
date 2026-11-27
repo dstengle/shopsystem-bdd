@@ -1468,3 +1468,70 @@ Feature: Checking
     Then the specification service fails this check
     And the specification service names the term t1
     And the specification service names `request`
+
+  @g164 @r164
+  Scenario: A check for an item passes when the item holds no requirement that violates an error rule
+    Given an item i1
+    And no requirement in the item i1 violates a rule whose severity is `error`
+    When the person validates this specification with the item i1
+    Then the specification service completes this request
+
+  @g165 @r165
+  Scenario: A check for an item fails on an operation outcome its port lines leave unhandled, naming the outcome
+    Given a port line p1
+    And an operation o1
+    And the port line p1 governs the operation o1
+    And an item i1
+    And the item i1 holds the port line p1
+    And an operation outcome o2
+    And the operation o1 has the operation outcome o2
+    And no core line handles the operation outcome o2
+    And no port line excludes the operation outcome o2
+    When the person validates this specification with the item i1
+    Then the specification service fails this check
+    And the specification service names the operation outcome o2
+
+  @g166 @r166
+  Scenario: A check for an item fails on a core line that uses another area's transition, naming the line and v_m9
+    Given a lifecycle l1
+    And an area a1
+    And the area a1 holds the lifecycle l1
+    And a transition t1
+    And the lifecycle l1 has the transition t1
+    And an operation o1
+    And the operation o1 performs the transition t1
+    And an area a2
+    And the area a2 holds the operation o1
+    And a core line c1
+    And the core line c1 uses the operation o1
+    And an item i1
+    And the item i1 holds the core line c1
+    When the person validates this specification with the item i1
+    Then the specification service fails this check
+    And the specification service names the core line c1
+    And the specification service names `v_m9`
+
+  @g167 @r167
+  Scenario: A check for an item returns no violation of a requirement no item holds
+    Given a rule r2
+    And the severity of the rule r2 is `error`
+    And a requirement r1
+    And the requirement r1 violates the rule r2
+    And this specification holds the requirement r1
+    And no item holds the requirement r1
+    And an item i1
+    When the person validates this specification with the item i1
+    Then the specification service does not return the requirement r1
+
+  @g168 @r168
+  Scenario: An item applied while the feature generator is unresponsive is refused, naming the generator
+    Given a specification s1
+    And a workspace w1
+    And the workspace w1 has the specification s1
+    And a feature generator f1
+    And the workspace w1 has the feature generator f1
+    And the responsiveness of the feature generator f1 is `unresponsive`
+    And an item i1
+    When the batches service applies the item i1 to the specification s1
+    Then the specification service refuses this request
+    And the specification service names the feature generator f1

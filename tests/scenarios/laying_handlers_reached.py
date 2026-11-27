@@ -1,4 +1,4 @@
-"""laying_handlers_prepare's worlds of g17-g20 (b758), moved from batches' (b707, b715, b721, b731), and their Thens.
+"""laying_handlers_prepare's worlds of g17 and g18 (b758), moved from batches' (b707, b715), and their Thens.
 g17: beside readiness_world's codified spec, the domain-model fixture's model, vocabulary and notebook (the index
 importing the request pack), the repository keeping notebook's feature and a corpus whose `notebook.md` holds each line
 of notebook with its form before the lay; the item holding a line of a capability `shelf` new to the notes area, no
@@ -7,11 +7,8 @@ scenario brings the note in by a Given and names it in its When) and giving a no
 is the note's: its form changes). g18: supervision given a sense of `take` (take#2, "agent takes stage") and a line
 `r5` using it, kept in the corpus with its form before the lay; the item holding readiness_world's passing line and,
 in a block of review (a layer before supervision's), a third sense of `take`, so supervision's is read as take#3 once
-laid. g19: batches_handlers_outcome's spec, the item holding readiness_handlers_outcome's BLOCK (the driven port
-`stock-port` excluding the refusal of `stock.reserve`, no core line on its completion: `stock.reserve done` unhandled).
-g20: readiness_handlers_lifecycle's spec (its area `desk`), the item holding its BLOCK (notebook#r10 setting the
-status of a note on the request of desk's `stamp`: v_m9). The Thens read the prepared workspace's feature and corpus
-(g17, g18) and the reasons of the failed check (g19, g20)."""
+laid. The Thens read the prepared workspace's feature and corpus. Laying's checks of g19 and g20 are the specification
+service's now (checking r165, r166, b871)."""
 import re
 import shutil
 import subprocess
@@ -34,11 +31,6 @@ USING, LINE = "r5", "When `work` starts a stage, `work` shall take the stage."
 OLDER = ("## Terms\n\n- **take** (verb, action): an agent takes a stage up. Forms: takes, taken. "
          "Frame: agent takes stage.\n\n")
 NEWER = "- **take** (verb, action): an agent takes a brief in. Forms: takes, taken. Frame: agent takes brief."
-
-
-def _module(stem):
-    return next(m for m in list(sys.modules.values())
-                if getattr(m, "__file__", None) and m.__file__.endswith("/%s.py" % stem))
 
 
 def _lines(root):
@@ -83,18 +75,7 @@ def sensed(step):
     B.write_item(step, "i1", sections={"Requirements": "### review\n\n%s\n\n%s" % (NEWER, R().block("Title", R().PASSING))})
 
 
-def bound(step):
-    _module("batches_handlers_outcome")._spec(step)
-    B.write_item(step, "i1", sections={"Requirements": _module("readiness_handlers_outcome").BLOCK})
-
-
-def transition(step):
-    life = _module("readiness_handlers_lifecycle")
-    life._spec(step, "laying")
-    B.write_item(step, "i1", sections={"Requirements": life.BLOCK})
-
-
-P.WORLDS.update({"g17": beyond, "g18": sensed, "g19": bound, "g20": transition})
+P.WORLDS.update({"g17": beyond, "g18": sensed})
 
 
 def _corpus_holds(step, name, rid, line, want):
@@ -108,10 +89,9 @@ def _corpus_holds(step, name, rid, line, want):
 
 def then(step):
     """g17: the feature generated (notebook's, r4's scenario naming the note its When adds, what `features generate`
-    writes there) and r4's block of the corpus; g18: supervision's r5 block read as take#3; g19, g20: the failed
-    check's reasons naming the outcome `stock.reserve done`, the core line notebook#r10 and `v_m9`."""
+    writes there) and r4's block of the corpus; g18: supervision's r5 block read as take#3."""
     tag, w = group(step), world(step)
-    if tag not in ("g17", "g18", "g19", "g20") or "tree" not in w:
+    if tag not in ("g17", "g18") or "tree" not in w:
         return False
     kinds = [k for k, _ in sys.modules["shop_world_four"].parts(step)]
     if tag == "g17" and kinds[-1] == "feature":
@@ -124,16 +104,8 @@ def then(step):
         _corpus_holds(step, "notebook", GOVERNING, _lines(w["tree"])[GOVERNING], r"of\(x4, x2\)")
     elif tag == "g18":
         _corpus_holds(step, "supervision", USING, LINE, r"take#3\(e\d+, subject: x\d+, object: x\d+\)")
-    elif step.term != "name":
-        return False
     else:
-        response = w["response"]
-        assert response.outcome == "failed", response
-        said = " ".join(e["reason"] for e in response.errors)
-        want = {"operation outcome": _module("batches_handlers_outcome").OUTCOME,
-                "core line": _module("readiness_handlers_lifecycle").LINE}.get(
-            kinds[-1], step.nps[-1].strip("`") if step.nps[-1].startswith("`") else None)
-        assert want and want in said, (step.text, want, said)
+        return False
     return None
 
 

@@ -4,7 +4,7 @@ importing the request pack), as laying_handlers_pieces' world of a driven port; 
 readiness_handlers_outcome's BLOCK, the driven port `stock-port` whose port line governs `stock.reserve` and excludes
 its refusal, its model line, and notebook's core line requesting it, no core line on its completion, so the outcome
 `stock.reserve done` no line handles. The Then of the outcome named reads `work batch start`'s output for its name in
-the bound check. r167, which retired r160, is laying#r19 (b758), whose world laying_handlers_reached builds with `_spec`. r166 (b725): BLOCK laid on the base spec before the item, so the base already leaves
+the bound check. r167, which retired r160, was laying#r19 (b758), now checking#r165 (b871). r166 (b725): BLOCK laid on the base spec before the item, so the base already leaves
 the outcome unhandled, and the item holding only a second port line of `stock-port` that governs `stock.reserve`
 (SECOND). r168 (b730), which retires r166, keeps its world."""
 import shutil

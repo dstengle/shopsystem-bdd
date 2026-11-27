@@ -461,6 +461,21 @@ Restates: design-model-check#r13@0.29.
 ### [g163] the check fails a term that redefines a verb of the request pack and does not tell its senses apart, naming the term and the pack
 - [r163] While a term redefines the `request` pack and the term violates `v_t15`, if the person validates this specification, then the specification service shall fail the check and name the term and the pack.
 
+### [g164] A check for an item passes when the item holds no requirement that violates an error rule
+- [r164] While an item holds no requirement that violates a rule whose severity is `error`, when the person validates this specification with the item, the specification service shall complete the request.
+
+### [g165] A check for an item fails on an operation outcome its port lines leave unhandled, naming the outcome
+- [r165] While an item holds a port line that governs an operation and every port line that governs the operation is in the item and the operation has an operation outcome and no core line handles the operation outcome and no port line excludes the operation outcome, if the person validates this specification with the item, then the specification service shall fail the check and name the operation outcome.
+
+### [g166] A check for an item fails on a core line that uses another area's transition, naming the line and v_m9
+- [r166] While an area holds a lifecycle and the lifecycle has a transition and another area holds an operation that performs the transition and an item holds a core line that uses the operation, if the person validates this specification with the item, then the specification service shall fail the check and name the core line and `v_m9`.
+
+### [g167] A check for an item returns no violation of a requirement no item holds
+- [r167] While this specification holds a requirement that violates a rule whose severity is `error` and no item holds the requirement, when the person validates this specification with an item, the specification service shall not return the requirement.
+
+### [g168] An item applied while the feature generator is unresponsive is refused, naming the generator
+- [r168] While a workspace has a specification and the workspace has a feature generator and the feature generator is `unresponsive`, if the batches service applies an item to the specification, then the specification service shall refuse the request and name the feature generator.
+
 ## Dropped
 - design-model-check#r2@0.29: retired with checking#r4 by b370.
 - design-model-check#r3@0.29: retired with checking#r4 by b370.

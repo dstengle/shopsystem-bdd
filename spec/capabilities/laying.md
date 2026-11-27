@@ -6,7 +6,7 @@ group: service
 area: laying
 specifies: service laying
 language: codified-2
-retired: [g1, r1, g42, r42]
+retired: [g1, r1, g42, r42, g3, r3, g4, r4, g19, r19, g20, r20]
 unbuilt: []
 ---
 
@@ -19,14 +19,6 @@ The specification a batch works on, reached by the batches service through a dri
 ### [g2] An item lifted is no longer held by the workspace
 - [r2] While a workspace holds a requirement of an item, when the batches service lifts the item from the workspace, the laying service shall keep a workspace that does not hold the requirement.
 Relied on by: batches#r182
-
-### [g3] A check of an item that violates a rule of severity error fails naming the rule
-- [r3] While a requirement of an item violates a rule whose severity is `error`, when the batches service checks the item in a workspace, the laying service shall fail the request and name the rule.
-Relied on by: batches#r180
-
-### [g4] A check of an item that violates no rule of severity error completes
-- [r4] While an item holds no requirement that violates a rule whose severity is `error`, when the batches service checks the item in a workspace, the laying service shall complete the request.
-Relied on by: batches#r180
 
 ### [g5] A lift of an item keeps out a requirement of the same group that another requirement in the workspace retires
 - [r5] While an item holds a requirement that retires the requirement id of a requirement of a requirement group and a workspace holds another requirement that retires the requirement id of another requirement of the requirement group, when the batches service lifts the item from the workspace, the laying service shall keep a workspace that does not hold the requirement.
@@ -79,14 +71,6 @@ Relied on by: batches#r188
 ### [g18] A workspace prepared for a batch keeps in the corpus the logical form of a requirement that uses a verb its items give a sense
 - [r18] While a batch holds an item and the item holds a verb that has a sense and a requirement of a capability uses the verb and the item holds no requirement id that is in the capability, when the batches service prepares a workspace for the batch, the laying service shall keep the logical form of the requirement in the corpus.
 Relied on by: batches#r188
-
-### [g19] A check of an item whose port line leaves an operation outcome unhandled fails naming the outcome
-- [r19] While an item holds a port line that governs an operation and every port line that governs the operation is in the item and the operation has an operation outcome and no core line handles the operation outcome and no port line excludes the operation outcome, when the batches service checks the item in a workspace, the laying service shall fail the request and name the operation outcome.
-Relied on by: batches#r180, batches#r189
-
-### [g20] A check of an item whose core line uses another area's operation that performs a transition fails naming the line and v_m9
-- [r20] While an area holds a lifecycle and the lifecycle has a transition and another area holds an operation that performs the transition and an item holds a core line that uses the operation, when the batches service checks the item in a workspace, the laying service shall fail the request and name the core line and `v_m9`.
-Relied on by: batches#r180, batches#r189
 
 ### [g22] An item laid that holds a universal condition where none exists keeps universal in the new language
 - [r22] While `universal` does not exist and a universal condition is in an item, when the batches service lays the item in a workspace, the laying service shall keep `universal` and set the language of `universal` to `codified-2`.

@@ -48,7 +48,7 @@ FORMS = REPO / "tests" / "scripts" / "fixtures" / "grammar4-factored" / "forms.j
 
 SLASHED = ("VPSlash", "ClSlash", "RS")
 SLASH_PER_KIND = 5
-FUNS_PER_KIND = 40
+FUNS_PER_KIND = 41
 SENSES = 400
 LOADED = 18.1
 BUDGET = 25.0
