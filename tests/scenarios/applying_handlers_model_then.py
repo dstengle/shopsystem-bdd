@@ -28,8 +28,10 @@ def _contract(step, tag):
         assert text.count('[operations."notes.pin"]') == 1, text
         assert 'command = "notes pin"' in text and '[operations."notes.pin".parameters]' in text, text
     else:
-        parameters = tomllib.loads(text)["operations"][M.OPERATION]["parameters"]     # annotated by the apply
-        assert parameters["note"]["example"] == "o1" and text.count('[operations."%s"]' % M.OPERATION) == 1, text
+        operation = tomllib.loads(text)["operations"][M.OPERATION]                      # annotated by the apply
+        note = operation["parameters"]["note"]
+        assert operation["command"] == "notes archive" and note["positional"] == 1, text
+        assert note["example"] == "o1" and text.count('[operations."%s"]' % M.OPERATION) == 1, text
 
 
 def _withheld(step, tag):
