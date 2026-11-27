@@ -4,7 +4,8 @@ The section holds one `### <capability>` block for each capability the item's pi
 file's own syntax one heading level down: an optional `language: codified-2` line first, the marker the item switches
 the capability's file to (`work line --recodify`, backlog_recodify), an optional `retired: [r<n>, ...]` line next, the live requirements of the
 capability the item's lines replace (`work line --retires`, backlog_retires), then an optional `retires: [r<n> r<m>, ...]`
-line, which of the item's lines retires which of those ids (b323; an id `--no-line` retired is in no pair), then an
+line, which of the item's lines retires which of those ids (b323; a line of another capability as `<cap>#r<n>`, b882; an id
+`--no-line` retired is in no pair), then an
 optional `serves: [g<n> <job>, ...]` line, the jobs the item dedicates groups of the capability to (b641), then optional term bullets, then relation rows (`| from | word | to |
 cardinality |`), then `#### [g<n>] <title>` groups of `- [r<n>] <statement>` bullets, one line each, a group's fenced
 `given` block after its lines. After the capability blocks, a `### universal` block of `- [U<n>] <statement>`
@@ -53,7 +54,8 @@ GROUP = re.compile(r"^#### \[(g[1-9]\d*)\] (\S.*)$")
 REQ = re.compile(r"^- \[(r[1-9]\d*)\] (\S.*)$")
 U = re.compile(r"^- \[(U[1-9]\d*)\] (\S.*)$")
 RETIRED = re.compile(r"^retired: \[(r[1-9]\d*(?:, r[1-9]\d*)*)\]$")
-RETIRES = re.compile(r"^retires: \[(r[1-9]\d* r[1-9]\d*(?:, r[1-9]\d* r[1-9]\d*)*)\]$")
+PAIR = r"(?:[a-z0-9]+(?:-[a-z0-9]+)*#)?r[1-9]\d* r[1-9]\d*"       # a line of another capability's as <cap>#r<n>
+RETIRES = re.compile(r"^retires: \[(%s(?:, %s)*)\]$" % (PAIR, PAIR))
 U_RETIRED = re.compile(r"^retired: \[(U[1-9]\d*(?:, U[1-9]\d*)*)\]$")
 SERVES = re.compile(r"^serves: \[(g[1-9]\d* \S+(?:, g[1-9]\d* \S+)*)\]$")
 LANGUAGE = re.compile(r"^language: (codified-2)$")
