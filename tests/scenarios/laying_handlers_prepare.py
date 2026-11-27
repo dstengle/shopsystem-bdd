@@ -1,14 +1,14 @@
-"""Handlers of laying's scenarios of a workspace prepared for a batch and of a check after it (r6, r9-r20, b758),
+"""Handlers of laying's scenarios of a workspace prepared for a batch (r6, r9-r18, b758),
 `work_queue_world.local`s tried before laying_handlers' own, each taking only a step of a scenario of one of their
 groups (`mine`). A scenario's world is its group's (`WORLDS`: this module's for g6 and g9-g16, laying_handlers_reached's
-for g17-g20), built on readiness_world's codified spec at the When, so the Givens of these groups record nothing: the
+for g17, g18), built on readiness_world's codified spec at the When, so the Givens of these groups record nothing: the
 item i1 (`b1`) holding readiness_world's PASSING line as `work-queue#r5` (g6, g14-g16), beside a corpus
 (`grammar/corpus/spec/`, g9), retiring `work-queue#r4` whose block the corpus holds (g10), with a line citing a rule's
 code (`v15k`, g11) or using a construct (`order-by`, the spec pack imported, g12), or one of a value that spells a
 construct's code and uses none, no construct catalogue in the repository (g13); the index given a Composition naming
 `work-queue` and `shelved`, a capability every line of which is retired (g15, g16). The When commits the world, makes
 the workspace w1 a worktree of it, lays the item there and prepares the workspace for the batch `batch-1` with the
-item (`laying.prepare`), or, of a check, checks the item once it is prepared, and keeps the laying service's reply.
+item (`laying.prepare`), and keeps the laying service's reply.
 The Thens read the reply's changed paths and the workspace's files."""
 import re
 import subprocess
@@ -99,8 +99,8 @@ def given(step):
 
 
 def requests(step):
-    """`the batches service prepares the workspace w1 for the batch b1` (checks the item i1 in it): the world built,
-    the item laid and the workspace prepared for `batch-1` (then the item checked); the reply kept."""
+    """`the batches service prepares the workspace w1 for the batch b1`: the world built, the item laid and the
+    workspace prepared for `batch-1`; the reply kept."""
     if not mine(step) or step.template != "WhenRequests":
         return False
     import backlog_items
@@ -118,7 +118,7 @@ def requests(step):
     assert laid.outcome == "done", laid
     w["prepared"] = laying.prepare(tree, "batch-1", [item])
     assert w["prepared"].outcome == "done", w["prepared"]
-    w["response"] = laying.check(item, tree) if step.term.endswith(".check") else w["prepared"]
+    w["response"] = w["prepared"]
 
 
 def kept(step, rel):

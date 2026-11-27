@@ -1,9 +1,8 @@
-"""items#r73's world (b731) and laying#r20's (laying_handlers_reached, b758): an item whose core line performs another
-area's lifecycle transition. The domain-model fixture's model, vocabulary and notebook (items: its whole spec; laying:
-beside readiness_world's codified spec, as batches_handlers_outcome's world), with a second area `desk` (DESK) whose service's `stamp` the notes
-area imports; the area `notes` holds the lifecycle `note.status` and its transition `draft → active`; the item holds
+"""items#r73's world (b731), whose BLOCK and DESK checking's r166 reads too (checking_handlers_brings, b871): an item
+whose core line performs another area's lifecycle transition. The domain-model fixture's whole spec, with a second area
+`desk` (DESK) whose service's `stamp` the notes area imports; the area `notes` holds the lifecycle `note.status` and its transition `draft → active`; the item holds
 notebook's core line requesting `desk.stamp` and setting the status of the note to `active` (BLOCK), so the lay brings
-v_m9 of the transition. What `work ready` and laying's check name the core line by is its requirement's id."""
+v_m9 of the transition. What `work ready` names the core line by is its requirement's id."""
 import importlib.util
 import shutil
 import sys
@@ -69,20 +68,12 @@ def _tag(step):
     return "items" if requested.capability(step.request.node) == "items" and "r73" in found.tags else None
 
 
-def _spec(step, tag):
-    """The world's spec, once: the fixture's (beside readiness_world's codified spec, of any other tag) and DESK."""
+def _spec(step):
+    """The world's spec, once: the fixture's and DESK."""
     if step.context.get("lifecycle_spec"):
         return
     spec = step.repo / "spec"
-    if tag == "items":
-        shutil.copytree(FIXTURE, spec, dirs_exist_ok=True)
-    else:
-        sys.modules["shop_readiness_world"].codify(step)
-        for folder in ("model", "vocabulary", "adapters"):
-            shutil.copytree(FIXTURE / folder, spec / folder, dirs_exist_ok=True)
-        shutil.copy(FIXTURE / "capabilities" / "notebook.md", spec / "capabilities" / "notebook.md")
-        index = spec / "index.md"
-        index.write_text(index.read_text().replace("imports: [cli]", "imports: [request]"))
+    shutil.copytree(FIXTURE, spec, dirs_exist_ok=True)
     notes = spec / "model" / "notes.md"
     notes.write_text(notes.read_text().replace("imports: []", "imports: [desk]", 1))
     for rel, text in DESK.items():
@@ -96,7 +87,7 @@ def given_named(step):
     tag = _tag(step)
     if tag is None or step.kind not in KINDS:
         return False
-    _spec(step, tag)
+    _spec(step)
     if step.kind == "core line":
         step.context.setdefault("says", {})[step.names[0]] = LINE
     return None
