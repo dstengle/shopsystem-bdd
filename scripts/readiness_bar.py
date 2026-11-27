@@ -29,6 +29,7 @@ import readiness_bound
 import readiness_titles
 import request_moves
 import request_text
+import spec_apply
 import spec_catalogued
 import spec_held
 import spec_language
@@ -218,7 +219,7 @@ def well_formed(root, item, others=()):
         shutil.copytree(Path(root) / "spec", copy / "spec")      # backlog_lines.lay, the lexicon read before the item
         spec_catalogued.copy(root, copy)        # parsing#r6 refuses on the copy as in the context (b444)
         for other in others:
-            backlog_lines.lay_onto(copy, other)
+            spec_apply.lay(copy, other)
         with spec_held.held(copy):          # the copy's inputs statted once a state, each line parsed once (b430)
             return _laid(copy, item, blocks, mine)
     finally:
@@ -236,7 +237,7 @@ def _laid(copy, item, blocks, mine):
         return problems, violations
     before, before_lay = readiness_before.before(copy, unlaid)
     doubled = backlog_forms.laid_already(copy, blocks)      # an upstream an item picked before lays (b476)
-    backlog_lines.lay_onto(copy, item)
+    spec_apply.lay(copy, item)       # the specification service's lay (b871)
     reasons = ["%s.md: %s" % (b.capability, p) for b in blocks
                for p in spec_read.capability(backlog_lines.capability_file(copy, b.capability)).problems]
     reasons += ["universal.md: %s" % p for p in spec_read.read_universal(copy).problems] if blocks.universal else []

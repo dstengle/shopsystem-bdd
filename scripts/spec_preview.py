@@ -8,7 +8,10 @@ file are read as they are. Of `spec check --item`, the violations the lay alone 
 checking r153-r155): v_s3 of a group the item lays, whose scenarios only a batch's lay writes, and v_a5 of a
 requirement it lays, which only a batch's lay annotates in the adapter contract, as the readiness bar leaves them out;
 every other violation of the item's reported, and each lexicon problem the lay brings that the specification without
-it has not, as the readiness bar's lexicon stage finds them (`lexicon`, b848, checking r160)."""
+it has not, as the readiness bar's lexicon stage finds them (`lexicon`, b848, checking r160). The item is laid by the
+specification service's lay (spec_apply, b871), and `spec check --item` is its check of what the item brings
+(spec_apply_check's `brought`, checking r164-r167): a finding the context has without the item is not returned, and
+the bound check's and v_m9's violations the item brings are named by its operation, outcome or line."""
 
 import shutil
 import tempfile
@@ -16,8 +19,8 @@ from contextlib import contextmanager
 from pathlib import Path
 
 import backlog_items
-import backlog_lines
 import backlog_section
+import spec_apply
 import spec_catalogued
 
 # The rules whose violations of the item's own ids only a batch's lay clears (`lay_only`), each with the place of the
@@ -38,7 +41,7 @@ def laid(root, name, whole=False):
         if whole:
             _beside(Path(root), copy)
         spec_catalogued.copy(root, copy)
-        backlog_lines.lay_onto(copy, item)
+        spec_apply.lay(copy, item)       # the specification service's lay (b871)
         yield copy
     finally:
         shutil.rmtree(copy, ignore_errors=True)
@@ -55,14 +58,19 @@ def _beside(root, copy):
 
 def rooted(args, run):
     """`run(args)`, or with `args.item` given, `run` of args whose root is the whole context with the item laid, its
-    `lexicon` the lexicon problems the lay brings."""
+    `lexicon` the lexicon problems the lay brings and `brought` the specification service's check of what the item
+    brings (spec_apply_check's `brought`, b871: the findings of `args.root` left out, the bound check's and v_m9's
+    reasons of the item named)."""
     if not getattr(args, "item", None):
         return run(args)
     import argparse
-    left_out = lay_only(backlog_items.find(args.root, args.item))
+
+    import spec_apply_check
+    item = backlog_items.find(args.root, args.item)
+    left_out, brought = lay_only(item), spec_apply_check.brought(args.root, item)
     with laid(args.root, args.item, whole=True) as copy:
         return run(argparse.Namespace(**{**vars(args), "root": str(copy), "item": None, "lay_only": left_out,
-                                         "lexicon": lexicon(args.root, copy)}))
+                                         "brought": brought, "lexicon": lexicon(args.root, copy)}))
 
 
 def lexicon(root, copy):

@@ -5,7 +5,7 @@ workspace may hold a newer generator than the checkout a command runs in) has it
 consumer's, whose generator is the plugin's own) by features_generate in this process. Read by laying_inprocess's
 prepare and lift and by batch_reached, so `work batch start`, `park` and `amend` all write with the tree's
 generator. A run that outlasts its time limit (`$SHOPSYSTEM_GENERATE_TIMEOUT` seconds, default 600) or cannot be
-started is a GenerateError naming the feature generator, which those commands refuse with (b749, batches r175,
+started is a GenerateError naming the feature generator (`Unresponsive`, b871), which those commands refuse with (b749, batches r175,
 r176)."""
 import contextlib
 import io
@@ -18,6 +18,15 @@ from pathlib import Path
 import features_generate
 
 TIMEOUT = 600
+
+
+class Unresponsive(features_generate.GenerateError):
+    """A run of the tree's generator that outlasts its time limit or cannot start: the feature generator
+    unresponsive (b871), the refusal reason of the specification service's apply."""
+
+    def __init__(self, message, program):
+        super().__init__(message)
+        self.program = str(program)
 
 
 def _timeout():
@@ -44,11 +53,9 @@ def _run(program, *args):
         return subprocess.run([sys.executable, str(program), *args], capture_output=True, text=True, env=env,
                               timeout=limit, stdin=subprocess.DEVNULL)
     except subprocess.TimeoutExpired:
-        raise features_generate.GenerateError("the feature generator %s timed out after %g s" % (program, limit)) \
-            from None
+        raise Unresponsive("the feature generator %s timed out after %g s" % (program, limit), program) from None
     except OSError as err:
-        raise features_generate.GenerateError("the feature generator %s could not start: %s" % (program, err)) \
-            from None
+        raise Unresponsive("the feature generator %s could not start: %s" % (program, err), program) from None
 
 
 def generate(tree, path):

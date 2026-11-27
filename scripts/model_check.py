@@ -138,17 +138,22 @@ def check(args):
     found, labels = solve(model)
     lay_only = getattr(args, "lay_only", None)       # `spec check --item`: what the item's lay alone brings (b808)
     found = [f for f in found if not (lay_only and lay_only(*f))]
+    brought, reasons = getattr(args, "brought", None), []      # `spec check --item`: what the item brings (b871)
+    if brought:
+        found, reasons = brought(model, found, labels)
     found += lexical(getattr(args, "lexicon", ()), labels)       # `spec check --item`: the lay's lexicon (b848)
     violations = [f for f in found if f[0].startswith("v")]
     warnings = [f for f in found if f[0].startswith("w_")]
     if args.json:
         printed = sorted({name for name, _ in violations + warnings}, key=rule_order(labels).index)
         print(json.dumps({"violations": violations, "warnings": warnings,
-                          "unresolved": model.dangling, "problems": model.problems,
+                          "unresolved": model.dangling, "problems": model.problems, "item": reasons,
                           "labels": {code: labels[code] for code in printed}}, indent=1))
     else:
         rows(violations, labels, "", args.limit)
         rows(warnings, labels, "warning ", args.limit)
+        for reason in reasons:
+            print(f"item: {reason}")
         for d in model.dangling:
             print(f"unresolved: {d}")
         for p in model.problems:
