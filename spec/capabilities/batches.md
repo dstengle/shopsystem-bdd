@@ -6,8 +6,8 @@ group: service
 area: execution
 specifies: object batch, object task, service batches
 language: codified-2
-retired: [g69, r69, g82, r82, g88, r88, g53, r53, g59, r59, g51, r51, g103, r103, g50, r50, g54, r54, g55, r55, g57, r57, g58, r58, g65, r65, g89, r89, g93, r93, g94, r94, g97, r97, g101, r101, g107, r107, g138, r138, g140, r140, g139, r139, g136, r136, g137, r137, g145, r145, g146, r146, g152, r152, g149, r149, g154, r154, g160, r160, g166, r166, g108, r108, g106, r106, g60, r60, g130, r130, g71, r71, g72, r72, g73, r73, g74, r74, g75, r75, g113, r113, g114, r114, g115, r115, g157, r157, g164, r164, g167, r167, g169, r169, g64, r64, g95, r95, g128, r128, g132, r132, g76, r76, g124, r124, g129, r129, g151, r151, g79, r79, g80, r80, g92, r92, g126, r126, g87, r87, g116, r116, g120, r120, g121, r121, g117, r117, g118, r118, g127, r127, g133, r133, g134, r134, g142, r142, g81, r81, g90, r90, g156, r156, g91, r91, g119, r119, g155, r155]
-unbuilt: []
+retired: [g69, r69, g82, r82, g88, r88, g53, r53, g59, r59, g51, r51, g103, r103, g50, r50, g54, r54, g55, r55, g57, r57, g58, r58, g65, r65, g89, r89, g93, r93, g94, r94, g97, r97, g101, r101, g107, r107, g138, r138, g140, r140, g139, r139, g136, r136, g137, r137, g145, r145, g146, r146, g152, r152, g149, r149, g154, r154, g160, r160, g166, r166, g108, r108, g106, r106, g60, r60, g130, r130, g71, r71, g72, r72, g73, r73, g74, r74, g75, r75, g113, r113, g114, r114, g115, r115, g157, r157, g164, r164, g167, r167, g169, r169, g64, r64, g95, r95, g128, r128, g132, r132, g76, r76, g124, r124, g129, r129, g151, r151, g79, r79, g80, r80, g92, r92, g126, r126, g87, r87, g116, r116, g120, r120, g121, r121, g117, r117, g118, r118, g127, r127, g133, r133, g134, r134, g142, r142, g81, r81, g90, r90, g156, r156, g91, r91, g119, r119, g155, r155, g179, r179, g180, r180, g181, r181, g184, r184, g188, r188, g189, r189, g185, r185, g170, r170, g172, r172, g175, r175, g174, r174, g178, r178, g182, r182, g183, r183, g176, r176]
+unbuilt: [r194, r195, r196, r197, r198, r199, r200, r201, r202]
 ---
 
 # Batches
@@ -160,62 +160,17 @@ when the change is merged.
 ### [g168] An item whose port outcomes were unhandled before it is allocated at the opening
 - [r168] While an item is `ready` and the item meets the readiness bar and the item has no dependency on an item whose status is not `delivered` and the item does not exceed the review limit and the item holds a port line that governs an operation and another port line that governs the operation is not in the item and the operation has an operation outcome and no core line handles the operation outcome and no port line excludes the operation outcome, when the person opens a batch, the batches service shall allocate the item.
 
-### [g170] An in-batch item amended has its features written by the generator its batch's workspace holds
-- [r170] While an item in a batch is `in-batch` and a task of the item is `running` and the item holds a requirement and the workspace of the batch has a feature generator, when the person amends the item, the batches service shall keep a workspace of the batch that holds a feature of the feature generator.
-
 ### [g171] An in-batch item amended with no review finding given keeps a change for the review finding its batch holds open
 - [r171] While an item in a batch is `in-batch` and a review of the batch holds a review finding, when the person amends the item, the batches service shall keep a kept change for the review finding.
-
-### [g172] An in-batch item amended keeps a corpus that conforms to the corpus form
-- [r172] While an item in a batch is `in-batch` and a task of the item is `running` and the item holds a requirement and this corpus holds the requirement, when the person amends the item, the batches service shall keep a corpus that conforms to the corpus form and keep a workspace of the batch that holds the corpus.
 
 ### [g173] A batch opened supersedes each accepted decision a laid line's retirement leaves unenforced
 - [r173] While an item is `ready` and the item meets the readiness bar and the item holds a requirement and the requirement retires the requirement id of a requirement that enforces a design-decision whose status is `accepted`, when the person opens a batch, the batches service shall set the status of the design-decision to `superseded`, keep a design-decision that supersedes the design-decision and name the design-decision.
 
-### [g174] A parked item's superseding decision leaves the batch and the decision it superseded is accepted again
-- [r174] While an item in a batch is `in-batch` and the item holds a requirement and the requirement retires the requirement id of a requirement that enforces a design-decision whose status is `superseded`, when the person parks the item, the batches service shall set the status of the design-decision to `accepted` and keep no design-decision that supersedes the design-decision.
-
-### [g175] An in-batch item amended while its batch's feature generator is unresponsive is refused, naming the generator
-- [r175] While an item in a batch is `in-batch` and a task of the item is `running` and the workspace of the batch has a feature generator and the feature generator is `unresponsive`, if the person amends the item, then the batches service shall refuse the request, name the feature generator and change nothing.
-
-### [g176] An in-batch item parked while its batch's feature generator is unresponsive is refused, naming the generator
-- [r176] While an item in a batch is `in-batch` and a task of the item is `running` and the workspace of the batch has a feature generator and the feature generator is `unresponsive`, if the person parks the item, then the batches service shall refuse the request, name the feature generator and change nothing.
-
 ### [g177] A batch opened with two items retiring ids of one decision supersedes it by one decision every retiring line enforces
 - [r177] While an item is `ready` and the item meets the readiness bar and the item holds a requirement and the requirement retires the requirement id of a requirement that enforces a design-decision whose status is `accepted` and a requirement that enforces the design-decision has a requirement id and another item that meets the readiness bar holds another requirement and the requirement retires the requirement id, when the person opens a batch, the batches service shall keep a design-decision that the requirement enforces.
 
-### [g178] A park of one of two items retiring ids of one decision keeps the decision superseded by the other item's line
-- [r178] While an item in a batch is `in-batch` and the item holds a requirement and the requirement retires the requirement id of a requirement that enforces a design-decision whose status is `superseded` and a requirement that enforces the design-decision has a requirement id and another requirement retires the requirement id, when the person parks the item, the batches service shall keep a design-decision that the requirement enforces.
-
-### [g179] An item allocated to a batch is laid in the batch's workspace
-- [r179] While an item is `ready` and the item meets the readiness bar and the item has no dependency on an item whose status is not `delivered` and the item does not exceed the review limit, when the person opens a batch, the batches service shall allocate the item, keep a batch that holds the item, keep a batch plan of the batch and lay the item in the workspace of the batch.
-
-### [g180] An item the laying service has laid is checked in the workspace
-- [r180] When the laying service completes the request to lay an item in a workspace, the batches service shall check the item in the workspace.
-
-### [g181] An item whose check the laying service fails is reopened naming the rules it violates
-- [r181] When the laying service fails the request to check an item in a workspace, the batches service shall reopen the item and name every rule that a requirement of the item violates.
-
-### [g182] An item parked is lifted from the batch's workspace
-- [r182] While an item in a batch is `in-batch` and the workspace of the batch holds a requirement of the item, when a session parks the item, the batches service shall lift the item from the workspace of the batch.
-
-### [g183] An item the laying service has lifted is kept out in a change that cites it
-- [r183] When the laying service completes the request to lift an item from a workspace, the batches service shall keep a kept change that cites the item.
-
-### [g184] An item whose check the laying service completes is kept in a change that cites it
-- [r184] When the laying service completes the request to check an item in a workspace, the batches service shall keep a kept change that cites the item.
-
 ### [g187] A ready item that no longer meets the readiness bar at opening is reopened naming each bar check it does not meet
 - [r187] While an item is `ready` and the item does not meet the readiness bar and the item does not exceed the review limit, when the person opens a batch, the batches service shall reopen the item and name every bar check that the item does not meet.
-
-### [g188] A workspace in which an item of a batch is laid is prepared for the batch
-- [r188] While a batch holds an item, when the laying service completes the request to lay the item in a workspace, the batches service shall prepare the workspace for the batch.
-
-### [g189] Each item of a batch is checked again once the laying service has prepared the workspace for the batch
-- [r189] While a batch holds an item, when the laying service completes the request to prepare a workspace for the batch, the batches service shall check the item in the workspace.
-
-### [g185] An amended item is lifted from the workspaces of its batch and task and laid there again
-- [r185] While an item in a batch is `in-batch` and a task of the item is `running`, when the person amends the item, the batches service shall lift the item from the workspace of the batch, lift the item from the workspace of the task, lay the item in the workspace of the batch and lay the item in the workspace of the task.
 
 ### [g190] An item picked whose requirement id a capability holds keeps its pack term once renumbered
 - [r190] While an item is `ready` and the item meets the readiness bar and the item holds a term of a pack and a capability holds a requirement id that the item holds, when the person opens a batch, the batches service shall keep the pack that has the term.
@@ -228,4 +183,31 @@ when the change is merged.
 
 ### [g193] A ready item whose line retires a requirement of another capability is not reopened when its scenario passes on the lay
 - [r193] While an item is `ready` and the item meets the readiness bar and the item holds a requirement of a capability and a scenario of the item refers to the requirement id of the requirement and the scenario succeeds in a workspace of a batch and the requirement retires the requirement id of a requirement of another capability, when the person opens the batch, the batches service shall not reopen the item.
+
+### [g194] An item allocated to a batch is applied to the specification of its task's workspace
+- [r194] While an item is `ready` and the item meets the readiness bar and the item has no dependency on an item whose status is not `delivered` and the item does not exceed the review limit, when the person opens a batch, the batches service shall allocate the item, keep a batch that holds the item, keep a batch plan of the batch and apply the item to the specification of the workspace of a task of the item.
+
+### [g195] A specification the specification service has applied an item to is validated with the item
+- [r195] When the specification service completes the request to apply an item to a specification, the batches service shall validate the specification with the item.
+
+### [g196] An item whose task's specification fails validation is reopened naming the rules it violates
+- [r196] While the workspace of a task of an item has a specification, when the specification service fails the request to validate the specification, the batches service shall reopen the item and name every rule that a requirement of the item violates.
+
+### [g197] An item whose task's specification is validated is kept in a change that cites it
+- [r197] While the workspace of a task of an item has a specification, when the specification service completes the request to validate the specification, the batches service shall keep a kept change that cites the item.
+
+### [g198] An amended item is applied again to the specification of its task's workspace
+- [r198] While an item in a batch is `in-batch` and a task of the item is `running`, when the person amends the item, the batches service shall apply the item to the specification of the workspace of the task.
+
+### [g199] An in-batch item amended has its features written by the generator its task's workspace holds
+- [r199] While an item in a batch is `in-batch` and a task of the item is `running` and the item holds a requirement and the workspace of the task has a feature generator, when the person amends the item, the batches service shall keep a workspace of the task that holds a feature of the feature generator.
+
+### [g200] An in-batch item amended keeps a corpus of the corpus form in its task's workspace
+- [r200] While an item in a batch is `in-batch` and a task of the item is `running` and the item holds a requirement and this corpus holds the requirement, when the person amends the item, the batches service shall keep a corpus that conforms to the corpus form and keep a workspace of the task that holds the corpus.
+
+### [g201] An in-batch item amended while its task's feature generator is unresponsive is refused, naming the generator
+- [r201] While an item in a batch is `in-batch` and a task of the item is `running` and the workspace of the task has a feature generator and the feature generator is `unresponsive`, if the person amends the item, then the batches service shall refuse the request, name the feature generator and change nothing.
+
+### [g202] A dependent item's task workspace holds the lines of the item it depends on
+- [r202] While an item in a batch is `in-batch` and a task of the item has a workspace and the item has a dependency on an item that holds a requirement, when the person opens the batch, the batches service shall keep the workspace that holds the requirement.
 

@@ -677,29 +677,6 @@ Feature: Batches
     When the person opens the batch b1
     Then the batches service allocates the item i1
 
-  @g170 @r170
-  Scenario: An in-batch item amended has its features written by the generator its batch's workspace holds
-    Given an item i1
-    And a batch b1
-    And the batch b1 holds the item i1
-    And the status of the item i1 is `in-batch`
-    And a task t1
-    And the item i1 has the task t1
-    And the status of the task t1 is `running`
-    And a requirement r1
-    And the item i1 holds the requirement r1
-    And a workspace w1
-    And the batch b1 has the workspace w1
-    And a feature generator f1
-    And the workspace w1 has the feature generator f1
-    And a feature f2
-    And a workspace w2
-    When the person amends the item i1
-    Then the feature generator f1 has the feature f2
-    And the batches service keeps the workspace w2
-    And the batch b1 has the workspace w2
-    And the workspace w2 holds the feature f2
-
   @g171 @r171
   Scenario: An in-batch item amended with no review finding given keeps a change for the review finding its batch holds open
     Given an item i1
@@ -713,25 +690,6 @@ Feature: Batches
     When the person amends the item i1
     Then the batches service keeps the kept change k1
     And the kept change k1 is for the review finding r2
-
-  @g172 @r172
-  Scenario: An in-batch item amended keeps a corpus that conforms to the corpus form
-    Given an item i1
-    And a batch b1
-    And the batch b1 holds the item i1
-    And the status of the item i1 is `in-batch`
-    And a task t1
-    And the item i1 has the task t1
-    And the status of the task t1 is `running`
-    And a requirement r1
-    And the item i1 holds the requirement r1
-    And this corpus holds the requirement r1
-    When the person amends the item i1
-    Then the batches service keeps the corpus c1
-    And the corpus c1 conforms to the corpus form
-    And the batches service keeps the workspace w1
-    And the batch b1 has the workspace w1
-    And the workspace w1 holds the corpus c1
 
   @g173 @r173
   Scenario: A batch opened supersedes each accepted decision a laid line's retirement leaves unenforced
@@ -753,65 +711,6 @@ Feature: Batches
     And the batches service keeps the design-decision d2
     And the design-decision d2 supersedes the design-decision d1
     And the batches service names the design-decision d2
-
-  @g174 @r174
-  Scenario: A parked item's superseding decision leaves the batch and the decision it superseded is accepted again
-    Given an item i1
-    And a batch b1
-    And the batch b1 holds the item i1
-    And the status of the item i1 is `in-batch`
-    And a requirement r1
-    And the item i1 holds the requirement r1
-    And a design-decision d1
-    And the status of the design-decision d1 is `superseded`
-    And a requirement r2
-    And the requirement r2 enforces the design-decision d1
-    And a requirement id r3
-    And the requirement r2 has the requirement id r3
-    And the requirement r1 retires the requirement id r3
-    And a design-decision d2
-    And the design-decision d2 supersedes the design-decision d1
-    When the person parks the item i1
-    Then the batches service sets the status of the design-decision d1 to `accepted`
-    And the batches service does not keep the design-decision d2
-
-  @g175 @r175
-  Scenario: An in-batch item amended while its batch's feature generator is unresponsive is refused, naming the generator
-    Given an item i1
-    And a batch b1
-    And the batch b1 holds the item i1
-    And the status of the item i1 is `in-batch`
-    And a task t1
-    And the item i1 has the task t1
-    And the status of the task t1 is `running`
-    And a workspace w1
-    And the batch b1 has the workspace w1
-    And a feature generator f1
-    And the workspace w1 has the feature generator f1
-    And the responsiveness of the feature generator f1 is `unresponsive`
-    When the person amends the item i1
-    Then the batches service refuses this request
-    And the batches service names the feature generator f1
-    # entailed: U17
-
-  @g176 @r176
-  Scenario: An in-batch item parked while its batch's feature generator is unresponsive is refused, naming the generator
-    Given an item i1
-    And a batch b1
-    And the batch b1 holds the item i1
-    And the status of the item i1 is `in-batch`
-    And a task t1
-    And the item i1 has the task t1
-    And the status of the task t1 is `running`
-    And a workspace w1
-    And the batch b1 has the workspace w1
-    And a feature generator f1
-    And the workspace w1 has the feature generator f1
-    And the responsiveness of the feature generator f1 is `unresponsive`
-    When the person parks the item i1
-    Then the batches service refuses this request
-    And the batches service names the feature generator f1
-    # entailed: U17
 
   @g177 @r177
   Scenario: A batch opened with two items retiring ids of one decision supersedes it by one decision every retiring line enforces
@@ -841,129 +740,6 @@ Feature: Batches
     Then the batches service keeps the design-decision d2
     And the requirement r6 enforces the design-decision d2
 
-  @g178 @r178
-  Scenario: A park of one of two items retiring ids of one decision keeps the decision superseded by the other item's line
-    Given an item i1
-    And a batch b1
-    And the batch b1 holds the item i1
-    And the status of the item i1 is `in-batch`
-    And a requirement r1
-    And the item i1 holds the requirement r1
-    And a design-decision d1
-    And the status of the design-decision d1 is `superseded`
-    And a requirement r2
-    And the requirement r2 enforces the design-decision d1
-    And a requirement id r3
-    And the requirement r2 has the requirement id r3
-    And the requirement r1 retires the requirement id r3
-    And a requirement r4
-    And the requirement r4 enforces the design-decision d1
-    And a requirement id r5
-    And the requirement r4 has the requirement id r5
-    And a requirement r6
-    And the requirement r6 retires the requirement id r5
-    When the person parks the item i1
-    Then the batches service keeps the design-decision d2
-    And the requirement r6 enforces the design-decision d2
-
-  @g179 @r179
-  Scenario: An item allocated to a batch is laid in the batch's workspace
-    Given an item i1
-    And the status of the item i1 is `ready`
-    And the item i1 meets this readiness bar
-    And the item i1 has no dependency
-    And the item i1 does not exceed the review limit
-    And a batch b1
-    When the person opens the batch b1
-    Then the batches service allocates the item i1
-    And the batches service keeps the batch b2
-    And the batch b2 holds the item i1
-    And the batches service keeps the batch plan b3
-    And the batch b2 has the batch plan b3
-    And the batches service lays the item i1 in the workspace w1
-    And the batch b2 has the workspace w1
-
-  @g180 @r180
-  Scenario: An item the laying service has laid is checked in the workspace
-    Given an item i1
-    And a workspace w1
-    And the batches service lays the item i1 in the workspace w1
-    When the laying service completes the request to lay the item i1 in the workspace w1
-    Then the batches service checks the item i1 in the workspace w1
-
-  @g181 @r181
-  Scenario: An item whose check the laying service fails is reopened naming the rules it violates
-    Given an item i1
-    And a workspace w1
-    And the batches service checks the item i1 in the workspace w1
-    And a rule r2
-    And a requirement r3
-    And the item i1 has the requirement r3
-    And the requirement r3 violates the rule r2
-    And a rule r4
-    And a requirement r5
-    And the item i1 has the requirement r5
-    And the requirement r5 violates the rule r4
-    And a rule r6
-    And a requirement r7
-    And the item i1 has the requirement r7
-    And the requirement r7 does not violate the rule r6
-    When the laying service fails the request to check the item i1 in the workspace w1
-    Then the batches service reopens the item i1
-    And the batches service names the rule r2
-    And the batches service names the rule r4
-    And the batches service does not name the rule r6
-
-  @g182 @r182
-  Scenario: An item parked is lifted from the batch's workspace
-    Given an item i1
-    And a batch b1
-    And the batch b1 holds the item i1
-    And the status of the item i1 is `in-batch`
-    And a workspace w1
-    And the batch b1 has the workspace w1
-    And a requirement r1
-    And the item i1 has the requirement r1
-    And the workspace w1 holds the requirement r1
-    And a session s1
-    When the session s1 parks the item i1
-    Then the batches service lifts the item i1 from the workspace w1
-
-  @g183 @r183
-  Scenario: An item the laying service has lifted is kept out in a change that cites it
-    Given an item i1
-    And a workspace w1
-    And the batches service lifts the item i1 from the workspace w1
-    When the laying service completes the request to lift the item i1 from the workspace w1
-    Then the batches service keeps the kept change k1
-    And the kept change k1 cites the item i1
-
-  @g184 @r184
-  Scenario: An item whose check the laying service completes is kept in a change that cites it
-    Given an item i1
-    And a workspace w1
-    And the batches service checks the item i1 in the workspace w1
-    When the laying service completes the request to check the item i1 in the workspace w1
-    Then the batches service keeps the kept change k1
-    And the kept change k1 cites the item i1
-
-  @g185 @r185
-  Scenario: An amended item is lifted from the workspaces of its batch and task and laid there again
-    Given an item i1
-    And a batch b1
-    And the batch b1 holds the item i1
-    And the status of the item i1 is `in-batch`
-    And a task t1
-    And the item i1 has the task t1
-    And the status of the task t1 is `running`
-    When the person amends the item i1
-    Then the batches service lifts the item i1 from the workspace w1
-    And the batch b1 has the workspace w1
-    And the batches service lifts the item i1 from the workspace w2
-    And the task t1 has the workspace w2
-    And the batches service lays the item i1 in the workspace w1
-    And the batches service lays the item i1 in the workspace w2
-
   @g187 @r187
   Scenario: A ready item that no longer meets the readiness bar at opening is reopened naming each bar check it does not meet
     Given an item i1
@@ -979,26 +755,6 @@ Feature: Batches
     Then the batches service reopens the item i1
     And the batches service names the bar check b2
     And the batches service names the bar check b3
-
-  @g188 @r188
-  Scenario: A workspace in which an item of a batch is laid is prepared for the batch
-    Given an item i1
-    And a batch b1
-    And the batch b1 holds the item i1
-    And a workspace w1
-    And the batches service lays the item i1 in the workspace w1
-    When the laying service completes the request to lay the item i1 in the workspace w1
-    Then the batches service prepares the workspace w1 for the batch b1
-
-  @g189 @r189
-  Scenario: Each item of a batch is checked again once the laying service has prepared the workspace for the batch
-    Given an item i1
-    And a batch b1
-    And the batch b1 holds the item i1
-    And a workspace w1
-    And the batches service prepares the workspace w1 for the batch b1
-    When the laying service completes the request to prepare the workspace w1 for the batch b1
-    Then the batches service checks the item i1 in the workspace w1
 
   @g190 @r190
   Scenario: An item picked whose requirement id a capability holds keeps its pack term once renumbered
@@ -1080,3 +836,167 @@ Feature: Batches
     And the requirement r1 retires the requirement id r4
     When the person opens the batch b1
     Then the batches service does not reopen the item i1
+
+  @g194 @r194
+  Scenario: An item allocated to a batch is applied to the specification of its task's workspace
+    Given an item i1
+    And the status of the item i1 is `ready`
+    And the item i1 meets this readiness bar
+    And the item i1 has no dependency
+    And the item i1 does not exceed the review limit
+    And a batch b1
+    When the person opens the batch b1
+    Then the batches service allocates the item i1
+    And the batches service keeps the batch b2
+    And the batch b2 holds the item i1
+    And the batches service keeps the batch plan b3
+    And the batch b2 has the batch plan b3
+    And the item i1 has the task t1
+    And the task t1 has the workspace w1
+    And the batches service applies the item i1 to the specification s1
+    And the workspace w1 has the specification s1
+
+  @g195 @r195
+  Scenario: A specification the specification service has applied an item to is validated with the item
+    Given an item i1
+    And a specification s1
+    And the batches service applies the item i1 to the specification s1
+    When the specification service completes the request to apply the item i1 to the specification s1
+    Then the batches service validates the specification s1 with the item i1
+
+  @g196 @r196
+  Scenario: An item whose task's specification fails validation is reopened naming the rules it violates
+    Given a task t1
+    And an item i1
+    And the item i1 has the task t1
+    And a workspace w1
+    And the task t1 has the workspace w1
+    And a specification s1
+    And the workspace w1 has the specification s1
+    And the batches service validates the specification s1
+    And a rule r2
+    And a requirement r3
+    And the item i1 has the requirement r3
+    And the requirement r3 violates the rule r2
+    And a rule r4
+    And a requirement r5
+    And the item i1 has the requirement r5
+    And the requirement r5 violates the rule r4
+    And a rule r6
+    And a requirement r7
+    And the item i1 has the requirement r7
+    And the requirement r7 does not violate the rule r6
+    When the specification service fails the request to validate the specification s1
+    Then the batches service reopens the item i1
+    And the batches service names the rule r2
+    And the batches service names the rule r4
+    And the batches service does not name the rule r6
+
+  @g197 @r197
+  Scenario: An item whose task's specification is validated is kept in a change that cites it
+    Given a task t1
+    And an item i1
+    And the item i1 has the task t1
+    And a workspace w1
+    And the task t1 has the workspace w1
+    And a specification s1
+    And the workspace w1 has the specification s1
+    And the batches service validates the specification s1
+    When the specification service completes the request to validate the specification s1
+    Then the batches service keeps the kept change k1
+    And the kept change k1 cites the item i1
+
+  @g198 @r198
+  Scenario: An amended item is applied again to the specification of its task's workspace
+    Given an item i1
+    And a batch b1
+    And the batch b1 holds the item i1
+    And the status of the item i1 is `in-batch`
+    And a task t1
+    And the item i1 has the task t1
+    And the status of the task t1 is `running`
+    When the person amends the item i1
+    Then the task t1 has the workspace w1
+    And the batches service applies the item i1 to the specification s1
+    And the workspace w1 has the specification s1
+
+  @g199 @r199
+  Scenario: An in-batch item amended has its features written by the generator its task's workspace holds
+    Given an item i1
+    And a batch b1
+    And the batch b1 holds the item i1
+    And the status of the item i1 is `in-batch`
+    And a task t1
+    And the item i1 has the task t1
+    And the status of the task t1 is `running`
+    And a requirement r1
+    And the item i1 holds the requirement r1
+    And a workspace w1
+    And the task t1 has the workspace w1
+    And a feature generator f1
+    And the workspace w1 has the feature generator f1
+    And a feature f2
+    And a workspace w2
+    When the person amends the item i1
+    Then the feature generator f1 has the feature f2
+    And the batches service keeps the workspace w2
+    And the task t1 has the workspace w2
+    And the workspace w2 holds the feature f2
+
+  @g200 @r200
+  Scenario: An in-batch item amended keeps a corpus of the corpus form in its task's workspace
+    Given an item i1
+    And a batch b1
+    And the batch b1 holds the item i1
+    And the status of the item i1 is `in-batch`
+    And a task t1
+    And the item i1 has the task t1
+    And the status of the task t1 is `running`
+    And a requirement r1
+    And the item i1 holds the requirement r1
+    And this corpus holds the requirement r1
+    When the person amends the item i1
+    Then the batches service keeps the corpus c1
+    And the corpus c1 conforms to the corpus form
+    And the batches service keeps the workspace w1
+    And the task t1 has the workspace w1
+    And the workspace w1 holds the corpus c1
+
+  @g201 @r201
+  Scenario: An in-batch item amended while its task's feature generator is unresponsive is refused, naming the generator
+    Given an item i1
+    And a batch b1
+    And the batch b1 holds the item i1
+    And the status of the item i1 is `in-batch`
+    And a task t1
+    And the item i1 has the task t1
+    And the status of the task t1 is `running`
+    And a workspace w1
+    And the task t1 has the workspace w1
+    And a feature generator f1
+    And the workspace w1 has the feature generator f1
+    And the responsiveness of the feature generator f1 is `unresponsive`
+    When the person amends the item i1
+    Then the batches service refuses this request
+    And the batches service names the feature generator f1
+    # entailed: U17
+
+  @g202 @r202
+  Scenario: A dependent item's task workspace holds the lines of the item it depends on
+    Given an item i1
+    And a batch b1
+    And the batch b1 holds the item i1
+    And the status of the item i1 is `in-batch`
+    And a task t1
+    And the item i1 has the task t1
+    And a workspace w1
+    And the task t1 has the workspace w1
+    And a requirement r1
+    And an item i2
+    And the item i2 holds the requirement r1
+    And a dependency d1
+    And the dependency d1 is on the item i2
+    And the item i1 has the dependency d1
+    When the person opens the batch b1
+    Then the workspace w1 holds the requirement r1
+    And the batches service keeps the workspace w1

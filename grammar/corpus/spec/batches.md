@@ -903,29 +903,6 @@ shall [x2: readiness bar "the readiness bar of the plugin that runs the command"
     allocate(e2, subject: x14, object: x1)
 ```
 
-## r170
-From: b740 r170.
-
-```reading
-While an item in a batch is `in-batch` and a task of the item is `running` and the item holds a requirement and the workspace of the batch has a feature generator, when the person amends the item, the batches service shall keep a workspace of the batch that holds a feature of the feature generator.
-shall [x7: agent the person (constant), x8: service the batches service (constant)]
-  while [x1: item, x2: batch, x3: task, x4: requirement, x5: workspace, x6: feature generator]
-    in(x1, x2)
-    status(x1) = `in-batch`
-    of(x3, x1)
-    status(x3) = `running`
-    in(x4, x1)
-    of(x5, x2)
-    of(x6, x5)
-  when
-    request(e1, batches.amend, subject: x7, object: x1)
-  response [x9: workspace, x10: feature]
-    of(x9, x2)
-    of(x10, x6)
-    in(x10, x9)
-    keep(e2, subject: x8, object: x9)
-```
-
 ## r171
 From: b740 r171.
 
@@ -942,29 +919,6 @@ shall [x5: agent the person (constant), x6: service the batches service (constan
   response [x7: kept change]
     for(x7, x4)
     keep(e2, subject: x6, object: x7)
-```
-
-## r172
-From: b740 r172.
-
-```reading
-While an item in a batch is `in-batch` and a task of the item is `running` and the item holds a requirement and this corpus holds the requirement, when the person amends the item, the batches service shall keep a corpus that conforms to the corpus form and keep a workspace of the batch that holds the corpus.
-shall [x5: corpus "the corpus of the bounded context the command runs in" (indexical), x6: agent the person (constant), x7: service the batches service (constant), x9: artifact the corpus form (constant)]
-  while [x1: item, x2: batch, x3: task, x4: requirement]
-    in(x1, x2)
-    status(x1) = `in-batch`
-    of(x3, x1)
-    status(x3) = `running`
-    in(x4, x1)
-    in(x4, x5)
-  when
-    request(e1, batches.amend, subject: x6, object: x1)
-  response [x8: corpus, x10: workspace]
-    conforms(x8, x9)
-    keep(e2, subject: x7, object: x8)
-    of(x10, x2)
-    in(x8, x10)
-    keep(e3, subject: x7, object: x10)
 ```
 
 ## r173
@@ -988,75 +942,6 @@ shall [x2: readiness bar "the readiness bar of the plugin that runs the command"
     supersede(subject: x10, object: x5)
     keep(e3, subject: x9, object: x10)
     name(e4, subject: x9, object: x10)
-```
-
-## r174
-From: b741 r174.
-
-```reading
-While an item in a batch is `in-batch` and the item holds a requirement and the requirement retires the requirement id of a requirement that enforces a design-decision whose status is `superseded`, when the person parks the item, the batches service shall set the status of the design-decision to `accepted` and keep no design-decision that supersedes the design-decision.
-shall [x7: agent the person (constant), x8: service the batches service (constant)]
-  while [x1: item, x2: batch, x3: requirement, x4: requirement, x5: design-decision, x6: requirement id]
-    in(x1, x2)
-    status(x1) = `in-batch`
-    in(x3, x1)
-    status(x5) = `superseded`
-    enforce(subject: x4, object: x5)
-    of(x6, x4)
-    retire(subject: x3, object: x6)
-  when
-    request(e1, batches.park, subject: x7, object: x1)
-  response
-    initiates(e2, subject: x8, status(x5) = `accepted`)
-    not [x9: design-decision]
-      supersede(subject: x9, object: x5)
-      keep(e3, subject: x8, object: x9)
-```
-
-## r175
-From: b749 r175.
-
-```reading
-While an item in a batch is `in-batch` and a task of the item is `running` and the workspace of the batch has a feature generator and the feature generator is `unresponsive`, if the person amends the item, then the batches service shall refuse the request, name the feature generator and change nothing.
-shall [x6: agent the person (constant), x7: service the batches service (constant), x8: request "the request the trigger makes" (indexical)]
-  while [x1: item, x2: batch, x3: task, x4: workspace, x5: feature generator]
-    in(x1, x2)
-    status(x1) = `in-batch`
-    of(x3, x1)
-    status(x3) = `running`
-    of(x4, x2)
-    of(x5, x4)
-    responsiveness(x5) = `unresponsive`
-  if
-    request(e1, batches.amend, subject: x6, object: x1)
-  response
-    refuse(e2, subject: x7, object: x8)
-    name(e3, subject: x7, object: x5)
-    not [x9: thing]
-      change(e4, subject: x7, object: x9)
-```
-
-## r176
-From: b749 r176.
-
-```reading
-While an item in a batch is `in-batch` and a task of the item is `running` and the workspace of the batch has a feature generator and the feature generator is `unresponsive`, if the person parks the item, then the batches service shall refuse the request, name the feature generator and change nothing.
-shall [x6: agent the person (constant), x7: service the batches service (constant), x8: request "the request the trigger makes" (indexical)]
-  while [x1: item, x2: batch, x3: task, x4: workspace, x5: feature generator]
-    in(x1, x2)
-    status(x1) = `in-batch`
-    of(x3, x1)
-    status(x3) = `running`
-    of(x4, x2)
-    of(x5, x4)
-    responsiveness(x5) = `unresponsive`
-  if
-    request(e1, batches.park, subject: x6, object: x1)
-  response
-    refuse(e2, subject: x7, object: x8)
-    name(e3, subject: x7, object: x5)
-    not [x9: thing]
-      change(e4, subject: x7, object: x9)
 ```
 
 ## r177
@@ -1087,158 +972,6 @@ shall [x2: readiness bar "the readiness bar of the plugin that runs the command"
     keep(e2, subject: x13, object: x14)
 ```
 
-## r178
-From: b750 r178.
-
-```reading
-While an item in a batch is `in-batch` and the item holds a requirement and the requirement retires the requirement id of a requirement that enforces a design-decision whose status is `superseded` and a requirement that enforces the design-decision has a requirement id and another requirement retires the requirement id, when the person parks the item, the batches service shall keep a design-decision that the requirement enforces.
-shall [x10: agent the person (constant), x11: service the batches service (constant)]
-  while [x1: item, x2: batch, x3: requirement, x4: requirement, x5: design-decision, x6: requirement id, x7: requirement, x8: requirement id, x9: requirement]
-    in(x1, x2)
-    status(x1) = `in-batch`
-    in(x3, x1)
-    status(x5) = `superseded`
-    enforce(subject: x4, object: x5)
-    of(x6, x4)
-    retire(subject: x3, object: x6)
-    enforce(subject: x7, object: x5)
-    of(x8, x7)
-    distinct(x9, x7)
-    retire(subject: x9, object: x8)
-  when
-    request(e1, batches.park, subject: x10, object: x1)
-  response [x12: design-decision]
-    enforce(subject: x9, object: x12)
-    keep(e2, subject: x11, object: x12)
-```
-
-## r179
-Retires: r108. From: b611 r179.
-
-```reading
-While an item is `ready` and the item meets the readiness bar and the item has no dependency on an item whose status is not `delivered` and the item does not exceed the review limit, when the person opens a batch, the batches service shall allocate the item, keep a batch that holds the item, keep a batch plan of the batch and lay the item in the workspace of the batch.
-shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x5: agent the review limit (constant), x6: agent the person (constant), x8: service the batches service (constant)]
-  while [x1: item]
-    status(x1) = `ready`
-    meet(subject: x1, object: x2)
-    not [x3: dependency, x4: item]
-      not
-        status(x4) = `delivered`
-      on(x3, x4)
-      of(x3, x1)
-    not
-      exceed#2(subject: x1, object: x5)
-  when [x7: batch]
-    request(e1, batches.open, subject: x6, object: x7)
-  response [x9: batch, x10: batch plan, x11: workspace]
-    allocate(e2, subject: x8, object: x1)
-    in(x1, x9)
-    keep(e3, subject: x8, object: x9)
-    of(x10, x9)
-    keep(e4, subject: x8, object: x10)
-    of(x11, x9)
-    lay(e5, subject: x8, object: x1, in: x11)
-```
-
-## r180
-From: b611 r180.
-
-```reading
-When the laying service completes the request to lay an item in a workspace, the batches service shall check the item in the workspace.
-shall [x1: service the laying service (constant), x5: service the batches service (constant)]
-  when [x2: request, x3: item, x4: workspace]
-    request(x2, laying.lay, object: x3, in: x4)
-    complete(e1, subject: x1, object: x2)
-  response
-    check(e2, subject: x5, object: x3, in: x4)
-```
-
-## r181
-Retires: r106. From: b611 r181.
-
-```reading
-When the laying service fails the request to check an item in a workspace, the batches service shall reopen the item and name every rule that a requirement of the item violates.
-shall [x1: service the laying service (constant), x5: service the batches service (constant)]
-  when [x2: request, x3: item, x4: workspace]
-    request(x2, laying.check, object: x3, in: x4)
-    fail(e1, subject: x1, object: x2)
-  response
-    reopen#2(e2, subject: x5, object: x3)
-    every [x6: rule, x7: requirement]
-      of(x7, x3)
-      violate(subject: x7, object: x6)
-      scope
-        name(e3, subject: x5, object: x6)
-```
-
-## r182
-Retires: r60. From: b611 r182.
-
-```reading
-While an item in a batch is `in-batch` and the workspace of the batch holds a requirement of the item, when a session parks the item, the batches service shall lift the item from the workspace of the batch.
-shall [x6: service the batches service (constant)]
-  while [x1: item, x2: batch, x3: workspace, x4: requirement]
-    in(x1, x2)
-    status(x1) = `in-batch`
-    of(x3, x2)
-    of(x4, x1)
-    in(x4, x3)
-  when [x5: session]
-    request(e1, batches.park, subject: x5, object: x1)
-  response
-    lift(e2, subject: x6, object: x1, from: x3)
-```
-
-## r183
-From: b611 r183.
-
-```reading
-When the laying service completes the request to lift an item from a workspace, the batches service shall keep a kept change that cites the item.
-shall [x1: service the laying service (constant), x5: service the batches service (constant)]
-  when [x2: request, x3: item, x4: workspace]
-    request(x2, laying.lift, object: x3, from: x4)
-    complete(e1, subject: x1, object: x2)
-  response [x6: kept change]
-    cite(subject: x6, object: x3)
-    keep(e2, subject: x5, object: x6)
-```
-
-## r184
-From: b611 r184.
-
-```reading
-When the laying service completes the request to check an item in a workspace, the batches service shall keep a kept change that cites the item.
-shall [x1: service the laying service (constant), x5: service the batches service (constant)]
-  when [x2: request, x3: item, x4: workspace]
-    request(x2, laying.check, object: x3, in: x4)
-    complete(e1, subject: x1, object: x2)
-  response [x6: kept change]
-    cite(subject: x6, object: x3)
-    keep(e2, subject: x5, object: x6)
-```
-
-## r185
-Retires: r81. From: b747 r185.
-
-```reading
-While an item in a batch is `in-batch` and a task of the item is `running`, when the person amends the item, the batches service shall lift the item from the workspace of the batch, lift the item from the workspace of the task, lay the item in the workspace of the batch and lay the item in the workspace of the task.
-shall [x4: agent the person (constant), x5: service the batches service (constant)]
-  while [x1: item, x2: batch, x3: task]
-    in(x1, x2)
-    status(x1) = `in-batch`
-    of(x3, x1)
-    status(x3) = `running`
-  when
-    request(e1, batches.amend, subject: x4, object: x1)
-  response [x6: workspace, x7: workspace]
-    of(x6, x2)
-    lift(e2, subject: x5, object: x1, from: x6)
-    of(x7, x3)
-    lift(e3, subject: x5, object: x1, from: x7)
-    lay(e4, subject: x5, object: x1, in: x6)
-    lay(e5, subject: x5, object: x1, in: x7)
-```
-
 ## r187
 Retires: r130. From: b758 r187.
 
@@ -1260,36 +993,6 @@ shall [x2: readiness bar "the readiness bar of the plugin that runs the command"
         meet(subject: x1, object: x7)
       scope
         name(e3, subject: x6, object: x7)
-```
-
-## r188
-From: b758 r188.
-
-```reading
-While a batch holds an item, when the laying service completes the request to lay the item in a workspace, the batches service shall prepare the workspace for the batch.
-shall [x3: service the laying service (constant), x6: service the batches service (constant)]
-  while [x1: batch, x2: item]
-    in(x2, x1)
-  when [x4: request, x5: workspace]
-    request(x4, laying.lay, object: x2, in: x5)
-    complete(e1, subject: x3, object: x4)
-  response
-    prepare(e2, subject: x6, object: x5, for: x1)
-```
-
-## r189
-From: b758 r189.
-
-```reading
-While a batch holds an item, when the laying service completes the request to prepare a workspace for the batch, the batches service shall check the item in the workspace.
-shall [x3: service the laying service (constant), x6: service the batches service (constant)]
-  while [x1: batch, x2: item]
-    in(x2, x1)
-  when [x4: request, x5: workspace]
-    request(x4, laying.prepare, object: x5, for: x1)
-    complete(e1, subject: x3, object: x4)
-  response
-    check(e2, subject: x6, object: x2, in: x5)
 ```
 
 ## r190
@@ -1377,4 +1080,197 @@ shall [x2: readiness bar "the readiness bar of the plugin that runs the command"
   response
     not
       reopen#2(e2, subject: x13, object: x1)
+```
+
+## r194
+Retires: r179. From: b874 r194.
+
+```reading
+While an item is `ready` and the item meets the readiness bar and the item has no dependency on an item whose status is not `delivered` and the item does not exceed the review limit, when the person opens a batch, the batches service shall allocate the item, keep a batch that holds the item, keep a batch plan of the batch and apply the item to the specification of the workspace of a task of the item.
+shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x5: agent the review limit (constant), x6: agent the person (constant), x8: service the batches service (constant)]
+  while [x1: item]
+    status(x1) = `ready`
+    meet(subject: x1, object: x2)
+    not [x3: dependency, x4: item]
+      not
+        status(x4) = `delivered`
+      on(x3, x4)
+      of(x3, x1)
+    not
+      exceed#2(subject: x1, object: x5)
+  when [x7: batch]
+    request(e1, batches.open, subject: x6, object: x7)
+  response [x9: batch, x10: batch plan, x11: task, x12: workspace, x13: specification]
+    allocate(e2, subject: x8, object: x1)
+    in(x1, x9)
+    keep(e3, subject: x8, object: x9)
+    of(x10, x9)
+    keep(e4, subject: x8, object: x10)
+    of(x11, x1)
+    of(x12, x11)
+    of(x13, x12)
+    apply(e5, subject: x8, object: x1, to: x13)
+```
+
+## r195
+Retires: r180. From: b874 r195.
+
+```reading
+When the specification service completes the request to apply an item to a specification, the batches service shall validate the specification with the item.
+shall [x1: service the specification service (constant), x5: service the batches service (constant)]
+  when [x2: request, x3: item, x4: specification]
+    request(x2, specification.apply, object: x3, to: x4)
+    complete(e1, subject: x1, object: x2)
+  response
+    request(e2, specification.check, subject: x5, object: x4)
+    param(e2, item, x3)
+```
+
+## r196
+Retires: r181. From: b874 r196.
+
+```reading
+While the workspace of a task of an item has a specification, when the specification service fails the request to validate the specification, the batches service shall reopen the item and name every rule that a requirement of the item violates.
+shall [x5: service the specification service (constant), x7: service the batches service (constant)]
+  while [x1: task, x2: item, x3: workspace, x4: specification]
+    of(x1, x2)
+    of(x3, x1)
+    of(x4, x3)
+  when [x6: request]
+    request(x6, specification.check, object: x4)
+    fail(e1, subject: x5, object: x6)
+  response
+    reopen#2(e2, subject: x7, object: x2)
+    every [x8: rule, x9: requirement]
+      of(x9, x2)
+      violate(subject: x9, object: x8)
+      scope
+        name(e3, subject: x7, object: x8)
+```
+
+## r197
+Retires: r184. From: b874 r197.
+
+```reading
+While the workspace of a task of an item has a specification, when the specification service completes the request to validate the specification, the batches service shall keep a kept change that cites the item.
+shall [x5: service the specification service (constant), x7: service the batches service (constant)]
+  while [x1: task, x2: item, x3: workspace, x4: specification]
+    of(x1, x2)
+    of(x3, x1)
+    of(x4, x3)
+  when [x6: request]
+    request(x6, specification.check, object: x4)
+    complete(e1, subject: x5, object: x6)
+  response [x8: kept change]
+    cite(subject: x8, object: x2)
+    keep(e2, subject: x7, object: x8)
+```
+
+## r198
+Retires: r185. From: b874 r198.
+
+```reading
+While an item in a batch is `in-batch` and a task of the item is `running`, when the person amends the item, the batches service shall apply the item to the specification of the workspace of the task.
+shall [x4: agent the person (constant), x5: service the batches service (constant)]
+  while [x1: item, x2: batch, x3: task]
+    in(x1, x2)
+    status(x1) = `in-batch`
+    of(x3, x1)
+    status(x3) = `running`
+  when
+    request(e1, batches.amend, subject: x4, object: x1)
+  response [x6: workspace, x7: specification]
+    of(x6, x3)
+    of(x7, x6)
+    apply(e2, subject: x5, object: x1, to: x7)
+```
+
+## r199
+Retires: r170. From: b874 r199.
+
+```reading
+While an item in a batch is `in-batch` and a task of the item is `running` and the item holds a requirement and the workspace of the task has a feature generator, when the person amends the item, the batches service shall keep a workspace of the task that holds a feature of the feature generator.
+shall [x7: agent the person (constant), x8: service the batches service (constant)]
+  while [x1: item, x2: batch, x3: task, x4: requirement, x5: workspace, x6: feature generator]
+    in(x1, x2)
+    status(x1) = `in-batch`
+    of(x3, x1)
+    status(x3) = `running`
+    in(x4, x1)
+    of(x5, x3)
+    of(x6, x5)
+  when
+    request(e1, batches.amend, subject: x7, object: x1)
+  response [x9: workspace, x10: feature]
+    of(x9, x3)
+    of(x10, x6)
+    in(x10, x9)
+    keep(e2, subject: x8, object: x9)
+```
+
+## r200
+Retires: r172. From: b874 r200.
+
+```reading
+While an item in a batch is `in-batch` and a task of the item is `running` and the item holds a requirement and this corpus holds the requirement, when the person amends the item, the batches service shall keep a corpus that conforms to the corpus form and keep a workspace of the task that holds the corpus.
+shall [x5: corpus "the corpus of the bounded context the command runs in" (indexical), x6: agent the person (constant), x7: service the batches service (constant), x9: artifact the corpus form (constant)]
+  while [x1: item, x2: batch, x3: task, x4: requirement]
+    in(x1, x2)
+    status(x1) = `in-batch`
+    of(x3, x1)
+    status(x3) = `running`
+    in(x4, x1)
+    in(x4, x5)
+  when
+    request(e1, batches.amend, subject: x6, object: x1)
+  response [x8: corpus, x10: workspace]
+    conforms(x8, x9)
+    keep(e2, subject: x7, object: x8)
+    of(x10, x3)
+    in(x8, x10)
+    keep(e3, subject: x7, object: x10)
+```
+
+## r201
+Retires: r175. From: b874 r201.
+
+```reading
+While an item in a batch is `in-batch` and a task of the item is `running` and the workspace of the task has a feature generator and the feature generator is `unresponsive`, if the person amends the item, then the batches service shall refuse the request, name the feature generator and change nothing.
+shall [x6: agent the person (constant), x7: service the batches service (constant), x8: request "the request the trigger makes" (indexical)]
+  while [x1: item, x2: batch, x3: task, x4: workspace, x5: feature generator]
+    in(x1, x2)
+    status(x1) = `in-batch`
+    of(x3, x1)
+    status(x3) = `running`
+    of(x4, x3)
+    of(x5, x4)
+    responsiveness(x5) = `unresponsive`
+  if
+    request(e1, batches.amend, subject: x6, object: x1)
+  response
+    refuse(e2, subject: x7, object: x8)
+    name(e3, subject: x7, object: x5)
+    not [x9: thing]
+      change(e4, subject: x7, object: x9)
+```
+
+## r202
+From: b874 r202.
+
+```reading
+While an item in a batch is `in-batch` and a task of the item has a workspace and the item has a dependency on an item that holds a requirement, when the person opens the batch, the batches service shall keep the workspace that holds the requirement.
+shall [x8: agent the person (constant), x9: service the batches service (constant)]
+  while [x1: item, x2: batch, x3: task, x4: workspace, x5: dependency, x6: item, x7: requirement]
+    in(x1, x2)
+    status(x1) = `in-batch`
+    of(x3, x1)
+    of(x4, x3)
+    in(x7, x6)
+    on(x5, x6)
+    of(x5, x1)
+  when
+    request(e1, batches.open, subject: x8, object: x2)
+  response
+    in(x7, x4)
+    keep(e2, subject: x9, object: x4)
 ```

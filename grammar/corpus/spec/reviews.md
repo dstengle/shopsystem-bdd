@@ -1,22 +1,5 @@
 # reviews: every live line with its intended reading (the domain contract, 0.38.0)
 
-## r1
-From: batches#r11, reworded in request words (0.38.0).
-
-```reading
-While an item in a batch is `in-batch`, when the person submits the batch, the batches service shall keep a proposed change of the batch that cites the item.
-shall [x3: agent the person (constant), x4: service the batches service (constant)]
-  while [x1: item, x2: batch]
-    in(x1, x2)
-    status(x1) = `in-batch`
-  when
-    request(e1, batches.submit, subject: x3, object: x2)
-  response [x5: proposed change]
-    of(x5, x2)
-    cite(subject: x5, object: x1)
-    keep(e2, subject: x4, object: x5)
-```
-
 ## r2
 From: batches#r37, reworded in request words (0.38.0).
 
@@ -249,34 +232,6 @@ shall [x2: agent the person (constant), x4: service the batches service (constan
     name(e3, subject: x4, object: x1)
 ```
 
-## r13
-From: b600 r13.
-
-```reading
-While an item in a batch is `in-batch` and every task of the batch is `done` and the workspace of the batch holds an amendment that cites the item and a scenario of the item succeeds in the workspace of a task of the item, when the person submits the batch, the batches service shall keep a proposed change of the batch and set the status of the batch to `in-review`.
-shall [x9: agent the person (constant), x10: service the batches service (constant)]
-  while [x1: item, x2: batch, x4: workspace, x5: amendment, x6: scenario, x7: task, x8: workspace]
-    in(x1, x2)
-    status(x1) = `in-batch`
-    every [x3: task]
-      of(x3, x2)
-      scope
-        status(x3) = `done`
-    of(x4, x2)
-    cite(subject: x5, object: x1)
-    in(x5, x4)
-    of(x6, x1)
-    of(x7, x1)
-    of(x8, x7)
-    succeed(subject: x6, in: x8)
-  when
-    request(e1, batches.submit, subject: x9, object: x2)
-  response [x11: proposed change]
-    of(x11, x2)
-    keep(e2, subject: x10, object: x11)
-    initiates(e3, subject: x10, status(x2) = `in-review`)
-```
-
 ## r14
 From: b703 r14.
 
@@ -306,4 +261,122 @@ shall [x10: agent the person (constant), x11: service the batches service (const
     of(x12, x1)
     keep(e2, subject: x11, object: x12)
     initiates(e3, subject: x11, status(x1) = `in-review`)
+```
+
+## r15
+Retires: r13. From: b874 r15.
+
+```reading
+While an item in a batch is `in-batch` and every task of the batch is `done` and the workspace of a task of the item holds an amendment that cites the item and a scenario of the item succeeds in the workspace of the batch, when the person submits the batch, the batches service shall keep a proposed change of the batch and set the status of the batch to `in-review`.
+shall [x9: agent the person (constant), x10: service the batches service (constant)]
+  while [x1: item, x2: batch, x4: task, x5: workspace, x6: amendment, x7: scenario, x8: workspace]
+    in(x1, x2)
+    status(x1) = `in-batch`
+    every [x3: task]
+      of(x3, x2)
+      scope
+        status(x3) = `done`
+    of(x4, x1)
+    of(x5, x4)
+    cite(subject: x6, object: x1)
+    in(x6, x5)
+    of(x7, x1)
+    of(x8, x2)
+    succeed(subject: x7, in: x8)
+  when
+    request(e1, batches.submit, subject: x9, object: x2)
+  response [x11: proposed change]
+    of(x11, x2)
+    keep(e2, subject: x10, object: x11)
+    initiates(e3, subject: x10, status(x2) = `in-review`)
+```
+
+## r17
+From: b874 r17.
+
+```reading
+While the status of an item in a batch is `needs-input` and the item holds a requirement, when the person submits the batch, the batches service shall keep a workspace of the batch that does not hold the requirement.
+shall [x4: agent the person (constant), x5: service the batches service (constant)]
+  while [x1: item, x2: batch, x3: requirement]
+    in(x1, x2)
+    status(x1) = `needs-input`
+    in(x3, x1)
+  when
+    request(e1, batches.submit, subject: x4, object: x2)
+  response [x6: workspace]
+    of(x6, x2)
+    not
+      in(x3, x6)
+    keep(e2, subject: x5, object: x6)
+```
+
+## r18
+Retires: batches#r174. From: b874 r18.
+
+```reading
+While the status of an item in a batch is `needs-input` and the item holds a requirement and the requirement retires the requirement id of a requirement that enforces a design-decision, when the person submits the batch, the batches service shall keep a workspace of the batch that holds no design-decision that supersedes the design-decision.
+shall [x7: agent the person (constant), x8: service the batches service (constant)]
+  while [x1: item, x2: batch, x3: requirement, x4: requirement, x5: design-decision, x6: requirement id]
+    in(x1, x2)
+    status(x1) = `needs-input`
+    in(x3, x1)
+    enforce(subject: x4, object: x5)
+    of(x6, x4)
+    retire(subject: x3, object: x6)
+  when
+    request(e1, batches.submit, subject: x7, object: x2)
+  response [x9: workspace]
+    of(x9, x2)
+    not [x10: design-decision]
+      supersede(subject: x10, object: x5)
+      in(x10, x9)
+    keep(e2, subject: x8, object: x9)
+```
+
+## r19
+Retires: batches#r178. From: b874 r19.
+
+```reading
+While the status of an item in a batch is `needs-input` and the item holds a requirement and the requirement retires the requirement id of a requirement that enforces a design-decision and another item in the batch is `in-batch` and the item holds another requirement and the requirement retires the requirement id, when the person submits the batch, the batches service shall keep a workspace of the batch that holds a design-decision that supersedes the design-decision.
+shall [x9: agent the person (constant), x10: service the batches service (constant)]
+  while [x1: item, x2: batch, x3: requirement, x4: requirement, x5: design-decision, x6: requirement id, x7: item, x8: requirement]
+    in(x1, x2)
+    status(x1) = `needs-input`
+    in(x3, x1)
+    enforce(subject: x4, object: x5)
+    of(x6, x4)
+    retire(subject: x3, object: x6)
+    distinct(x7, x1)
+    in(x7, x2)
+    status(x7) = `in-batch`
+    distinct(x8, x4)
+    in(x8, x7)
+    retire(subject: x8, object: x6)
+  when
+    request(e1, batches.submit, subject: x9, object: x2)
+  response [x11: workspace, x12: design-decision]
+    of(x11, x2)
+    supersede(subject: x12, object: x5)
+    in(x12, x11)
+    keep(e2, subject: x10, object: x11)
+```
+
+## r20
+Retires: r1. From: b874 r20.
+
+```reading
+While an item in a batch is `in-batch`, when the person submits the batch, the batches service shall keep a proposed change of the batch that cites the item and apply the item to the specification of the workspace of the batch.
+shall [x3: agent the person (constant), x4: service the batches service (constant)]
+  while [x1: item, x2: batch]
+    in(x1, x2)
+    status(x1) = `in-batch`
+  when
+    request(e1, batches.submit, subject: x3, object: x2)
+  response [x5: proposed change, x6: workspace, x7: specification]
+    of(x5, x2)
+    cite(subject: x5, object: x1)
+    keep(e2, subject: x4, object: x5)
+    of(x6, x2)
+    of(x7, x6)
+    apply(e3, subject: x4, object: x1, to: x7)
 ```

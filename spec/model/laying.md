@@ -12,9 +12,4 @@ imports: [execution, specification, tracking, upgrades]
 The specification a batch works on, reached by the batches service through a driven port: an item laid in a workspace and lifted from it, the item checked there and its scenarios generated there, whichever adapter does it.
 
 ```model
-service laying
-  operation lay(item, workspace)  outcomes: done
-  operation lift(item, workspace)  outcomes: done
-  operation check(item, workspace)  outcomes: done | failed
-  operation prepare(workspace, batch)  outcomes: done
 ```
