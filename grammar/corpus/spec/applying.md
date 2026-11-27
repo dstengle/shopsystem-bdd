@@ -1,20 +1,5 @@
 # applying: every live line with its intended reading
 
-## r1
-From: b872 r1.
-
-```reading
-While an item holds a requirement, when the batches service applies the item to a specification, the specification service shall keep the specification that holds the requirement.
-shall [x3: service the batches service (constant), x5: service the specification service (constant)]
-  while [x1: item, x2: requirement]
-    in(x2, x1)
-  when [x4: specification]
-    request(e1, specification.apply, subject: x3, object: x1, to: x4)
-  response
-    in(x2, x4)
-    keep(e2, subject: x5, object: x4)
-```
-
 ## r2
 From: b872 r2.
 
@@ -435,4 +420,197 @@ shall [x4: service the batches service (constant), x6: service the specification
     of(x7, x3)
     specify(subject: x2, object: x7)
     keep(e2, subject: x6, object: x2)
+```
+
+## r37
+Retires: r1. From: b873 r37.
+
+```reading
+While an item holds a requirement, when the batches service applies the item to a specification, the specification service shall keep the specification that holds the requirement and keep a scenario that refers to the requirement id of the requirement.
+shall [x3: service the batches service (constant), x5: service the specification service (constant)]
+  while [x1: item, x2: requirement]
+    in(x2, x1)
+  when [x4: specification]
+    request(e1, specification.apply, subject: x3, object: x1, to: x4)
+  response [x6: scenario, x7: requirement id]
+    in(x2, x4)
+    keep(e2, subject: x5, object: x4)
+    of(x7, x2)
+    refer(subject: x6, to: x7)
+    keep(e3, subject: x5, object: x6)
+```
+
+## r38
+Retires: laying#r9. From: b873 r38.
+
+```reading
+While a requirement of an item has a logical form, when the batches service applies the item to a specification, the specification service shall keep the logical form in the corpus.
+shall [x4: service the batches service (constant), x6: service the specification service (constant), x7: corpus "the corpus of the bounded context the command runs in" (indexical)]
+  while [x1: requirement, x2: item, x3: logical form]
+    of(x1, x2)
+    of(x3, x1)
+  when [x5: specification]
+    request(e1, specification.apply, subject: x4, object: x2, to: x5)
+  response
+    in(x3, x7)
+    keep(e2, subject: x6, object: x3)
+```
+
+## r39
+Retires: laying#r10. From: b873 r39.
+
+```reading
+While a requirement id is in an item and a requirement in the corpus has the requirement id, when the batches service applies the item to a specification, the specification service shall keep a corpus that does not hold the requirement.
+shall [x4: corpus "the corpus of the bounded context the command runs in" (indexical), x5: service the batches service (constant), x7: service the specification service (constant)]
+  while [x1: requirement id, x2: item, x3: requirement]
+    in(x1, x2)
+    in(x3, x4)
+    of(x1, x3)
+  when [x6: specification]
+    request(e1, specification.apply, subject: x5, object: x2, to: x6)
+  response [x8: corpus]
+    not
+      in(x3, x8)
+    keep(e2, subject: x7, object: x8)
+```
+
+## r40
+Retires: laying#r11. From: b873 r40.
+
+```reading
+While a requirement of an item uses a rule, when the batches service applies the item to a specification, the specification service shall keep the catalogue entry of the rule.
+shall [x4: service the batches service (constant), x6: service the specification service (constant)]
+  while [x1: requirement, x2: item, x3: rule]
+    of(x1, x2)
+    use(subject: x1, object: x3)
+  when [x5: specification]
+    request(e1, specification.apply, subject: x4, object: x2, to: x5)
+  response [x7: catalogue entry]
+    of(x7, x3)
+    keep(e2, subject: x6, object: x7)
+```
+
+## r41
+Retires: laying#r12. From: b873 r41.
+
+```reading
+While an item holds a requirement that uses a construct, when the batches service applies the item to a specification, the specification service shall keep the construct catalogue.
+shall [x4: service the batches service (constant), x6: service the specification service (constant), x7: construct catalogue "the construct catalogue of the bounded context the command runs in" (indexical)]
+  while [x1: item, x2: requirement, x3: construct]
+    use(subject: x2, object: x3)
+    in(x2, x1)
+  when [x5: specification]
+    request(e1, specification.apply, subject: x4, object: x1, to: x5)
+  response
+    keep(e2, subject: x6, object: x7)
+```
+
+## r42
+Retires: laying#r13. From: b873 r42.
+
+```reading
+While an item holds no requirement that uses a construct and no construct catalogue exists, when the batches service applies the item to a specification, the specification service shall keep no construct catalogue.
+shall [x5: service the batches service (constant), x7: service the specification service (constant)]
+  while [x1: item]
+    not [x2: requirement, x3: construct]
+      use(subject: x2, object: x3)
+      in(x2, x1)
+    not [x4: construct catalogue]
+      exists(x4)
+  when [x6: specification]
+    request(e1, specification.apply, subject: x5, object: x1, to: x6)
+  response
+    not [x8: construct catalogue]
+      keep(e2, subject: x7, object: x8)
+```
+
+## r43
+Retires: laying#r14. From: b873 r43.
+
+```reading
+When the batches service applies an item to a specification, the specification service shall keep an index file that conforms to the index form.
+shall [x1: service the batches service (constant), x4: service the specification service (constant), x6: artifact the index form (constant)]
+  when [x2: item, x3: specification]
+    request(e1, specification.apply, subject: x1, object: x2, to: x3)
+  response [x5: index file]
+    conforms(x5, x6)
+    keep(e2, subject: x4, object: x5)
+```
+
+## r44
+Retires: laying#r15. From: b873 r44.
+
+```reading
+While a capability has no requirement, when the batches service applies an item to a specification, the specification service shall keep an index file that does not hold the capability.
+shall [x3: service the batches service (constant), x6: service the specification service (constant)]
+  while [x1: capability]
+    not [x2: requirement]
+      of(x2, x1)
+  when [x4: item, x5: specification]
+    request(e1, specification.apply, subject: x3, object: x4, to: x5)
+  response [x7: index file]
+    not
+      in(x1, x7)
+    keep(e2, subject: x6, object: x7)
+```
+
+## r45
+Retires: laying#r16. From: b873 r45.
+
+```reading
+While a capability has a requirement, when the batches service applies an item to a specification, the specification service shall keep an index file that holds the capability.
+shall [x3: service the batches service (constant), x6: service the specification service (constant)]
+  while [x1: capability, x2: requirement]
+    of(x2, x1)
+  when [x4: item, x5: specification]
+    request(e1, specification.apply, subject: x3, object: x4, to: x5)
+  response [x7: index file]
+    in(x1, x7)
+    keep(e2, subject: x6, object: x7)
+```
+
+## r46
+Retires: laying#r17. From: b873 r46.
+
+```reading
+While an item holds a model line that specifies an operation and a requirement of a capability governs the operation and the item holds no requirement id that is in the capability, when the batches service applies the item to a specification, the specification service shall generate the feature of the capability and keep the logical form of the requirement in the corpus.
+shall [x7: service the batches service (constant), x9: service the specification service (constant), x11: corpus "the corpus of the bounded context the command runs in" (indexical)]
+  while [x1: item, x2: model line, x3: operation, x4: requirement, x5: capability]
+    specify#2(subject: x2, object: x3)
+    in(x2, x1)
+    of(x4, x5)
+    govern(subject: x4, object: x3)
+    not [x6: requirement id]
+      in(x6, x5)
+      in(x6, x1)
+  when [x8: specification]
+    request(e1, specification.apply, subject: x7, object: x1, to: x8)
+  response [x10: feature, x12: logical form]
+    of(x10, x5)
+    generate(e2, subject: x9, object: x10)
+    in(x4, x11)
+    of(x12, x4)
+    keep(e3, subject: x9, object: x12)
+```
+
+## r47
+Retires: laying#r18. From: b873 r47.
+
+```reading
+While an item holds a verb that has a sense and a requirement of a capability uses the verb and the item holds no requirement id that is in the capability, when the batches service applies the item to a specification, the specification service shall keep the logical form of the requirement in the corpus.
+shall [x7: service the batches service (constant), x9: service the specification service (constant), x10: corpus "the corpus of the bounded context the command runs in" (indexical)]
+  while [x1: item, x2: verb, x3: sense, x4: requirement, x5: capability]
+    of(x3, x2)
+    in(x2, x1)
+    of(x4, x5)
+    use(subject: x4, object: x2)
+    not [x6: requirement id]
+      in(x6, x5)
+      in(x6, x1)
+  when [x8: specification]
+    request(e1, specification.apply, subject: x7, object: x1, to: x8)
+  response [x11: logical form]
+    in(x4, x10)
+    of(x11, x4)
+    keep(e2, subject: x9, object: x11)
 ```

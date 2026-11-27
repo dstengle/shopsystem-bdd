@@ -4,10 +4,9 @@ driven port, made in process of scripts/laying.py with the adapter wired in, the
 readiness_world's codified spec (committed on `main`) with the item i1 holding readiness_world's PASSING line as
 `work-queue#r5`. The workspace w1 is a worktree of the repository beside it on a branch of its own (`workspace`).
 The When lifts the item once its lay is committed there (r2), and keeps the laying service's reply, a
-domain_envelope Response. The Thens read the reply and the workspace: its capability file holding the line or not,
-its feature holding a scenario tagged with the requirement's id. A check of an item is the specification service's
-(checking r164-r167, b871). The prepare of a workspace for a batch and a check after it are
-laying_handlers_prepare's and laying_handlers_reached's (b758)."""
+domain_envelope Response. The Thens read the reply and the workspace: its capability file holding the line or not.
+A check of an item is the specification service's (checking r164-r167, b871); what its apply prepares (the
+scenarios, corpus, catalogues and index) is applying_handlers_prepare's and applying_handlers_reached's (b873)."""
 import sys
 from pathlib import Path
 
@@ -16,7 +15,6 @@ from vocab import handler
 W = sys.modules["shop_work_queue_world"]
 ID = "r5"                       # readiness_world's `block` gives the item's line this id in work-queue
 CAP = "spec/capabilities/work-queue.md"
-FEATURE = "features/work-queue.feature"
 KEEPS = ("keep", "write", "commit", "make")
 
 
@@ -34,7 +32,7 @@ def R():
 
 
 def given_instance(step):
-    if not mine(step) or step.kind not in ("requirement", "item", "workspace", "scenario"):
+    if not mine(step) or step.kind not in ("requirement", "item", "workspace"):
         return False
     world(step)
 
@@ -86,9 +84,7 @@ def _text(step, rel):
 
 def then_does(step):
     """`the laying service keeps the workspace w1 (w2)`: the lay or the lift done; `the workspace holds the requirement
-    r1` (does not): its line in the workspace's capability file under its id; `the laying service keeps the scenario
-    s1` and `the scenario s1 refers to the requirement id r2`: the workspace's feature holds a scenario tagged
-    `@r5`; `the requirement r1 has the requirement id r2`: the line is the one laid."""
+    r1` (does not): its line in the workspace's capability file under its id."""
     if not mine(step) or "laying" not in step.context:
         return False
     negated = step.template.endswith("Not")
@@ -97,11 +93,6 @@ def then_does(step):
         _response(step, "done")
     elif term == "holds" and step.text.startswith("the workspace"):
         assert (line in _text(step, CAP)) != negated, (step.text, _text(step, CAP))
-    elif term == "has":
-        assert line in _text(step, CAP), _text(step, CAP)
-    elif term in ("keep", "refer"):
-        _response(step, "done")
-        assert "@%s" % ID in _text(step, FEATURE).split(), _text(step, FEATURE)[-400:]
     else:
         raise AssertionError("laying_handlers takes no Then %s %s: %s" % (step.template, step.term, step.text))
 
@@ -119,6 +110,5 @@ def untaken(step):
     raise AssertionError("no handler of this scenario's feature took the step: %s" % step.text)
 
 
-for key in (("WhenRequests", "laying.lay"), ("WhenRequests", "laying.lift"),
-            ("WhenRequests", "laying.prepare"), ("ThenDoes", "refer"), ("ThenDoes", "generate")):
+for key in (("WhenRequests", "laying.lay"), ("WhenRequests", "laying.lift")):
     handler(*key)(untaken)

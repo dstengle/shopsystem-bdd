@@ -2,16 +2,6 @@
 Feature: Applying
   Narrator: the batches service
 
-  @g1 @r1
-  Scenario: An item applied is held by the specification it is applied to
-    Given a requirement r1
-    And an item i1
-    And the item i1 holds the requirement r1
-    And a specification s1
-    When the batches service applies the item i1 to the specification s1
-    Then the specification s1 holds the requirement r1
-    And the specification service keeps the specification s1
-
   @g2 @r2
   Scenario: An item applied that holds a universal condition where none exists keeps universal in the new language
     Given `universal` does not exist
@@ -329,3 +319,140 @@ Feature: Applying
     Then the area a1 has the service s2
     And the capability c1 specifies the service s2
     And the specification service keeps the capability c1
+
+  @g37 @r37
+  Scenario: Applying an item prepares the specification: scenarios, corpus, catalogues and index
+    Given a requirement r1
+    And an item i1
+    And the item i1 holds the requirement r1
+    And a specification s1
+    When the batches service applies the item i1 to the specification s1
+    Then the specification s1 holds the requirement r1
+    And the specification service keeps the specification s1
+    And the requirement r1 has the requirement id r2
+    And the specification service keeps the scenario s2
+    And the scenario s2 refers to the requirement id r2
+
+  @g38 @r38
+  Scenario: An item applied keeps the logical form of each of its requirements in the corpus
+    Given a requirement r1
+    And an item i1
+    And the item i1 has the requirement r1
+    And a logical form l1
+    And the requirement r1 has the logical form l1
+    And a specification s1
+    When the batches service applies the item i1 to the specification s1
+    Then this corpus holds the logical form l1
+    And the specification service keeps the logical form l1
+
+  @g39 @r39
+  Scenario: An item applied keeps no corpus block of a requirement id it retires
+    Given a requirement id r1
+    And an item i1
+    And the item i1 holds the requirement id r1
+    And a requirement r2
+    And this corpus holds the requirement r2
+    And the requirement r2 has the requirement id r1
+    And a specification s1
+    When the batches service applies the item i1 to the specification s1
+    Then the specification service keeps the corpus c1
+    And the corpus c1 does not hold the requirement r2
+
+  @g40 @r40
+  Scenario: An item applied keeps the catalogue entry of a rule its requirements use
+    Given a requirement r1
+    And an item i1
+    And the item i1 has the requirement r1
+    And a rule r2
+    And the requirement r1 uses the rule r2
+    And a specification s1
+    When the batches service applies the item i1 to the specification s1
+    Then the specification service keeps the catalogue entry c1
+    And the rule r2 has the catalogue entry c1
+
+  @g41 @r41
+  Scenario: An item applied keeps the construct catalogue when its requirements use a construct
+    Given a requirement r1
+    And a construct c1
+    And the requirement r1 uses the construct c1
+    And an item i1
+    And the item i1 holds the requirement r1
+    And a specification s1
+    When the batches service applies the item i1 to the specification s1
+    Then the specification service keeps this construct catalogue
+
+  @g42 @r42
+  Scenario: An item applied whose requirements use no construct keeps no construct catalogue
+    Given an item i1
+    And no requirement in the item i1 uses a construct
+    And no construct catalogue exists
+    And a specification s1
+    When the batches service applies the item i1 to the specification s1
+    Then the specification service does not keep a construct catalogue
+
+  @g43 @r43
+  Scenario: An item applied keeps an index file of the index form
+    Given an item i1
+    And a specification s1
+    When the batches service applies the item i1 to the specification s1
+    Then the specification service keeps the index file i2
+    And the index file i2 conforms to the index form
+
+  @g44 @r44
+  Scenario: An item applied keeps a capability with no requirement out of the index file
+    Given a capability c1
+    And the capability c1 has no requirement
+    And an item i1
+    And a specification s1
+    When the batches service applies the item i1 to the specification s1
+    Then the specification service keeps the index file i2
+    And the index file i2 does not hold the capability c1
+
+  @g45 @r45
+  Scenario: An item applied keeps a capability with a requirement in the index file
+    Given a requirement r1
+    And a capability c1
+    And the capability c1 has the requirement r1
+    And an item i1
+    And a specification s1
+    When the batches service applies the item i1 to the specification s1
+    Then the specification service keeps the index file i2
+    And the index file i2 holds the capability c1
+
+  @g46 @r46
+  Scenario: An item applied generates the feature of a capability whose operation its model lines specify
+    Given a model line m1
+    And an operation o1
+    And the model line m1 specifies the operation o1
+    And an item i1
+    And the item i1 holds the model line m1
+    And a requirement r1
+    And a capability c1
+    And the capability c1 has the requirement r1
+    And the requirement r1 governs the operation o1
+    And the item i1 holds no requirement id in the capability c1
+    And a specification s1
+    When the batches service applies the item i1 to the specification s1
+    Then the specification service generates the feature f1
+    And the capability c1 has the feature f1
+    And this corpus holds the requirement r1
+    And the specification service keeps the logical form l1
+    And the requirement r1 has the logical form l1
+
+  @g47 @r47
+  Scenario: An item applied keeps in the corpus the logical form of a requirement that uses a verb it gives a sense
+    Given a sense s1
+    And a verb v1
+    And the verb v1 has the sense s1
+    And an item i1
+    And the item i1 holds the verb v1
+    And a requirement r1
+    And a capability c1
+    And the capability c1 has the requirement r1
+    And the requirement r1 uses the verb v1
+    And the item i1 holds no requirement id in the capability c1
+    And a specification s2
+    When the batches service applies the item i1 to the specification s2
+    Then this corpus holds the requirement r1
+    And the specification service keeps the logical form l1
+    And the requirement r1 has the logical form l1

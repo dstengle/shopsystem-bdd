@@ -6,7 +6,7 @@ group: service
 area: specification
 specifies: service language
 language: codified-2
-retired: []
+retired: [g1, r1]
 unbuilt: []
 ---
 
@@ -16,9 +16,6 @@ unbuilt: []
 An item applied to a specification: its requirements, groups, capabilities, model lines, terms, packs and operation tables kept in the specification, whichever service applies it.
 
 ## Behaviour
-### [g1] An item applied is held by the specification it is applied to
-- [r1] While an item holds a requirement, when the batches service applies the item to a specification, the specification service shall keep the specification that holds the requirement.
-
 ### [g2] An item applied that holds a universal condition where none exists keeps universal in the new language
 - [r2] While `universal` does not exist and a universal condition is in an item, when the batches service applies the item to a specification, the specification service shall keep `universal` and set the language of `universal` to `codified-2`.
 
@@ -90,4 +87,37 @@ An item applied to a specification: its requirements, groups, capabilities, mode
 
 ### [g25] An item applied that holds a capability keeps the capability specifying the service its area holds
 - [r25] While an item holds a capability and an area holds the capability, when the batches service applies the item to a specification, the specification service shall keep the capability that specifies the service of the area.
+
+### [g37] Applying an item prepares the specification: scenarios, corpus, catalogues and index
+- [r37] While an item holds a requirement, when the batches service applies the item to a specification, the specification service shall keep the specification that holds the requirement and keep a scenario that refers to the requirement id of the requirement.
+
+### [g38] An item applied keeps the logical form of each of its requirements in the corpus
+- [r38] While a requirement of an item has a logical form, when the batches service applies the item to a specification, the specification service shall keep the logical form in the corpus.
+
+### [g39] An item applied keeps no corpus block of a requirement id it retires
+- [r39] While a requirement id is in an item and a requirement in the corpus has the requirement id, when the batches service applies the item to a specification, the specification service shall keep a corpus that does not hold the requirement.
+
+### [g40] An item applied keeps the catalogue entry of a rule its requirements use
+- [r40] While a requirement of an item uses a rule, when the batches service applies the item to a specification, the specification service shall keep the catalogue entry of the rule.
+
+### [g41] An item applied keeps the construct catalogue when its requirements use a construct
+- [r41] While an item holds a requirement that uses a construct, when the batches service applies the item to a specification, the specification service shall keep the construct catalogue.
+
+### [g42] An item applied whose requirements use no construct keeps no construct catalogue
+- [r42] While an item holds no requirement that uses a construct and no construct catalogue exists, when the batches service applies the item to a specification, the specification service shall keep no construct catalogue.
+
+### [g43] An item applied keeps an index file of the index form
+- [r43] When the batches service applies an item to a specification, the specification service shall keep an index file that conforms to the index form.
+
+### [g44] An item applied keeps a capability with no requirement out of the index file
+- [r44] While a capability has no requirement, when the batches service applies an item to a specification, the specification service shall keep an index file that does not hold the capability.
+
+### [g45] An item applied keeps a capability with a requirement in the index file
+- [r45] While a capability has a requirement, when the batches service applies an item to a specification, the specification service shall keep an index file that holds the capability.
+
+### [g46] An item applied generates the feature of a capability whose operation its model lines specify
+- [r46] While an item holds a model line that specifies an operation and a requirement of a capability governs the operation and the item holds no requirement id that is in the capability, when the batches service applies the item to a specification, the specification service shall generate the feature of the capability and keep the logical form of the requirement in the corpus.
+
+### [g47] An item applied keeps in the corpus the logical form of a requirement that uses a verb it gives a sense
+- [r47] While an item holds a verb that has a sense and a requirement of a capability uses the verb and the item holds no requirement id that is in the capability, when the batches service applies the item to a specification, the specification service shall keep the logical form of the requirement in the corpus.
 
