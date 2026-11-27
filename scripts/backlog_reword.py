@@ -75,9 +75,25 @@ def remove(root, name, ident):
     if retiring:
         blocks[b] = block._replace(retired=tuple(r for r in block.retired if r not in retiring),
                                    retires=tuple(p for p in block.retires if p[0] != rid))
+    b = _unpaired(blocks, b, "%s#%s" % (block.capability, rid))
     _written(item, blocks, b)
     commit(root, item, "work line: %s removes %s" % (label(item), ident))
     return item
+
+
+def _unpaired(blocks, b, ident):
+    """The pairs of the line `ident` under another capability's block (b882) and the ids they retire taken out of
+    `blocks`, a block left with nothing going too; the index of the block `b` after."""
+    for k, other in list(enumerate(blocks))[::-1]:
+        gone = {old for line, old in other.retires if line == ident}
+        if k == b or not gone:
+            continue
+        blocks[k] = other = other._replace(retired=tuple(r for r in other.retired if r not in gone),
+                                           retires=tuple(p for p in other.retires if p[0] != ident))
+        if not (other.groups or other.terms or other.relations or other.retired or other.language or other.new):
+            del blocks[k]
+            b -= k < b
+    return b
 
 
 def _written(item, blocks, b):

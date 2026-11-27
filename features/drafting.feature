@@ -1266,3 +1266,20 @@ Feature: Drafting
     And the drafting service keeps the term t1
     And the drafting service names `v_t6`
     And the drafting service completes this request
+
+  @g113 @r113
+  Scenario: A line drafted into one capability that retires a requirement of another is kept in the item
+    Given a requirement r1
+    And a capability c1
+    And the capability c1 has the requirement r1
+    And a requirement id r2
+    And the requirement r1 has the requirement id r2
+    And an item i1
+    And a capability c2
+    And a requirement r3
+    And an item i2
+    When the person drafts the item i1 with the requirement id r2 and the capability c2
+    Then the capability c2 has the requirement r3
+    And the requirement r3 retires the requirement id r2
+    And the drafting service keeps the item i2
+    And the item i2 holds the requirement r3

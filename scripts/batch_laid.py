@@ -12,6 +12,7 @@ from pathlib import Path
 
 import backlog_items
 import backlog_lines
+import backlog_retires
 import batch_reach
 import batch_tasks
 
@@ -19,15 +20,17 @@ LAID, REPORT = "SHOPSYSTEM_LAID", "SHOPSYSTEM_LAID_REPORT"      # work_items'
 
 
 def fresh(item):
-    """The item's requirement ids `<capability>#r<n>` that retire no id: in a block with a `retired:` line, those
-    its `retires:` pairs leave out (none when it has no pairs to tell them by)."""
+    """The item's requirement ids `<capability>#r<n>` that retire no id: those no `retires:` pair of any block names
+    (a line of another capability's block paired as `<cap>#r<n>`, b882), none of a block with a `retired:` line and
+    no pairs to tell them by."""
+    blocks = backlog_lines.read(item, backlog_items.rel_of(item.name))
+    retiring = backlog_retires.retiring(blocks)
     found = []
-    for block in backlog_lines.read(item, backlog_items.rel_of(item.name)):
+    for block in blocks:
         if block.retired and not block.retires:
             continue
-        retiring = {mine for mine, _ in block.retires}
         found += ["%s#%s" % (block.capability, r) for g in block.groups for r, _ in g.requirements
-                  if r not in retiring]
+                  if "%s#%s" % (block.capability, r) not in retiring]
     return found
 
 

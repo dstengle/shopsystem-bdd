@@ -226,3 +226,6 @@ when the change is merged.
 ### [g192] An item picked whose requirement id a capability holds keeps the term it moves once renumbered
 - [r192] While an item is `ready` and the item meets the readiness bar and the item moves a term that means an element and an area holds the element and a capability holds a requirement id that the item holds, when the person opens a batch, the batches service shall keep the area that holds the term.
 
+### [g193] A ready item whose line retires a requirement of another capability is not reopened when its scenario passes on the lay
+- [r193] While an item is `ready` and the item meets the readiness bar and the item holds a requirement of a capability and a scenario of the item refers to the requirement id of the requirement and the scenario succeeds in a workspace of a batch and the requirement retires the requirement id of a requirement of another capability, when the person opens the batch, the batches service shall not reopen the item.
+

@@ -57,7 +57,7 @@ def add_parsers(sub):
     where.add_argument("--in", dest="in_group", help="the item's group g<n> the line joins")
     p.add_argument("text", nargs="?", help="the requirement line (or --term)")
     p.add_argument("--retires", metavar="CAP#rN", help="the live requirement `<capability>#r<n>` the line replaces: "
-                   "its id goes under the block's retired:, the line into that capability; with --universal, the "
+                   "its id goes under the block's retired:, the line into that capability or the one --into names; with --universal, the "
                    "live universal condition `universal#U<n>` it replaces; each design-decision whose enforced_by names "
                    "the requirement is named")
     p.add_argument("--retirement-list", metavar="FILE", help="a file of pairs `<capability>#r<n> <line>`, each line "

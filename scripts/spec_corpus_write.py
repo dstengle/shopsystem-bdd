@@ -9,6 +9,7 @@ from pathlib import Path
 
 import backlog_items
 import backlog_lines
+import backlog_retires
 import spec_read
 
 CORPUS = "grammar/corpus/spec"
@@ -73,8 +74,10 @@ def _edits(item):
     """{file name: ([(id, trace, line)], [retired id])} of one item's blocks."""
     blocks = backlog_lines.read(item, backlog_items.rel_of(item.name))
     out = {}
+    pairs = backlog_retires.retiring(blocks)       # a line of another capability's old id named whole (b882)
     for b in blocks:
-        retiring = {line: old for line, old in b.retires}
+        retiring = {line.split("#")[1]: old.split("#")[1] if old.startswith(b.capability + "#") else old
+                    for line, old in pairs.items() if line.startswith(b.capability + "#")}
         laid = [(rid, "%sFrom: %s %s." % ("Retires: %s. " % retiring[rid] if rid in retiring else "", item.name, rid),
                  text) for g in b.groups for rid, text in g.requirements]
         found = out.setdefault(b.capability, ([], []))

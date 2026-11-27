@@ -1351,3 +1351,30 @@ shall [x2: readiness bar "the readiness bar of the plugin that runs the command"
     in(x3, x5)
     keep(e2, subject: x10, object: x5)
 ```
+
+## r193
+From: b882 r193.
+
+```reading
+While an item is `ready` and the item meets the readiness bar and the item holds a requirement of a capability and a scenario of the item refers to the requirement id of the requirement and the scenario succeeds in a workspace of a batch and the requirement retires the requirement id of a requirement of another capability, when the person opens the batch, the batches service shall not reopen the item.
+shall [x2: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x12: agent the person (constant), x13: service the batches service (constant)]
+  while [x1: item, x3: requirement, x4: capability, x5: scenario, x6: requirement id, x7: workspace, x8: batch, x9: requirement, x10: capability, x11: requirement id]
+    status(x1) = `ready`
+    meet(subject: x1, object: x2)
+    of(x3, x4)
+    in(x3, x1)
+    of(x5, x1)
+    of(x6, x3)
+    refer(subject: x5, to: x6)
+    of(x7, x8)
+    succeed(subject: x5, in: x7)
+    distinct(x10, x4)
+    of(x9, x10)
+    of(x11, x9)
+    retire(subject: x3, object: x11)
+  when
+    request(e1, batches.open, subject: x12, object: x8)
+  response
+    not
+      reopen#2(e2, subject: x13, object: x1)
+```
