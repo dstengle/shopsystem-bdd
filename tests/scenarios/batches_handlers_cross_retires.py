@@ -44,7 +44,7 @@ def has(step):
     r3 has the requirement id r4: review#r1. Any other `has` left to its chain."""
     if not mine(step):
         return False
-    (k1, n1), (k2, n2) = parts(step)
+    (k1, n1), (_, n2) = parts(step)
     if k1 == "capability":
         named = _world(step).setdefault("capabilities", [])
         named.append(n1)
