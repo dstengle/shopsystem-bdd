@@ -73,7 +73,7 @@ ADDED = {"consistency#g33": "design-model-check", "consistency#g34": "design-mod
          "reviews#g7": "batches", "reviews#g8": "batches",      # b491: task branches merged in task order
          "drafting#g28": "readiness",                            # b458: the decisions a retired requirement enforces
          "measurement#g10": "telemetry", "measurement#g11": "batch-measurement",    # b420: compare's frames of two
-         "measurement#g12": "telemetry",                                         # b73: test runs, opening time
+         "measurement#g13": "telemetry",                     # b73, b876: test runs, opening time and its phases
          "items#g31": "backlog", "items#g32": "backlog",                         # b431: work reopen
          "parsing#g19": "design-model-check", "parsing#g20": "design-model-check",     # b452: spec parse --item
          "parsing#g22": "design-model-check",
