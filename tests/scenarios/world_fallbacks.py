@@ -74,7 +74,7 @@ def given_recorded(step):
 INTRODUCED = frozenset({
     "adapter contract", "adapter spec", "ambiguous text", "area", "batch plan", "batch summary form", "batch summary",
     "channel", "chore", "construct", "contract", "defect", "element", "enforcer", "foundation", "fragment",
-    "heading", "idea", "operation", "pip command", "plural object", "question", "quote", "ratio", "reading rule",
+    "heading", "idea", "opening phase", "operation", "pip command", "plural object", "question", "quote", "ratio", "reading rule",
     "replied request", "requester", "review", "role", "session time", "session", "test run", "thread", "token",
     "translation", "turn", "value in use", "wall time"})
 # The verbs of a negative fact ("no commit is for ...", "... does not contain ...") the world holds by lacking it.

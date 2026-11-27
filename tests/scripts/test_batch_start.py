@@ -179,3 +179,17 @@ def test_the_lay_commit_holds_the_annotated_contract(batch_repo):
     contract = git(batch_repo, "show", "batch-1:spec/adapters/cli.toml")
     table = contract[contract.index('[operations."notes.archive"]'):contract.index('[operations."notes.label"]')]
     assert "notebook#r10: %s" % ARCHIVE in table, table
+
+
+def test_start_keeps_each_phase_of_its_opening(two):
+    """b876, measurement r13: every phase of the opening kept with its time, beside the opening time."""
+    import batch_timings
+    from plumbing import phases
+    done = work(two, "batch", "start")
+    assert done.returncode == 0, done.stderr
+    found = batch_timings.figures(two, "batch-1")
+    kept = [p["phase"] for p in found["opening_phases"]]
+    assert {phases.PICK, phases.LAY, phases.FEATURES, phases.CATALOGUES, phases.CHECK, phases.SCENARIOS,
+            phases.COMMIT} <= set(kept), kept
+    assert found["opening_time_seconds"] is not None
+    assert sum(p["seconds"] for p in found["opening_phases"]) <= found["opening_time_seconds"] + len(kept)

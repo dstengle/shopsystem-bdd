@@ -79,6 +79,10 @@ def has(step):
     elif (one, other) == ("test run", "duration"):      # b73: its own duration, as `work batch done` kept it
         seconds = T.given(step, "test run", step.names[0])["seconds"]
         assert seconds in [r["seconds"] for r in ran(step).figures()["test_runs"]], (step.text, seconds)
+    elif (one, other) == ("opening phase", "duration"):     # b876: its own duration, as `work batch start` kept it
+        found = T.given(step, "opening phase", step.names[0])
+        phases = {p["phase"]: p["seconds"] for p in ran(step).figures()["opening_phases"]}
+        assert phases.get("phase %s" % step.names[0]) == found["seconds"], (step.text, phases)
     elif (one, other) == ("measurement", "opening time"):
         figures = ran(step).figures()
         assert figures["opening_time_seconds"] == step.context["opening seconds"], (step.text, figures)

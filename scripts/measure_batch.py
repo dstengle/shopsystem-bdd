@@ -124,7 +124,9 @@ def _figures(root, name, sessions_dir):
     wall = _seconds(at["started"], at["closed"] or stop)
     seconds = sum(s["session_time_seconds"] for s in sessions)
     cost = round(sum(s["cost"] or 0 for s in sessions), 6)
-    timed = batch_timings.figures(root, name)       # test runs and opening time (b73)
+    timed = batch_timings.figures(root, name)       # test runs, opening time (b73) and its phases (b876)
+    for one in timed["opening_phases"]:
+        one["duration"] = measure_cost.duration(one["seconds"])
     return {"batch": name, "status": batch.status, "pull_request": batch.pull_request,
             "items": [{"item": i.name, "title": i.title, "status": i.status} for i in items],
             "window": window, "wall_time_seconds": wall,

@@ -20,6 +20,7 @@ object compaction
 object measurement kind of record
   relations: has → stage row | total row | session row (many); holds → tool use | compaction (many); includes → measurement (many)
   relations: has → test run | opening time (many)
+  relations: has → opening phase (many)
 
 object trial
   relations: has → target | measurement (many)
@@ -73,4 +74,7 @@ object test run
 object opening time
 
 object duration
+
+object opening phase
+  relations: has → duration (one)
 ```

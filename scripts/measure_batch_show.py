@@ -33,12 +33,15 @@ def _totals(figures):
 
 
 def summary(figures):
-    """The totals, the cost by role, the review findings by grade, the defects and the knobs, as tables; then what
+    """The totals, the opening's phases (b876), the cost by role, the review findings by grade, the defects and the knobs, as tables; then what
     the totals leave out (unpriced requests) or that no transcript was found."""
     roles = figures.get("cost_by_role", {})
     defects = figures.get("defects", {})
     review, after = defects.get("review", {}), defects.get("after_merge", {})
     out = ["totals\n%s\n" % _totals(figures),
+           "opening phases\n%s\n" % table(["phase", "duration"], [
+               (p.get("phase"), p.get("duration") or _duration(p.get("seconds")))
+               for p in figures.get("opening_phases", [])]),
            "cost by role\n%s\n" % table(list(ROLE_HEAD), [
                (role, r["sessions"], r["session_time"], r["output_tokens"], r["new_input_tokens"],
                 r["cache_read_tokens"], r["cost"]) for role, r in roles.items()]),

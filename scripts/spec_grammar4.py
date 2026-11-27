@@ -34,6 +34,7 @@ import spec_rgl_time
 import spec_rgl_vocab
 import spec_value_kinds
 import tools_grammar
+from plumbing import phases
 
 MARKER = "codified-2"
 GRAMMAR = "Context"
@@ -140,7 +141,8 @@ def _trees(gram, words, tokens, name=None):
     digest = spec_parse_cache.key(name, GRAMMAR, spec_gf.gf_text(tokens), words, LIMIT)
     hit = spec_parse_cache.get(name, GRAMMAR, digest)
     if hit is None:
-        hit = _gf_trees(gram, words, tokens)
+        with phases.phase(phases.PARSE):      # a parse of grammar 4's, timed (b876)
+            hit = _gf_trees(gram, words, tokens)
         spec_parse_cache.put(name, GRAMMAR, digest, *hit)
     return list(hit[0]), hit[1]
 

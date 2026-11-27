@@ -15,6 +15,7 @@ import spec_grammar4
 import spec_parse_cache
 import spec_read
 import spec_rgl
+from plumbing import phases
 
 
 def workers(cpus=None):
@@ -64,7 +65,13 @@ def _work(order):
 
 def prefetch(root, lines, processes=None):
     """The misses of `lines` parsed and kept in the cache: by a pool of `processes` (`workers()`'s when None) when there
-    are more of them than one, else (or when the pool fails) one by one in this process."""
+    are more of them than one, else (or when the pool fails) one by one in this process; timed as the phase of the
+    lines' parse (b876)."""
+    with phases.phase(phases.PARSE):
+        _prefetch(root, lines, processes)
+
+
+def _prefetch(root, lines, processes):
     try:
         name, words, keyed = _keyed(root, lines)
     except (ImportError, spec_gf.GrammarError):        # no grammar: the readers after it say so

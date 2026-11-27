@@ -92,6 +92,8 @@ def given_link(step):
     one, other = step.names
     if step.nps[0].startswith("the test run "):        # the measurement m1 has the test run t2 (b73)
         T.given(step, "test run", other)
+    elif step.nps[0].startswith("the opening phase "):     # the measurement m1 has the opening phase o2 (b876)
+        T.given(step, "opening phase", other)
     elif step.term == "on":
         T.given(step, "review finding", one)["pull request"] = other
     elif step.nps[0].startswith("the pull request"):
@@ -142,11 +144,16 @@ def measure_batch(step):
 
 def keep_timings(step, batch):
     """b73: each test run a Given names kept as `work batch done` keeps one, of its own duration (21 s, 22 s ...),
-    and of a batch with test runs the opening time `work batch start` keeps (95 s)."""
+    each opening phase a Given names kept as `work batch start` keeps one, of its own duration (4 s, 5 s ...), and of a
+    batch with test runs the opening time `work batch start` keeps (95 s)."""
     runs = step.context.get("given", {}).get("test run", {})
     for k, (name, found) in enumerate(sorted(runs.items()), 1):
         found["seconds"] = 20 + k
         batch_timings.kept(step.repo, batch, "done", found["seconds"], "t%d" % k)
+    phases = step.context.get("given", {}).get("opening phase", {})
+    for k, (name, found) in enumerate(sorted(phases.items()), 1):     # b876: each phase of its own duration (4 s, 5 s ...)
+        found["seconds"] = 3 + k
+        batch_timings.kept(step.repo, batch, "phase", found["seconds"], phase="phase %s" % name)
     if runs:
         step.context["opening seconds"] = 95
         batch_timings.kept(step.repo, batch, "opening", 95)

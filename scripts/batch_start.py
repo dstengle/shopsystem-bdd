@@ -26,7 +26,7 @@ import decision_successor
 import laying
 from batch_git import add_tree, current_branch, git, locked, remove_tree, trees_dir
 from batch_plan import Batch, Task, commit, next_name, open_batch
-from plumbing import shop_files
+from plumbing import phases, shop_files
 from plumbing.shop_files import Refused
 
 
@@ -59,12 +59,15 @@ def _laid(tree, name, picked):
     item whose check it failed, naming each rule, r181)."""
     changed, broken = [], []
     for item in picked:
-        changed += laying.changed(laying.lay(item, tree))
-    reply = laying.prepare(tree, name, picked)
+        with phases.phase(phases.LAY):
+            changed += laying.changed(laying.lay(item, tree))
+    with phases.phase(phases.FEATURES):
+        reply = laying.prepare(tree, name, picked)
     changed += laying.changed(reply)
     unwritten, superseded = reply.content.get("unwritten", []), reply.content.get("superseded", [])
     for item in picked:
-        reply = laying.check(item, tree)
+        with phases.phase(phases.CHECK):
+            reply = laying.check(item, tree)
         if reply.outcome == "failed":
             broken.append((item, laying.reasons(reply)))
         elif reply.outcome != "done":
@@ -79,36 +82,55 @@ def _build(root, base, picked, returned):
     forked = git(root, "rev-parse", "HEAD").stdout.strip()
     tree = trees_dir(root) / name
     try:
-        add_tree(root, tree, name, forked)
+        with phases.phase(phases.COMMIT):
+            add_tree(root, tree, name, forked)
         changed, unwritten, superseded, broken = _laid(tree, name, picked)
-        broken = broken or batch_laid.passing(root, tree, picked)
+        if not broken:
+            with phases.phase(phases.SCENARIOS):
+                broken = batch_laid.passing(root, tree, picked)
         if broken:
             raise _Broken(broken)
-        if changed:                 # a pick of chore items only lays no line (b316): the commit is still made
-            git(tree, "add", "--", *changed)
-        git(tree, "commit", "-q", "--allow-empty", "-m", "%s: the requirement lines of %s\n%s" % (
-            name, labels(picked), cites(picked)))
-        context = shop_files.context_path(root)
-        batch = Batch(name=name, ident="batch/%s/%s" % (context, name), status="building", base=base,
-                      forked_from=forked, branch=name, pull_request=None,
-                      tasks=[Task("t%d" % k, i.name, "pending", "%s-%s" % (name, i.name)) for k, i in enumerate(picked, 1)])
-        for item in picked:
-            backlog_lifecycle.allocate(item)
-        commit(root, batch, picked + [i for i, _ in returned], "work batch start: %s %s" % (name, labels(picked)))
+        with phases.phase(phases.COMMIT):
+            batch = _committed(root, base, name, forked, tree, changed, picked, returned)
     except BaseException:
-        remove_tree(root, tree)
-        if git(root, "branch", "--list", name).stdout.strip():
-            git(root, "branch", "-D", name)
+        with phases.phase(phases.COMMIT):
+            remove_tree(root, tree)
+            if git(root, "branch", "--list", name).stdout.strip():
+                git(root, "branch", "-D", name)
         raise
     said = decision_successor.said(superseded)
     batch_driver.write(root, batch, picked, unwritten, said)
     return batch, said
 
 
+def _committed(root, base, name, forked, tree, changed, picked, returned):
+    """The lay committed on the batch's branch, then the batch's plan with the moved items on the base; the batch."""
+    if changed:                 # a pick of chore items only lays no line (b316): the commit is still made
+        git(tree, "add", "--", *changed)
+    git(tree, "commit", "-q", "--allow-empty", "-m", "%s: the requirement lines of %s\n%s" % (
+        name, labels(picked), cites(picked)))
+    context = shop_files.context_path(root)
+    batch = Batch(name=name, ident="batch/%s/%s" % (context, name), status="building", base=base,
+                  forked_from=forked, branch=name, pull_request=None,
+                  tasks=[Task("t%d" % k, i.name, "pending", "%s-%s" % (name, i.name)) for k, i in enumerate(picked, 1)])
+    for item in picked:
+        backlog_lifecycle.allocate(item)
+    commit(root, batch, picked + [i for i, _ in returned], "work batch start: %s %s" % (name, labels(picked)))
+    return batch
+
+
 def start(root):
     """(the batch or None, the Pick) of `work batch start`, under the lock; the time it took to open a batch kept as
-    its opening time (b73)."""
+    its opening time (b73), and the time of each of its phases (b876: plumbing.phases' stopwatch)."""
     began = time.monotonic()
+    phases.started()
+    try:
+        return _start(root, began)
+    finally:
+        phases.stopped()
+
+
+def _start(root, began):
     with locked(root):
         base = current_branch(root)
         if base is None:
@@ -124,10 +146,12 @@ def start(root):
             raise Refused("work batch start: %s is %s; one batch is open at a time" % (found.name, found.status))
         if not any(i.status == "ready" for i in backlog_items.items(root)):
             raise Refused("work batch start: no item is ready")
-        pick = batch_pick.pick(root)
+        with phases.phase(phases.PICK):
+            pick = batch_pick.pick(root)
         while pick.picked:
             try:
                 batch, said = _build(root, base, pick.picked, pick.returned)
+                batch_timings.kept_phases(root, batch.name, phases.stopped())
                 batch_timings.kept(root, batch.name, "opening", time.monotonic() - began)
                 return batch, pick._replace(superseded=tuple(said))
             except _Broken as err:          # laid again without the items whose lines broke a rule (b478)
