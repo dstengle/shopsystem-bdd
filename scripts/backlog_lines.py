@@ -123,15 +123,13 @@ def retire(root, name, ident, text, into=None, group=None, in_group=None):
     holds no live requirement of that id. The item and the new line's `<cap>#r<n>`; with no `text` (`--no-line`,
     b271) the old id alone, the block made when the item has none, and None."""
     item = find(root, name)
-    capability, rid = backlog_retires.check(root, item, ident, into)
-    if text is None:
-        blocks = read(item, "the item %s" % item.name)
-        block_of(blocks, capability)
-        item.sections[SECTION] = render(blocks)
-        new = None
-    else:
-        new = add_line_to(root, item, capability, text, group, in_group)
-    backlog_retires.with_retired(item, capability, rid, new and new.split("#")[1])
+    capability, rid = backlog_retires.check(root, item, ident, into, text is not None)
+    new = None if text is None else add_line_to(root, item, into or capability, text, group, in_group)
+    blocks = read(item, "the item %s" % item.name)
+    block_of(blocks, capability)        # the retired id's block, which a line of another capability opens (b882)
+    item.sections[SECTION] = render(blocks)
+    backlog_retires.with_retired(item, capability, rid, new and (
+        new.split("#")[1] if new.startswith(capability + "#") else new))
     commit(root, item, "work line: %s %s %s" % (label(item), "%s retires" % new if new else "retires", ident))
     return item, new
 

@@ -62,8 +62,10 @@ def renumber(root, item, taken):
         out.universal = [(_fresh(u, "universal", used, seen, pairs), text) for u, text in blocks.universal]
         taken.setdefault("universal", set()).update(u for u, _ in out.universal)
     if pairs:
-        out[:] = [b._replace(groups=backlog_relied.renumbered(b.groups, pairs)) for b in out]    # b705
-        item.sections[SECTION] = render(out)
         moved = dict(pairs)
+        out[:] = [b._replace(groups=backlog_relied.renumbered(b.groups, pairs),    # b705
+                             retires=tuple((moved.get(r, r) if "#" in r else r, old) for r, old in b.retires))
+                  for b in out]         # a line of another capability's, `<cap>#r<n>` (b882)
+        item.sections[SECTION] = render(out)
         item.request_lines = {moved.get(i, i): n for i, n in item.request_lines.items()}
     return pairs

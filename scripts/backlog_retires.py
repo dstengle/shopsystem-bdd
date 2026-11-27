@@ -28,16 +28,18 @@ def _line(rid):
     return "(?m)" + LINE % re.escape(rid)
 
 
-def check(root, item, ident, into=None):
+def check(root, item, ident, into=None, line=False):
     """The capability and r<n> of `<cap>#r<n>`, the live requirement `work line --retires` retires on the item;
-    refused when the capability holds no live requirement of that id, or the item retires it already."""
+    refused when the capability holds no live requirement of that id, or the item retires it already, or `into`
+    names another capability than its own when there is no `line`, or one the spec has no file of (b882)."""
     takes(item)
     found = IDENT.match(ident or "")
     if not found:
         raise Refused("work line: --retires takes `<capability>#r<n>`, not %s" % ident)
     capability, rid = found.groups()
-    if into is not None and into != capability:
-        raise Refused("work line: --retires %s goes into %s, not --into %s" % (ident, capability, into))
+    if into is not None and into != capability and not (line and _codified(root, into)):
+        raise Refused("work line: --retires %s goes into %s%s, not --into %s" % (
+            ident, capability, " or another capability of the spec" if line else "", into))
     try:
         cap = spec_read.capability(capability_file(root, capability))
     except Refused as err:
@@ -49,14 +51,34 @@ def check(root, item, ident, into=None):
     return capability, rid
 
 
+def _codified(root, capability):
+    """Whether the spec has a codified file of `capability`, one a line `--into` it may retire another's from."""
+    try:
+        path = capability_file(root, capability)
+    except Refused:
+        return False
+    return path.is_file() and str(spec_read.capability(path).frontmatter.get("language", "")).strip() == "codified-2"
+
+
 def with_retired(item, capability, rid, line=None):
     """The item's block for `capability` given `rid` under its `retired:`, and the pair (`line`, `rid`) under its
-    `retires:` when the item's line `line` retires it (b323); nothing is committed."""
+    `retires:` when the item's line `line` retires it (b323), `line` an `r<n>` of the block's own capability or a
+    `<cap>#r<n>` of another's (b882); nothing is committed. The block is there already."""
     blocks = read(item, "the item %s" % item.name)
     at = next(k for k, b in enumerate(blocks) if b.capability == capability)
     pairs = tuple(blocks[at].retires) + (((line, rid),) if line else ())
     blocks[at] = blocks[at]._replace(retired=tuple(blocks[at].retired) + (rid,), retires=pairs)
     item.sections[SECTION] = render(blocks)
+
+
+def ident_of(capability, line):
+    """The `<cap>#r<n>` of a `retires:` pair's line in the block of `capability`: `r<n>` its own, else as written."""
+    return line if "#" in line else "%s#%s" % (capability, line)
+
+
+def retiring(blocks):
+    """{the item's line `<cap>#r<n>`: the `<cap>#r<m>` it retires} of the `retires:` pairs of `blocks` (b882)."""
+    return {ident_of(b.capability, line): "%s#%s" % (b.capability, old) for b in blocks for line, old in b.retires}
 
 
 def _listed(text, ids, drop=False):
