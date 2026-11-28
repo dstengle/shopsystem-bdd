@@ -210,7 +210,7 @@ item also holds r5, the behaviour you added.
 ### What you see: the trace, before the batch
 
 The pairs are on the item, not yet in `spec/`, so a plain `shop spec trace` says nothing serves the job and points at
-the item. With `--item`, the session reads the trace with the item laid in on a copy, and checks it the same way;
+the item. With `--item`, the session reads the trace with the item applied to a copy, and checks it the same way;
 nothing in `spec/` changes:
 
 <!-- docs: context docs/examples/notes-cli -->
@@ -356,7 +356,7 @@ $ shop work backlog
 
 | rank | item | title | provenance | value | urgency | size | score | waiting on |
 |---|---|---|---|---|---|---|---|---|
-| 1 | b7 | Close the generator gaps in spec_steps | own | high-value | medium-urgency | large | 1.67 | question: The item's lines fail the suite as laid, before any code: ... How are the gloss and r20 reworded? ... |
+| 1 | b7 | Close the generator gaps in spec_steps | own | high-value | medium-urgency | large | 1.67 | question: The item's lines fail the suite as applied, before any code: ... How are the gloss and r20 reworded? ... |
 ```
 
 Tell Claude your answer, or record it yourself. The item goes back to `shaped`, the question and its answer kept on

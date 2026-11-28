@@ -172,7 +172,7 @@ b250 "work show prints the status of an item": items#r31 retires items#r12
 
 **What happened.** The line went into the item's `## Requirements`, not into `spec/` yet. It was given the
 next free id of the capability, `r31`, in a new group `g31`, with `retired: [r12]` beside it. The spec itself only
-changes when a batch lays the line, in stop 5. [Writing requirements](writing-requirements.md) has the do's and
+changes when a batch applies the line, in stop 5. [Writing requirements](writing-requirements.md) has the do's and
 don'ts this stop ran into.
 
 ### The job it serves
@@ -195,7 +195,7 @@ b250 "work show prints the status of an item" ready
 ```
 
 **What happened.** The rating gives the item its place in the backlog. `shop work ready` is the readiness bar: on a
-copy of `spec/` with b250's lines laid in, it checked that each line parses, that `shop spec logic` finds no clash with
+copy of `spec/` with b250's lines applied to it, it checked that each line parses, that `shop spec logic` finds no clash with
 the rest of the spec, and that `shop features generate` can write the group's scenario with no bracketed placeholder.
 All three held, so the item moved to `ready`. Had one failed, `shop work ready` would have refused and named the reason.
 
@@ -237,7 +237,7 @@ batch brief: .../repo/.shop/worktrees/batch-34-driver/brief.md
 
 **What happened.** A *batch* is ready items built together on one branch and closed by one pull request.
 `shop work batch start` picked the ready items in rank order (here, one), moved b250 to `in-batch`, and made the branch
-`batch-34` in its own worktree. On that branch, one commit laid the item's lines into
+`batch-34` in its own worktree. On that branch, one commit applied the item's lines to
 `spec/capabilities/items.md`: group g12 and line r12 out, g31 and r31 in, and `r31` added to the capability's
 `unbuilt:` list. The same commit regenerated `features/items.feature`, where r12's scenario gave way to this one:
 

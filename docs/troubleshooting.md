@@ -160,7 +160,7 @@ When the person lists the backlog, the backlog service shall return an item.
 
 ## `shop work ready` refuses
 
-`shop work ready` runs the readiness bar on a copy of `spec/` with the item's lines laid in. It lists every reason at
+`shop work ready` runs the readiness bar on a copy of `spec/` with the item's lines applied to it. It lists every reason at
 once, so you can fix them in one go.
 
 ### An L1 clash

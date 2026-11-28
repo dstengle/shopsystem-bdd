@@ -163,7 +163,7 @@ Synopsis: `shop work line [--into INTO] [--group GROUP | --in IN_GROUP] [--retir
   item's `### <name> pack` block; `shop work batch start` appends it to the pack's `## Glossary`, makes the pack when it
   is missing and adds its name to `spec/index.md`'s `imports:`. A term the pack has already is refused, naming the
   term, and so is the name of one of the plugin's own packs, which a pack of the context's would shadow whole.
-- `--model "<lines>"`: model lines for the domain model of the capability's area (`object label`, `item: has → label (many)`); an element the area declares already gets the member lines, and an operation it declares already (same service and name) is restated: laid in place of its own line, with the parameters, outcomes and reasons the model line gives, and put back when the item leaves the batch.
+- `--model "<lines>"`: model lines for the domain model of the capability's area (`object label`, `item: has → label (many)`); an element the area declares already gets the member lines, and an operation it declares already (same service and name) is restated: applied in place of its own line, with the parameters, outcomes and reasons the model line gives, and put back when the item leaves the batch.
 - `--relation "<object>: <phrase> → <object> (<cardinality>)"`, `--given`, `--universal`, `--upstream`: the other
   spec pieces an item can carry: a relation of the model, a group's given block, a universal condition, an upstream
   entry.
@@ -179,7 +179,7 @@ Synopsis: `shop work line [--into INTO] [--group GROUP | --in IN_GROUP] [--retir
 - `--move-model "<header>"` and `--move-term <term>`: an element another area declares, with its members and
   vocabulary entries, moved into the area of the capability `--into` names, or one vocabulary entry moved into the
   layer of the area that declares its element. `--retire-model "<header>"` and `--retire-term <term>` take an
-  element (with the entries that mean it) or an entry out once the item is laid, and `--import <pack>` adds a pack
+  element (with the entries that mean it) or an entry out once the item is applied, and `--import <pack>` adds a pack
   of the plugin to `spec/index.md`'s `imports:`. `--reinstate-model`, `--reinstate-term` and `--remove-import` take
   the item's retirement or import back out. Each refuses an element, a term or a pack it cannot find, naming it.
 - `--relied-on-by <cap>#r<n>[,...]`: the core requirements a port line supports, kept as the line's
@@ -200,7 +200,7 @@ Synopsis: `shop work line [--into INTO] [--group GROUP | --in IN_GROUP] [--retir
   operation: its command named after the operation (after the program the contract's other operations of its service
   are requested by, else the service), and each parameter an option named after it with an example of its type (its
   first value, its object's name, a flag `flag = true`). `--withhold <service>.<operation>` keeps an operation no
-  command requests instead. `shop work batch start` lays each into `spec/adapters/cli.toml` (the table in place of the
+  command requests instead. `shop work batch start` applies each to `spec/adapters/cli.toml` (the table in place of the
   operation's own, a withheld operation under `[unexposed]` with its table out), the contract made when there is none.
 
 The line gets the next free id of its capability (`items#r31`). It goes into `spec/` only when a batch starts.
@@ -268,7 +268,7 @@ Moves a `shaped` item to `ready` when it passes the readiness bar, and otherwise
 Any other item is refused, named.\
 Synopsis: `shop work ready name`
 
-The bar lays the item's lines over a temporary copy of `spec/` and the construct catalogue and checks that they
+The bar applies the item's lines to a temporary copy of `spec/` and the construct catalogue and checks that they
 parse (using no construct the catalogue has no entry of), that `shop spec logic` finds
 no clash naming them, and that `shop features generate` writes their scenarios. A line from a request must be settled.
 Readying is the decision to build: a ready item goes into the next batch.
@@ -487,7 +487,7 @@ These are the commands the batch's driver runs; [Concepts](../concepts.md) draws
 Picks the ready, unblocked items that pass the bar, in rank order, and starts a batch of them.\
 Synopsis: `shop work batch start`
 
-It makes the branch `batch-<n>` in its own worktree, lays the items' lines into `spec/` (their ids into `unbuilt:`),
+It makes the branch `batch-<n>` in its own worktree, applies the items' lines to `spec/` (their ids into `unbuilt:`),
 regenerates the features and commits that, citing each item. On the base branch it commits
 `.shop/batches/<n>/plan.md` with the items moved to `in-batch`. It writes the batch brief for the driver (never
 committed). It is refused while `spec/` or `features/` has uncommitted changes, and the batch size comes from
@@ -576,16 +576,16 @@ batch-34 t1 b250 "work show prints the status of an item": done
 
 #### `shop work batch amend`
 
-Lays an in-batch item's lines again on `batch-<n>` and on its task's branch, after `shop work line` changed them: the
-lines it last laid are taken out and its lines as they now read laid in, one commit on each branch citing the item. A new id
-is renumbered past the other items' lines on the batch branch (the item committed again on the base), a line laid
+Applies an in-batch item's lines again on `batch-<n>` and on its task's branch, after `shop work line` changed them: the
+lines it last applied are taken out and its lines as they now read applied, one commit on each branch citing the item. A new id
+is renumbered past the other items' lines on the batch branch (the item committed again on the base), a line applied
 before with the same text keeps its place in `unbuilt:`, and a `done` task is set `running` again. Refused for an item
 that is not `in-batch`, and while the task's worktree has uncommitted changes.\
 Synopsis: `shop work batch amend item`
 
 ```console
 $ shop work batch amend b253
-batch-35 b253 "work names prints every item" amended: laid on batch-35, batch-35-b253
+batch-35 b253 "work names prints every item" amended: applied on batch-35, batch-35-b253
 ```
 
 #### `shop work batch park`
@@ -1031,7 +1031,7 @@ Synopsis: `shop spec parse [--file FILE] [--form] [--item b<n>] [line]`
 - `--form`: print the line's meaning (its logical form) instead of its tree. Read this one.
 - `--file`: parse every line of a file, numbered.
 - `--item b<n>`: read the line as it reads once the terms, relation rows, lines and model lines the item holds are
-  laid into the specification, on a copy, as `shop work ready` lays them; nothing in `spec/` changes. Use it to see why
+  applied to the specification, on a copy, as `shop work ready` applies them; nothing in `spec/` changes. Use it to see why
   a line of an item is refused without running `shop work ready`.
 
 ```console
@@ -1094,9 +1094,9 @@ Synopsis: `shop spec check [--json] [--limit LIMIT] [--item b<n>]`
 
 - `--limit`: rows shown for each rule (the rest are counted).
 - `--item b<n>`: check the specification as it reads once the item's lines, terms, model lines and `serves:` pairs
-  are laid into it, on a copy, as `shop spec parse --item` reads a line; nothing in `spec/` changes. A job the item's
-  groups serve is then no `w_unserved_job`, before any batch lays them. What only a batch's lay writes is not
-  reported: no `v_s3` of a group the item lays (its scenarios), no `v_a5` of a requirement it lays (the adapter
+  are applied to it, on a copy, as `shop spec parse --item` reads a line; nothing in `spec/` changes. A job the item's
+  groups serve is then no `w_unserved_job`, before any batch applies them. What only a batch's apply writes is not
+  reported: no `v_s3` of a group the item applies (its scenarios), no `v_a5` of a requirement it applies (the adapter
   contract's annotations); every other violation of its lines is, and fails the check.
 
 ```console
@@ -1325,9 +1325,9 @@ traces of the jobs it needs (its needs in the product file), each requirement an
 in the trace. A job no requirement group serves is refused naming it.\
 Synopsis: `shop spec trace [--json] [--item b<n>] <job>`
 
-- `--item b<n>`: trace the job as the specification reads once the item's lines and `serves:` pairs are laid into
-  it, on a copy, as `shop spec parse --item` does; nothing in `spec/` changes. Without it a group the item dedicates
-  to the job (`shop work line --serves`) is in no trace until a batch lays the item, and a job only such groups serve
+- `--item b<n>`: trace the job as the specification reads once the item's lines and `serves:` pairs are applied
+  to it, on a copy, as `shop spec parse --item` does; nothing in `spec/` changes. Without it a group the item dedicates
+  to the job (`shop work line --serves`) is in no trace until a batch applies the item, and a job only such groups serve
   is refused.
 
 ```console

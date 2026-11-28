@@ -226,7 +226,7 @@ XFAIL tests/scenarios/test_items.py::test_an_item_shown_gives_its_status - unbui
 
 An item becomes `ready` only by passing a mechanical check, so the questions come before the build, not during it.
 `shop work ready` copies `spec/` (and the construct catalogue `grammar/constructs.md`, when the context keeps one) to a
-temporary directory, lays the item's lines into the copy, and runs the pipeline above over it: every line parses
+temporary directory, applies the item's lines to the copy, and runs the pipeline above over it: every line parses
 (and uses no construct the catalogue has no entry of), the lexicon gains no problem, `shop spec logic` finds no L0 and
 no L1 naming the item's lines, and `shop features generate` writes a scenario for each group. Your real `spec/` is never
 written.
@@ -248,7 +248,7 @@ it. See [concepts](concepts.md) for the item's states.
 
 ### A batch: one branch, a worktree per task
 
-`shop work batch start` picks the ready, unblocked items in rank order and lays them on a new branch `batch-<n>`, in its
+`shop work batch start` picks the ready, unblocked items in rank order and applies them on a new branch `batch-<n>`, in its
 own worktree under `.shop/worktrees/`. One commit puts every item's lines into `spec/`, adds their ids to each
 capability's `unbuilt:`, and regenerates the features. The base branch gets the batch's `plan.md` and the items
 moved to `in-batch`. The checkout you work in is never switched.
@@ -271,7 +271,7 @@ This is batch-32 of this repository, which built item b197 and was merged as pul
 gitGraph
   commit id: "work ready: b197"
   branch batch-32
-  commit id: "lines of b197 laid"
+  commit id: "lines of b197 applied"
   checkout main
   commit id: "work batch start"
   branch batch-32-b197
