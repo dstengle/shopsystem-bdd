@@ -1217,7 +1217,7 @@ While an item is `shaped` and the item retires a term and the item holds no requ
 shall [x4: readiness bar "the readiness bar of the plugin that runs the command" (indexical), x5: agent the person (constant), x6: service the backlog service (constant)]
   while [x1: item, x2: term]
     status(x1) = `shaped`
-    retire#4(subject: x1, object: x2)
+    retire#5(subject: x1, object: x2)
     not [x3: requirement]
       in(x3, x1)
     meet(subject: x1, object: x4)
@@ -1242,7 +1242,7 @@ shall [x7: readiness bar "the readiness bar of the plugin that runs the command"
     spell(subject: x3, object: x5)
     distinct(x6, x3)
     mean(subject: x6, object: x5)
-    retire#4(subject: x1, object: x6)
+    retire#5(subject: x1, object: x6)
     meet(subject: x1, object: x7)
   when
     request(e1, backlog.ready, subject: x8, object: x1)

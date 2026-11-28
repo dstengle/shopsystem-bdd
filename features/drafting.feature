@@ -1283,3 +1283,52 @@ Feature: Drafting
     And the requirement r3 retires the requirement id r2
     And the drafting service keeps the item i2
     And the item i2 holds the requirement r3
+
+  @g114 @r114
+  Scenario: An area retired in an item is kept
+    Given an area a1
+    And an item i1
+    When the person retires the area a1 in the item i1
+    Then the drafting service keeps the item i2
+    And the item i2 retires the area a1
+
+  @g115 @r115
+  Scenario: Retiring an area that the domain model does not hold is refused
+    Given an area a1
+    And this domain model does not hold the area a1
+    And an item i1
+    When the person retires the area a1 in the item i1
+    Then the drafting service refuses this request
+    And the drafting service names the area a1
+
+  @g116 @r116
+  Scenario: Retiring an area that holds a model line is refused
+    Given a model line m1
+    And an area a1
+    And the area a1 holds the model line m1
+    And an item i1
+    When the person retires the area a1 in the item i1
+    Then the drafting service refuses this request
+    And the drafting service names the model line m1
+
+  @g117 @r117
+  Scenario: Retiring an area that holds a term is refused
+    Given a term t1
+    And an area a1
+    And the area a1 holds the term t1
+    And an item i1
+    When the person retires the area a1 in the item i1
+    Then the drafting service refuses this request
+    And the drafting service names the term t1
+
+  @g118 @r118
+  Scenario: Retiring an area that holds a capability with a requirement is refused
+    Given a requirement r1
+    And a capability c1
+    And the capability c1 has the requirement r1
+    And an area a1
+    And the area a1 holds the capability c1
+    And an item i1
+    When the person retires the area a1 in the item i1
+    Then the drafting service refuses this request
+    And the drafting service names the requirement r1

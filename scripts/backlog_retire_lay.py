@@ -4,13 +4,14 @@ lines are laid (backlog_model's `lay`).
 The imports are backlog_import's. A model line's retirement takes the element (its header and members) out of the
 fence of `spec/model/<area>.md`, with each entry of any layer that means it (backlog_area_move's `means`); a term's
 retirement takes its entry out of its layer, and is met when a model line retirement of the item took the entry
-out with its element (b688)."""
+out with its element (b688); an area's retirement takes the area out (backlog_retire_area's `lay`, b898)."""
 from pathlib import Path
 
 import backlog_area_move
 import backlog_area_move_lay as laid
 import backlog_import
 import backlog_model
+import backlog_retire_area
 from backlog_items import Refused
 
 
@@ -38,6 +39,9 @@ def lay(into, blocks, files):
     """The item's imports and retirements laid over `into/spec`, each path changed added to `files`."""
     backlog_import.lay(into, blocks, files)
     for retirement in getattr(blocks, "retirements", ()):
+        if retirement.kind == "area":
+            backlog_retire_area.lay(into, retirement.what, files)
+            continue
         if retirement.kind == "model line":
             path, lines, start, end = laid._body(into, retirement.area)
             body = lines[start:end]
