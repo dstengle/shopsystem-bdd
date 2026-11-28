@@ -6,9 +6,9 @@ import contextlib
 import time
 
 # the phases of `work batch start`'s opening, each a name of the timings line batch_timings keeps of it
-PICK, COMPILE, PARSE, LAY = "pick and readiness checks", "grammar 4 compile", "line parse", "lay"
+PICK, COMPILE, PARSE, LAY = "pick and readiness checks", "grammar 4 compile", "line parse", "apply"
 FEATURES, CATALOGUES = "features and corpus written again", "catalogues and Composition"
-CHECK, SCENARIOS, COMMIT = "item check", "laid scenarios run", "worktree and commit"
+CHECK, SCENARIOS, COMMIT = "item check", "applied scenarios run", "worktree and commit"
 
 _totals = {}
 _stack = []

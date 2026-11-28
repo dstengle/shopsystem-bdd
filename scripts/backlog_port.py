@@ -1,9 +1,9 @@
 """A driven port an item makes (b701, batches r151): a new capability's block that says `kind: port` (`work line
---capability <c> --area <a> --port`) laid as an area of kind port, its model file made by the lay even with no model
-lines (backlog_model_area's skeleton writes the kind), importing each area whose layer has a word the item's lines
-of the port or its model lines of the port say, and imported in turn by the model file of each area a capability
-block of the item is in whose lines say a word of the port's layer, so the lay raises no v_m1 (`lay`). Every other
-area the item makes is laid alike (b830: `areas`), its model file made only when it imports an area. A word is said when
+--capability <c> --area <a> --port`) applied as an area of kind port, its model file made by spec_apply's apply even
+with no model lines (backlog_model_area's skeleton writes the kind), importing each area whose layer has a word the
+item's lines of the port or its model lines of the port say, and imported in turn by the model file of each area a capability
+block of the item is in whose lines say a word of the port's layer, so the apply raises no v_m1 (`lay`). Every other
+area the item makes is applied alike (b830: `areas`), its model file made only when it imports an area. A word is said when
 it, one of its forms or its plural stands whole in the text, as backlog_area_move_lay reads a moved word's users."""
 import re
 from pathlib import Path

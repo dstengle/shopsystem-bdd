@@ -106,10 +106,10 @@ serves: shape-work
 
 **`serves: <job>, ...`** names each job by its id, as `shop spec job` declared it in the product file
 (`.shop/product/product.toml`). It is never written by hand: `shop work line <b> --serves <cap>#g<n> <job>` puts the
-pair on an item, and the batch that lays the item writes the line. A job's trace (`shop spec trace <job>`) starts from
+pair on an item, and the batch that applies the item writes the line. A job's trace (`shop spec trace <job>`) starts from
 the groups that serve it, and `shop spec check` warns of a job no group serves (`w_unserved_job`) and of a capability
-none of whose groups serves a job (`w_unserved_cap`). Before the batch lays the item, `shop spec trace <job> --item b<n>`
-and `shop spec check --item b<n>` read it with the item's pairs laid in. [Concepts](../concepts.md#product-job-and-trace)
+none of whose groups serves a job (`w_unserved_cap`). Before the batch applies the item, `shop spec trace <job> --item b<n>`
+and `shop spec check --item b<n>` read it with the item's pairs applied. [Concepts](../concepts.md#product-job-and-trace)
 has the product's words.
 
 Every line must parse to exactly one meaning. Here is what g14's line means:
@@ -357,7 +357,7 @@ retires: [r31 r12]
 
 Meanwhile a second item, b251, also took a line for `items`. It was written before b250 reached `spec/`, so it got
 the same ids. That's fine: `shop work batch start` renumbers each item's ids past the capability's and the other picked
-items' when it lays them:
+items' when it applies them:
 
 ```console
 $ shop work line b251 --into items --group 'An item shown gives its provenance' 'When the person shows an item, the backlog service shall return the provenance of the item.'
