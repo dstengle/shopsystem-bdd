@@ -4,8 +4,7 @@ The item keeps its imports in an `### imports` block of its `## Requirements` (b
 after the moves block), one bullet a pack: `- pack `<name>``. `work line <item> --import <name>` keeps the import of
 the plugin's pack `grammar/packs/<name>.md` in the item, refused naming the pack when the plugin has no pack of that
 name, and when the item imports it already; a pack spec/index.md imports is kept too. `lay` adds each name to
-`spec/index.md`'s `imports:` that it does not list; `unlay` takes out each one the index did not import at the
-batch's base (else in the latest version git holds of it)."""
+`spec/index.md`'s `imports:` that it does not list."""
 import re
 
 import spec_packs
@@ -14,7 +13,6 @@ from backlog_items import Refused, commit, find, label, one_line
 HEAD = "### imports"
 LINE = re.compile(r"^- pack `([a-z0-9]+(?:-[a-z0-9]+)*)`$")
 FLAGS = ("import_pack",)
-INDEX = "spec/index.md"
 
 
 def add_arguments(p):
@@ -84,19 +82,3 @@ def lay(into, blocks, files):
     from backlog_pack import _index
     for pack in getattr(blocks, "imports", ()):
         _index(into, pack, True, files)
-
-
-def unlay(into, blocks, files, base=None):
-    """The reverse of `lay`: each import out of spec/index.md that the index did not hold at `base` (else in the
-    latest version git holds of it)."""
-    from backlog_area_move_unlay import held
-    from backlog_pack import _index
-    imports = list(getattr(blocks, "imports", ()))
-    if not imports:
-        return
-    was = held(spec_packs.Path(into) / INDEX, base)
-    found = spec_packs.IMPORTS.search(spec_packs._frontmatter(was)) if was is not None else None
-    before = [n.strip() for n in found.group("names").split(",")] if found else []
-    for pack in imports:
-        if pack not in before:
-            _index(into, pack, False, files)

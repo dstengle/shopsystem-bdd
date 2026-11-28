@@ -1,6 +1,5 @@
 """`work line --capability` (b317): a new capability written as a block of an item, lines and terms going into it with
-`--into`, laid over a copy of `spec/` as its file and Composition row, taken out again, and through the readiness
-bar."""
+`--into`, laid over a copy of `spec/` as its file and Composition row, and through the readiness bar."""
 import shutil
 
 import backlog_items
@@ -48,13 +47,12 @@ def test_it_refuses_an_existing_capability_a_second_block_and_a_bad_group(ready_
     assert done.returncode == 1 and "takes --narrator" in done.stderr, done.stderr
 
 
-def test_lay_writes_the_file_and_row_and_unlay_takes_them_out(ready_repo, tmp_path_factory):
+def test_lay_writes_the_file_and_row(ready_repo, tmp_path_factory):
     tmp_path = tmp_path_factory.mktemp("copy")
     made(ready_repo)
     assert work(ready_repo, "line", "b1", "--into", "shelf", LINE).returncode == 0
     item = backlog_items.find(ready_repo, "b1")
     shutil.copytree(ready_repo / "spec", tmp_path / "spec")
-    index = (tmp_path / "spec" / "index.md").read_text()
     files = []
     assert backlog_lines.lay_onto(tmp_path, item, files) == ["shelf"]
     assert files == ["spec/index.md"]
@@ -67,11 +65,6 @@ def test_lay_writes_the_file_and_row_and_unlay_takes_them_out(ready_repo, tmp_pa
     laid = (tmp_path / "spec" / "index.md").read_text()
     assert laid.count("## Composition") == 1
     assert "| area | kind | capabilities |\n|---|---|---|\n| shelf | core | shelf |" in laid
-    files = []
-    assert backlog_lines.unlay(tmp_path, item, files) == []
-    assert not (tmp_path / "spec" / "capabilities" / "shelf.md").exists()
-    assert (tmp_path / "spec" / "index.md").read_text() == index
-    assert files == ["spec/capabilities/shelf.md", "spec/index.md"]
 
 
 def test_an_item_making_a_capability_passes_the_bar(ready_repo):
@@ -92,8 +85,8 @@ def test_a_new_capability_and_a_chore_exclude_each_other(ready_repo):
     assert done.returncode == 1 and "a chore and requirement lines exclude each other" in done.stderr, done.stderr
 
 
-def test_lay_names_the_capability_in_its_area_row_and_unlay_takes_it_out(tmp_path):
-    from backlog_capability import lay, unlay
+def test_lay_names_the_capability_in_its_area_row(tmp_path):
+    from backlog_capability import lay
     (tmp_path / "spec" / "capabilities").mkdir(parents=True)
     was = ("---\nid: bounded-context/ex.com/prod/ctx\n---\n\n## Composition\n\n| area | kind | capabilities |\n"
            "|---|---|---|\n| shelf | core | notes |\n| other | supporting | x |\n\n## Upstreams\n")
@@ -104,8 +97,6 @@ def test_lay_names_the_capability_in_its_area_row_and_unlay_takes_it_out(tmp_pat
     laid = (tmp_path / "spec" / "index.md").read_text()
     assert "| shelf | core | notes, shelf |\n| other | supporting | x |" in laid, laid
     assert "specifies: the shelf guarantees" in (tmp_path / "spec" / "capabilities" / "shelf.md").read_text()
-    unlay(tmp_path, block, files)
-    assert (tmp_path / "spec" / "index.md").read_text() == was
 
 
 OLD = ("---\nid: bounded-context/ex.com/prod/ctx\n---\n\n## Composition\n\nThe capabilities by area.\n\n"
@@ -115,11 +106,11 @@ OLD = ("---\nid: bounded-context/ex.com/prod/ctx\n---\n\n## Composition\n\nThe c
        "| `gone` | the person | service |\n\n## Upstreams\n")
 
 
-def test_lay_writes_an_index_of_old_tables_in_the_index_form_and_unlay_puts_it_back(tmp_path):
+def test_lay_writes_an_index_of_old_tables_in_the_index_form(tmp_path):
     """f1 of batch-51: an index whose Composition holds the old `| capability | narrator | group |` tables is written
     in the index form, each area's row from the capability files' `area:` and its kind from spec/model/<area>.md, the
-    new capability in its area's row; the unlay puts the index back byte for byte."""
-    from backlog_capability import lay, unlay
+    new capability in its area's row."""
+    from backlog_capability import lay
     caps = tmp_path / "spec" / "capabilities"
     caps.mkdir(parents=True)
     for name, where in (("notes", "shelf"), ("x", "other"), ("y", "other"), ("gone", None)):
@@ -127,9 +118,6 @@ def test_lay_writes_an_index_of_old_tables_in_the_index_form_and_unlay_puts_it_b
     (tmp_path / "spec" / "model").mkdir()
     (tmp_path / "spec" / "model" / "other.md").write_text("---\narea: other\nkind: supporting\n---\n")
     (tmp_path / "spec" / "index.md").write_text(OLD)
-    git(tmp_path, "init", "-q")
-    git(tmp_path, "add", "-A")
-    git(tmp_path, "-c", "user.name=t", "-c", "user.email=t@t", "commit", "-qm", "spec")
     block = Block("shelf", [], [], new=NEW)
     files = []
     lay(tmp_path, block, files)
@@ -138,11 +126,6 @@ def test_lay_writes_an_index_of_old_tables_in_the_index_form_and_unlay_puts_it_b
                     "| area | kind | capabilities |\n|---|---|---|\n| shelf | core | notes, shelf |\n"
                     "| other | supporting | x, y |\n\n### Retired in 0.31.0\n\n| capability | narrator | group |\n"
                     "|---|---|---|\n| `gone` | the person | service |\n\n## Upstreams\n"), laid
-    git(tmp_path, "add", "-A")
-    git(tmp_path, "-c", "user.name=t", "-c", "user.email=t@t", "commit", "-qm", "laid")
-    unlay(tmp_path, block, files)
-    assert (tmp_path / "spec" / "index.md").read_text() == OLD
-    assert not (caps / "shelf.md").exists()
 
 
 REPO = ("---\nid: bounded-context/ex.com/prod/ctx\n---\n\n## Composition\n\nPlugin 0.38.0: the domain contract.\n\n"
@@ -156,16 +139,13 @@ REPO = ("---\nid: bounded-context/ex.com/prod/ctx\n---\n\n## Composition\n\nPlug
 def test_lay_keeps_the_retired_subsections_of_an_index_shaped_as_this_repositorys(tmp_path):
     """f1 of batch-51: of an index shaped as this repository's spec/index.md, the area subsections become the index
     form's table (an area's kind from its `### <area> (<kind>)` heading where no model file gives one) and every other
-    subsection (the Retired lists) is kept verbatim after it; the unlay puts the index back byte for byte."""
-    from backlog_capability import lay, unlay
+    subsection (the Retired lists) is kept verbatim after it."""
+    from backlog_capability import lay
     caps = tmp_path / "spec" / "capabilities"
     caps.mkdir(parents=True)
     for name, where in (("decisions", "specification"), ("upgrades", "upgrades"), ("supervision", None)):
         (caps / ("%s.md" % name)).write_text("---\nid: c/%s\n%s---\n" % (name, "area: %s\n" % where if where else ""))
     (tmp_path / "spec" / "index.md").write_text(REPO)
-    git(tmp_path, "init", "-q")
-    git(tmp_path, "add", "-A")
-    git(tmp_path, "-c", "user.name=t", "-c", "user.email=t@t", "commit", "-qm", "spec")
     block = Block("shelf", [], [], new=NEW)
     files = []
     lay(tmp_path, block, files)
@@ -175,7 +155,3 @@ def test_lay_keeps_the_retired_subsections_of_an_index_shaped_as_this_repository
                     "| upgrades | generic | upgrades |\n| shelf | core | shelf |\n\n### Retired in 0.38.0\n\nEvery line moved with a new id: "
                     "`backlog`, `intake`.\n\n### Retired in 0.31.0\n\n| capability | narrator | group |\n|---|---|---|\n"
                     "| `supervision` | the person who started `work run` | service |\n\n## Testing\n\n- The suite.\n"), laid
-    git(tmp_path, "add", "-A")
-    git(tmp_path, "-c", "user.name=t", "-c", "user.email=t@t", "commit", "-qm", "laid")
-    unlay(tmp_path, block, files)
-    assert (tmp_path / "spec" / "index.md").read_text() == REPO

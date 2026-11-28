@@ -32,10 +32,6 @@ def labels(items):
     return ", ".join(backlog_items.label(i) for i in items)
 
 
-def cites(items):
-    return "".join("\nItem: %s" % i.name for i in items)
-
-
 def _returns(root, returned):
     rels = [backlog_items.rel_of(i.name) for i, _ in returned]
 

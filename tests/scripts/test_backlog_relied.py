@@ -1,11 +1,11 @@
 """The core lines a port line of an item supports (b705): `work line --relied-on-by` on the last line of a group
-(`--in`), the `Relied on by:` line laid into the capability file as spec_read reads it and taken out by the unlay, and
+(`--in`), the `Relied on by:` line laid into the capability file as spec_read reads it, and
 renumber carrying the item's own ids in it."""
 import backlog_items
 import backlog_lines
 import spec_read
 from backlog_section import read
-from backlog_testing import git, work, write_item
+from backlog_testing import work, write_item
 
 CAP = "work-queue"
 LINE = "When the person runs `work start` on an initiative, `work` shall commit the initiative."
@@ -27,12 +27,9 @@ def test_a_group_s_last_line_is_given_the_ids_and_the_lay_writes_them(ready_repo
     rid = group.requirements[0][0]
     assert read(item, "b1")[0].groups[0].relied == ((rid, ("%s#r1" % CAP, "%s#r2" % CAP)),)
     path = ready_repo / "spec" / "capabilities" / ("%s.md" % CAP)
-    held = path.read_text()
     backlog_lines.lay_onto(ready_repo, item)
     laid = {r.id: r for g in spec_read.capability(path).groups for r in g.requirements}
     assert laid[rid].supports == ("%s#r1" % CAP, "%s#r2" % CAP)
-    backlog_lines.unlay(ready_repo, item, [], git(ready_repo, "rev-parse", "HEAD").strip())
-    assert path.read_text() == held
 
 
 def test_renumber_carries_the_item_s_own_ids(ready_repo):

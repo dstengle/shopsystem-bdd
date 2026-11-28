@@ -8,11 +8,9 @@ its id, as `spec check` reads it, and a product file not of the product form che
 r97, b803); each the pair
 (g<n>, job) under the `serves: [g<n> <job>, ...]` line of the item's block of the capability (backlog_section),
 one commit of the item. Laid by `lay` into the group's `serves: <job>, ...` line under its heading in the capability
-file (spec_read reads it, `spec check` its serves fact) and taken out again by `unlay`, a job the file at the batch's
-base serves left on (`at_base`); a pair a live group serves already, or another open item holds, refused; the pairs
+file (spec_read reads it, `spec check` its serves fact); a pair a live group serves already, or another open item holds, refused; the pairs
 of the item's own groups carried to their new ids by `renumbered` (backlog_renumber)."""
 import re
-import subprocess
 import sys
 from pathlib import Path
 
@@ -79,8 +77,7 @@ def _holder(root, item, capability, gid, job):
 def dedicate(root, item, capability, gid, job):
     """The pair (gid, job) under the item's block of the capability; nothing committed. Refused, naming the group,
     when neither the capability nor the item holds it; and, naming the group and the job, when the capability's live
-    group serves the job already or another open item holds the pair, so that the unlay takes off only what this
-    item's lay put on."""
+    group serves the job already or another open item holds the pair."""
     from backlog_lines import block_of
     from backlog_section import SECTION, capability_file, read, render, takes
     takes(item)
@@ -174,42 +171,4 @@ def lay(text, serves):
             text = text[:at + 1] + new + rest[len(line):]
         else:
             text = text[:at] + "\n%s %s" % (spec_read.SERVES, job) + text[at:]
-    return text
-
-
-def _served(text, gid):
-    """The jobs the `serves:` line under the group's heading in `text` names; none when it has no such line."""
-    found = re.search(r"(?m)^### \[%s\] .*\n(%s.*)$" % (gid, re.escape(spec_read.SERVES)), text)
-    return spec_read.jobs_of(found.group(1)) if found else []
-
-
-def at_base(path, base):
-    """The text of the capability file `path` at the commit `base` (the batch's base), or None when there is none."""
-    path = Path(path)
-    if base is None:
-        return None
-
-    def git(*args):
-        return subprocess.run(["git", "-C", str(path.parent), *args], capture_output=True, text=True)
-    shown = git("show", "%s:%s%s" % (base, git("rev-parse", "--show-prefix").stdout.strip(), path.name))
-    return shown.stdout if shown.returncode == 0 else None
-
-
-def unlay(text, serves, held=None):
-    """The reverse of `lay`: each pair's job off its group's `serves:` line, the line out when it names no job; a job
-    the group serves in `held` (the file at the batch's base) left on, as the lay did not put it there."""
-    for gid, job in serves:
-        if held is not None and job in _served(held, gid):
-            continue
-        found = re.search(r"(?m)^### \[%s\] .*$" % gid, text)
-        if found is None:
-            continue
-        at = found.end()
-        rest = text[at + 1:]
-        line = rest.split("\n", 1)[0]
-        if not line.startswith(spec_read.SERVES):
-            continue
-        jobs = [j for j in spec_read.jobs_of(line) if j != job]
-        new = "\n%s %s" % (spec_read.SERVES, ", ".join(jobs)) if jobs else ""
-        text = text[:at] + new + text[at + 1 + len(line):]
     return text

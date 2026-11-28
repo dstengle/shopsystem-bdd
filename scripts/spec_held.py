@@ -3,7 +3,7 @@
 adapter spec's providers' contracts (`provider/`), the plugin's packs and the base grammar's files), their
 (path, mtime_ns, size) and whether `spec/model/` is a folder (`state`). Outside a held scope every call stats them
 again; while a root is held (`held`, as the readiness bar holds its copy) they are statted once, until a writer of the
-root says it changed (`invalidate`, as a lay and an unlay do), and what is kept for that
+root says it changed (`invalidate`, as a lay does), and what is kept for that
 state (`memo`: a line's parse) lives exactly as long."""
 import contextlib
 import functools

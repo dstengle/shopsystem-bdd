@@ -1,6 +1,5 @@
 """adapter_tables and backlog_adapter (b355): an operation's tables changed as text, an item's adapter block read and
-written back byte-stable, and the lay into the contract taken out again as git held it."""
-import subprocess
+written back byte-stable, and the lay into the contract."""
 
 import adapter_tables
 import backlog_adapter
@@ -65,18 +64,10 @@ def test_block_read_and_written_back():
         backlog_section.read(_Item("### cli adapter\n\nsomething"), "b1")
 
 
-def _git(root, *args):
-    subprocess.run(["git", "-C", str(root), *args], check=True, capture_output=True)
-
-
-def test_lay_and_unlay_put_the_contract_back(tmp_path):
+def test_lay_puts_the_tables_into_the_contract(tmp_path):
     path = tmp_path / "spec" / "adapters" / "cli.toml"
     path.parent.mkdir(parents=True)
     path.write_text(CONTRACT)
-    _git(tmp_path, "init", "-q")
-    _git(tmp_path, "-c", "user.name=t", "-c", "user.email=t@e", "commit", "-qm", "c", "--allow-empty")
-    _git(tmp_path, "add", ".")
-    _git(tmp_path, "-c", "user.name=t", "-c", "user.email=t@e", "commit", "-qm", "contract")
     blocks = backlog_section.Blocks(adapters=[backlog_adapter.AdapterBlock("cli", (("notes.add", ADD),
                                                                                    ("notes.archive", ARCHIVE)),
                                                                            ("notes.list",))])
@@ -85,22 +76,13 @@ def test_lay_and_unlay_put_the_contract_back(tmp_path):
     laid = path.read_text()
     assert files == ["spec/adapters/cli.toml"] and adapter_tables.table(laid, "notes.add") == ADD
     assert "notes.list" in adapter_tables.unexposed(laid) and adapter_tables.table(laid, "notes.list") is None
-    _git(tmp_path, "add", ".")
-    _git(tmp_path, "-c", "user.name=t", "-c", "user.email=t@e", "commit", "-qm", "lay")
-    backlog_adapter.unlay(tmp_path, blocks, [])
-    back = path.read_text()
-    assert adapter_tables.unexposed(back) == ["notes.sweep"] and adapter_tables.table(back, "notes.archive") is None
-    for ident in ("notes.add", "notes.list"):
-        assert adapter_tables.table(back, ident) == adapter_tables.table(CONTRACT, ident)
 
 
-def test_lay_makes_a_contract_and_unlay_removes_it(tmp_path):
+def test_lay_makes_a_contract(tmp_path):
     blocks = backlog_section.Blocks(adapters=[backlog_adapter.AdapterBlock("cli", (("notes.archive", ARCHIVE),))])
     backlog_adapter.lay(tmp_path, blocks, [])
     path = tmp_path / "spec" / "adapters" / "cli.toml"
     assert path.read_text() == ARCHIVE + "\n"
-    backlog_adapter.unlay(tmp_path, blocks, [])
-    assert not path.exists()
 
 
 def test_operation_table_written_from_the_model():

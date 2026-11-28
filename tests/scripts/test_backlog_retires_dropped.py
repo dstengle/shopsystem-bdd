@@ -1,7 +1,6 @@
 """A retired group's `Restates:` ids (b333): laying a retire that removes a group writes each 0.29 id it restated, and
 that no group left restates, under the capability's `## Dropped` as `r<n>@0.29: retired with <cap>#r<m> by b<k>.`, so
-`model restates` still finds it covered; unlaying takes the entry out again."""
-import subprocess
+`model restates` still finds it covered."""
 
 import backlog_retires
 import spec_read
@@ -56,14 +55,3 @@ def test_the_dropped_entries_read_and_cover_the_ids(tmp_path):
     found = spec_read.capability(path)
     assert not found.problems
     assert ("queue", 3, "retired with queue#r1 by b7.") in found.dropped
-
-
-def test_unlay_takes_the_entries_out_with_the_group_back(tmp_path):
-    subprocess.run(["git", "init", "-q", str(tmp_path)], check=True)
-    path = tmp_path / "queue.md"
-    path.write_text(TEXT)
-    subprocess.run(["git", "-C", str(tmp_path), "add", "queue.md"], check=True)
-    subprocess.run(["git", "-C", str(tmp_path), "-c", "user.name=t", "-c", "user.email=t@t", "commit", "-q", "-m", "q"],
-                   check=True)
-    laid = backlog_retires.lay(TEXT, "queue", ["r1"], "b7")
-    assert backlog_retires.unlay(path, laid, ["r1"]) == TEXT

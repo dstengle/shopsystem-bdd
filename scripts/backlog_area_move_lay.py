@@ -1,14 +1,12 @@
-"""An item's moves laid over a spec and taken out again (b607, batches r117, r118), before its model lines are laid and
-after they are taken out (backlog_model's `lay`, `unlay`).
+"""An item's moves laid over a spec (b607, batches r117, r118), before its model lines are laid (backlog_model's
+`lay`).
 
 A model line's move takes the element (its header and members) out of the fence of `spec/model/<source>.md` and
 declares it in `spec/model/<target>.md` (made for a capability the item makes, backlog_model_area), with each entry of
 the source's layer that means it (backlog_area_move's `means`) out of `spec/vocabulary/<source>.md` into the target's
 layer (made when missing); a term's move takes its entry out of its layer into the target's. Each model file of an area
 whose capabilities' lines use a moved word is given the import of the target area, so that the word stays in a layer
-its lines read (v_m1). The unlay takes each out of the target, puts it back where the source held it, at the commit
-`base` (the batch's base), else in the latest version git holds of it with it, and takes out an import that version
-of the model file does not hold."""
+its lines read (v_m1)."""
 import re
 from pathlib import Path
 

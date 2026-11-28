@@ -5,10 +5,8 @@ refused when `spec/capabilities/<name>.md` exists; with `--area`, its `area:` li
 0.38's form (its id under the context's, its title, narrator, group, `area:` and `specifies:`, `language: codified-2`,
 `retired: []`, `## Purpose`, `## Behaviour`, no empty section) and names it in its area's row of the one table
 `| area | kind | capabilities |` under `spec/index.md`'s `## Composition` (b391; old tables `| capability | narrator |
-group |` written in that form first, and put back as git held them by the unlay), before its lines, terms and rows go
-into it as any block's do; taken out again (`unlay`), the file, its feature and the name are removed."""
+group |` written in that form first), before its lines, terms and rows go into it as any block's do."""
 import re
-import subprocess
 from pathlib import Path
 
 import backlog_model_area
@@ -189,20 +187,6 @@ def _converted(root, body, block):
             + ("\n" if body.endswith("\n\n") else ""))
 
 
-def _held(root, body, block):
-    """The old tables' Composition body git last held in spec/index.md that `_converted` makes `body` of, or None."""
-    def git(*args):
-        return subprocess.run(["git", "-C", str(Path(root) / "spec"), *args], capture_output=True, text=True)
-    log = git("log", "--format=%H", "--", "index.md")
-    for sha in log.stdout.split() if log.returncode == 0 else ():
-        text = git("show", "%s:./index.md" % sha).stdout
-        span = _composition(text)
-        old = text[span[0]:span[1]] if span else ""
-        if _old(old) and _converted(root, old, block) == body:
-            return old
-    return None
-
-
 def _with(body, block, root):
     """The Composition section's `body` with the capability named in its area's row of the table `| area | kind |
     capabilities |` (the row, and the table, made when missing); old tables `| capability | narrator | group |`
@@ -220,30 +204,6 @@ def _with(body, block, root):
             return body[:row.start()] + "| %s |" % " | ".join(cells) + body[row.end():]
     at = rows[-1].end()
     return body[:at] + "\n" + _row(block) + body[at:]
-
-
-def _without(body, block, root):
-    """The reverse of `_with`: the old tables git held put back when `_with` converted them and nothing else changed
-    the section since (`_held`); else the capability out of its area's row, the row out when `_with` made it, the
-    table out when no row is left."""
-    held = _held(root, body, block)
-    if held is not None:
-        return held
-    rows = list(re.finditer(r"(?m)^\|.*\|[ \t]*\n?", body))
-    for row in rows[2:]:
-        cells = _cells(row.group(0))
-        if cells[0] != area(block) or block.capability not in [n.strip() for n in cells[2].split(",")]:
-            continue
-        if row.group(0).rstrip("\n") == _row(block):
-            body = body[:row.start()] + body[row.end():]
-            if len(rows) == 3:
-                body = body.replace(HEADER + "\n", "", 1)
-                body = re.sub(r"\n+\Z", "\n", body) if body.strip() else ""
-            return body
-        cells[2] = ", ".join(n.strip() for n in cells[2].split(",") if n.strip() != block.capability)
-        return body[:row.start()] + "| %s |" % " | ".join(cells) + row.group(0)[len(row.group(0).rstrip("\n")):] \
-            + body[row.end():]
-    return body
 
 
 def respecify(into, block):
@@ -272,25 +232,3 @@ def lay(into, block, files):
         now = was.rstrip("\n") + "\n\n## Composition\n\n%s\n%s\n" % (HEADER, _row(block))
     index.write_text(now)
     files.append("spec/index.md")
-
-
-def unlay(into, block, files):
-    """The reverse of `lay`: the capability file, its feature and its Composition row removed (the section too when
-    `lay` made it), each path added to `files`."""
-    for rel in ("spec/capabilities/%s.md" % block.capability, "features/%s.feature" % block.capability):
-        if (Path(into) / rel).exists():
-            (Path(into) / rel).unlink()
-            files.append(rel)
-    index = Path(into) / "spec" / "index.md"
-    was = index.read_text()
-    made = "\n\n## Composition\n\n%s\n%s\n" % (HEADER, _row(block))
-    span = _composition(was)
-    if was.endswith(made):
-        now = was[:-len(made)] + "\n"
-    elif span:
-        now = was[:span[0]] + _without(was[span[0]:span[1]], block, into) + was[span[1]:]
-    else:
-        now = was
-    if now != was:
-        index.write_text(now)
-        files.append("spec/index.md")
