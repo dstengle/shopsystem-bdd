@@ -1931,7 +1931,7 @@ requirement = { option = "--reword" }
 text = { positional = 2 }
 
 [operations."drafting.retire area"]
-command = "work retire area"
+command = "work line"
 requirements = [
   "drafting#r114: When the person retires an area in an item, the drafting service shall keep an item that retires the area.",
   "drafting#r115: If the person retires an area that the domain model does not hold in an item, then the drafting service shall refuse the request and name the area.",
@@ -1940,5 +1940,5 @@ requirements = [
   "drafting#r118: If the person retires an area that holds a capability that has a requirement in an item, then the drafting service shall refuse the request and name the requirement.",
 ]
 [operations."drafting.retire area".parameters]
-area = { option = "--area", example = "area-1" }
-item = { option = "--item", example = "item-1" }
+item = { positional = 1 }
+area = { option = "--retire-area" }
