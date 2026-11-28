@@ -5,9 +5,6 @@
 [registry]
 modules = ["scripts/contract_registry*.py"]
 
-[laying]
-modules = ["scripts/laying*.py"]
-
 [specification]
 modules = ["scripts/spec", "scripts/spec_*.py", "scripts/model", "scripts/model_*.py", "scripts/domain_*.py",
            "scripts/adapter_*.py", "scripts/contract_*.py", "scripts/product_*.py", "scripts/decision_*.py",
