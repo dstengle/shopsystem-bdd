@@ -17,7 +17,7 @@ each, in an order where each builds on the last. Every section says the same fiv
 - **where to read more**.
 
 If you want the machinery behind a word, [How it works](how-it-works.md) has it. If you want to see the words in
-motion first, take [the tour](tour.md).
+motion first, take [the tour of the internals](internals-tour.md).
 
 **On this page:** [product, job and trace](#product-job-and-trace) · [bounded context](#bounded-context) ·
 [domain model](#domain-model) · [service and operation](#service-and-operation) ·

@@ -113,9 +113,9 @@ def test_a_scenario_that_is_not_gherkin_is_caught(tools):
 
 
 def test_a_scenario_missing_a_given_is_caught(tools):
-    text = broken("docs/tour.md", "    Given an item i1\n    When the person shows the item i1",
+    text = broken("docs/internals-tour.md", "    Given an item i1\n    When the person shows the item i1",
                   "    When the person shows the item i1")
-    assert any("names i1, which no Given brought in" in p for p in gherkin_problems("docs/tour.md", text))
+    assert any("names i1, which no Given brought in" in p for p in gherkin_problems("docs/internals-tour.md", text))
 
 
 def test_a_step_that_does_not_read_is_caught(tools):

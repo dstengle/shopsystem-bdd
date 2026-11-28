@@ -132,7 +132,7 @@ You need:
 | if you want to | read |
 |---|---|
 | set up a repository by talking with Claude and see a first scenario go green | [Getting started](docs/getting-started.md) |
-| follow one feature from an idea to a merged batch | [The tour](docs/tour.md) |
+| see what the session runs underneath, from an idea to a merged batch | [A tour of the internals](docs/internals-tour.md) |
 | know what to say to Claude, and what you will be asked | [Talking with Claude](docs/talking-with-claude.md) |
 | write and review requirement lines | [Writing requirements](docs/writing-requirements.md) |
 | know the four parts of a spec, adapters, catalogues and records | [Concepts](docs/concepts.md) |

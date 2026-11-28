@@ -10,11 +10,12 @@ stops' outputs the ids and names are written as 0.38.0 gives them (`items#r31` f
 `test_items.py` for `test_backlog.py`).
 -->
 
-# A tour: one feature from an idea to a merged batch
+# A tour of the internals: what the session runs underneath, from an idea to a merged batch
 
-This page is for everyone. It follows one small feature all the way round the loop: from a sentence you say to
-Claude, to a requirement line, to a scenario, to a reviewed pull request, to a delivered item. You'll see what you
-say, what Claude does, every command it runs and what each one printed.
+This page shows the machinery, not how to use it: you never type these commands, the session runs them for you. It
+follows one small feature all the way round the loop: from a sentence you say to Claude, to a requirement line, to a
+scenario, to a reviewed pull request, to a delivered item. You'll see what you say, what Claude does underneath,
+every command it runs and what each one printed.
 
 The feature is real, and it lives in this repository's own `backlog` capability:
 
