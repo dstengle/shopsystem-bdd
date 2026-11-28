@@ -34,7 +34,7 @@ def steps(text):
             open_ = (m.group(1), m.group(2), [], n, path)
             path = None
         elif open_ is not None and s.startswith(open_[0]) and not s.strip(open_[0][0]):
-            fence, lang, body, at, file = open_
+            _, lang, body, at, file = open_
             open_ = None
             if file:
                 out.append(("file", at, (file, "\n".join(body) + "\n")))
