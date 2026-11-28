@@ -667,3 +667,23 @@ shall [x4: service the batches service (constant), x6: service the specification
       in(x7, x2)
       keep(e3, subject: x6, object: x7)
 ```
+
+## r51
+From: b903 r51.
+
+```reading
+While an item retires an area and a capability has the stem of the area, when the batches service applies the item to a specification, the specification service shall keep the capability in the specification and keep no capability in the area.
+shall [x5: service the batches service (constant), x7: service the specification service (constant)]
+  while [x1: item, x2: area, x3: capability, x4: stem]
+    retire#5(subject: x1, object: x2)
+    of(x4, x2)
+    of(x4, x3)
+  when [x6: specification]
+    request(e1, specification.apply, subject: x5, object: x1, to: x6)
+  response
+    in(x3, x6)
+    keep(e2, subject: x7, object: x3)
+    not [x8: capability]
+      in(x8, x2)
+      keep(e3, subject: x7, object: x8)
+```

@@ -7,7 +7,7 @@ area: specification
 specifies: service language
 language: codified-2
 retired: [g1, r1]
-unbuilt: []
+unbuilt: [r51]
 ---
 
 # Applying
@@ -129,4 +129,7 @@ An item applied to a specification: its requirements, groups, capabilities, mode
 
 ### [g50] An item applied that retires an area keeps its capabilities in no area
 - [r50] While an item retires an area and a capability is in the area, when the batches service applies the item to a specification, the specification service shall keep the capability in the specification and keep no capability in the area.
+
+### [g51] An item applied that retires an area keeps in no area a capability with the stem of the area
+- [r51] While an item retires an area and a capability has the stem of the area, when the batches service applies the item to a specification, the specification service shall keep the capability in the specification and keep no capability in the area.
 
