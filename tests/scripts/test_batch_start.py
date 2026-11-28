@@ -1,6 +1,6 @@
-"""`work batch start` and `work batch status` (workflow simplification plan 4, Task 3, D4-D9, D18): the pick laid on
-a new branch `batch-<n>` with its ids unbuilt and its scenarios generated, the batch file and the moved items
-committed on the base, the person's checkout left alone, and where a batch stands printed."""
+"""`work batch start` and `work batch status` (workflow simplification plan 4, Task 3, D4-D9, D18; b874): each picked
+item applied on its task's branch with its ids unbuilt and its scenarios generated, `batch-<n>` at the base, the batch
+file and the moved items committed on the base, the person's checkout left alone, and where a batch stands printed."""
 import json
 import pathlib
 import sys
@@ -39,14 +39,17 @@ def test_start_writes_the_batch_the_branch_and_the_lines(two):
     assert [backlog_items.find(two, n).status for n in ("b1", "b2")] == ["in-batch", "in-batch"]
     plan = (two / ".shop/batches/1/plan.md").read_text()
     assert "| t1 | b1 | pending | batch-1-b1 |\n| t2 | b2 | pending | batch-1-b2 |" in plan
-    cap = git(two, "show", "batch-1:spec/capabilities/work-queue.md")
-    assert "### [g4] Abandon\n- [r5] " in cap and "### [g5] Exit\n- [r6] " in cap and "unbuilt: [r5, r6]" in cap
-    feature = git(two, "show", "batch-1:features/work-queue.feature")
-    assert "@g4 @r5" in feature and "@g5 @r6" in feature
-    message = git(two, "log", "-1", "--format=%B", "batch-1")
-    assert message.startswith('batch-1: the requirement lines of b1 "Abandon", b2 "Exit"')
-    assert "Item: b1" in message.splitlines() and "Item: b2" in message.splitlines()
-    assert git(two, "rev-parse", "batch-1~1").strip() == git(two, "rev-parse", "HEAD~1").strip()
+    assert git(two, "rev-parse", "batch-1").strip() == git(two, "rev-parse", "HEAD~1").strip()    # b874
+    for branch, mine, other, ids in (("batch-1-b1", "### [g4] Abandon\n- [r5] ", "### [g5] Exit", "unbuilt: [r5]"),
+                                     ("batch-1-b2", "### [g5] Exit\n- [r6] ", "### [g4] Abandon", "unbuilt: [r6]")):
+        cap = git(two, "show", "%s:spec/capabilities/work-queue.md" % branch)
+        assert mine in cap and other not in cap and ids in cap, cap
+        assert git(two, "rev-parse", "%s~1" % branch).strip() == git(two, "rev-parse", "HEAD~1").strip()
+        message = git(two, "log", "-1", "--format=%B", branch)
+        assert message.startswith("batch-1: the requirement lines of b%s" % branch[-1]), message
+        assert message.strip().splitlines()[-1] == "Item: b%s" % branch[-1]
+    assert "@g4 @r5" in git(two, "show", "batch-1-b1:features/work-queue.feature")
+    assert (two / ".shop/worktrees/batch-1-t2").is_dir()
     notes = backlog_items.find(two, "b2").sections["Notes"]
     assert "work-queue#r5 -> work-queue#r6" in notes
     assert "- [r6] " in backlog_items.find(two, "b2").sections["Requirements"]
@@ -175,8 +178,8 @@ def test_the_lay_commit_holds_the_annotated_contract(batch_repo):
                size="small", body="\n## Requirements\n\n### notebook\n\n#### [g10] Archive\n- [r10] %s\n" % ARCHIVE)
     done = work(batch_repo, "batch", "start")
     assert done.returncode == 0, done.stderr
-    assert "spec/adapters/cli.toml" in git(batch_repo, "show", "--name-only", "--format=", "batch-1").split()
-    contract = git(batch_repo, "show", "batch-1:spec/adapters/cli.toml")
+    assert "spec/adapters/cli.toml" in git(batch_repo, "show", "--name-only", "--format=", "batch-1-b1").split()
+    contract = git(batch_repo, "show", "batch-1-b1:spec/adapters/cli.toml")
     table = contract[contract.index('[operations."notes.archive"]'):contract.index('[operations."notes.label"]')]
     assert "notebook#r10: %s" % ARCHIVE in table, table
 

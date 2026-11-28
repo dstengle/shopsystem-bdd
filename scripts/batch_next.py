@@ -54,9 +54,10 @@ def _unfixed(root, batch):
 
 
 def _cites(root, since, branch, item):
-    """Whether a commit on `branch` after `since` has an `Item: <item>` trailer and no `Laid:` one: an amendment
-    `work batch amend` lays cites the item but builds nothing (b698)."""
-    out = batch_git.git(root, "log", "--format=%(trailers:key=Laid,valueonly,separator=%x2c)%x09"
+    """Whether a commit on `branch` after `since` has an `Item: <item>` trailer and no `Applied:` (or, before b874,
+    `Laid:`) one: an amendment `work batch amend` applies cites the item but builds nothing (b698)."""
+    out = batch_git.git(root, "log", "--format=%(trailers:key=Applied,valueonly,separator=%x2c)"
+                        "%(trailers:key=Laid,valueonly,separator=%x2c)%x09"
                         "%(trailers:key=Item,valueonly,separator=%x2c)", "%s..%s" % (since, branch)).stdout
     rows = (line.split("\t", 1) for line in out.splitlines() if "\t" in line)
     return any(not laid.strip() and item in {c.strip() for c in cited.split(",")} for laid, cited in rows)
@@ -65,15 +66,10 @@ def _cites(root, since, branch, item):
 def _built(root, batch, tasks):
     """The ids of the running tasks whose branch holds a commit citing the task's item since the batch's lines commit:
     the kept change its subagent reported."""
-    running = [t for t in tasks if t.status == "running"]
-    try:
-        since = batch_tasks.lines_commit(root, batch) if running else None
-    except Refused:
-        return set()
     found = set()
-    for task in running:
+    for task in [t for t in tasks if t.status == "running"]:
         try:
-            if _cites(root, since, task.branch, task.item):
+            if _cites(root, batch_tasks.lines_commit(root, batch, task), task.branch, task.item):
                 found.add(task.task)
         except Refused:          # no such branch yet: nothing built on it
             pass

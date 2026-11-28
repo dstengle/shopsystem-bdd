@@ -4,7 +4,6 @@ only the commits after the last review, with each finding's own."""
 import subprocess
 
 import batch_findings
-import batch_merge
 import batch_plan
 import pytest
 from backlog_testing import git, state, work
@@ -98,7 +97,7 @@ def test_a_parked_items_finding_needs_no_fix(fixing):
     ok(work(fixing, "batch", "park", "batch-1", "b1", "--question", TITLE))
     ok(work(fixing, "batch", "review", "batch-1"))
     text = brief_text(fixing)
-    assert "the requirement lines of b1" in section(text, "Commits")
+    assert "the specification rebuilt from its base with b2" in section(text, "Commits")     # b1 applied nowhere
     assert "f1" not in section(text, "Earlier findings")
     findings(fixing, 2).write_text(CLEAN)
     ok(work(fixing, "batch", "reviewed", "batch-1"))
@@ -180,10 +179,10 @@ def test_a_fix_may_merge_another_items_fix_to_resolve_a_conflict(batch_repo):
     tree = tree_of(batch_repo, "batch-1-b2")
     assert work(batch_repo, "batch", "review", "batch-1").returncode == 1
     subprocess.run(["git", "merge", "-q", "batch-1-b1"], cwd=tree, capture_output=True)
-    spec = "spec/capabilities/work-queue.md"
-    (tree / spec).write_text(batch_merge.settled(tree, spec))
+    spec = [p for p in git(tree, "diff", "--name-only", "--diff-filter=U").split() if p != "src/shared.txt"]
+    git(tree, "checkout", "--ours", "--", *spec)        # the task's own spec: the review rebuilds the batch's
     (tree / "src" / "shared.txt").write_text("f1\nf2\n")
-    git(tree, "add", spec, "src/shared.txt")
+    git(tree, "add", *spec, "src/shared.txt")
     git(tree, "commit", "-q", "-m", "merge b1's fix\n\nItem: b2\nFinding: f3")
     ok(work(batch_repo, "batch", "review", "batch-1"))
     assert batch_plan.find(batch_repo, "batch-1").status == "in-review"

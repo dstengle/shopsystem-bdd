@@ -75,7 +75,7 @@ def _tasks(root, batch, picked):
         unbound = [_module(c) for c in caps if not (root / _module(c)).exists()]
         chore = ["- %s" % said for said in backlog_chore.said(item)]       # in place of ids (b316)
         out += ["### %s %s" % (task.task, backlog_items.label(item)), "",
-                "- Worktree: %s (made by `shop work batch resume`)" % (trees_dir(root) / ("%s-%s" % (batch.name, task.task))),
+                "- Worktree: %s (made by `shop work batch start`)" % (trees_dir(root) / ("%s-%s" % (batch.name, task.task))),
                 "- Branch: %s" % task.branch,
                 "- Item file: %s" % (Path(root) / backlog_items.rel_of(item.name)),
                 *(chore or ["- Requirement ids: %s" % (", ".join(ids) or "none"),
@@ -92,7 +92,7 @@ def _module(cap):
 
 
 LOOP = (
-    ("prepare task", "`shop work batch resume`, which gives each pending task its worktree."),
+    ("prepare task", "`shop work batch resume`, which sets each pending task running in its worktree."),
     ("build task", ("one subagent for every task in its `tasks` list at once, each in its task's worktree, with its "
                     "task below and the rules every subagent is given.")),
     ("finish task", "`shop work batch done` of its task; a refusal goes back to the task's subagent."),
@@ -168,12 +168,15 @@ def text(root, batch, picked, unwritten=(), superseded=()):
     if _fresh(root, picked):
         out += ["## A fresh context", "", FRESH[0], "", *FRESH[1:], ""]
     out += ["## The lay's bookkeeping", "",
-            ("The lay's commit wrote each laid line's corpus block, took out each retired id's and wrote the "
-             "catalogues again (b333): a block's form is the parser's, so the task whose item changes the grammar "
-             "reads it against the line and corrects it."), ""]
+            ("Each task's first commit applied its item alone: it wrote each of its lines' corpus blocks, took out "
+             "each retired id's and wrote the catalogues again (b333, b874): a block's form is the parser's, so the "
+             "task whose item changes the grammar reads it against the line and corrects it. `shop work batch "
+             "review` rebuilds the batch's specification from the base with every in-batch item applied, so a "
+             "task's own `spec/` and `features/` are never merged as they are."), ""]
     out += ["- Not written, for the task of the item that brings it to mend: %s" % p for p in unwritten]
     out += [""] if unwritten else []
-    out += ["- Superseded by the lay, its retirement leaving the decision unenforced: %s" % s for s in superseded]
+    out += ["- Superseded by an item's apply, its retirement leaving the decision unenforced: %s" % s
+            for s in superseded]
     out += [""] if superseded else []
     out += ["## Push", "",
             ("Run every git push and gh call as `%s <command>`; `work` pushes its own commits." % push) if push else
