@@ -31,10 +31,11 @@ from docs_testing import (
 )
 from test_spec_lf_read import reading
 
-PAGES = ("README.md", "docs/index.md", "docs/getting-started.md", "docs/tour.md", "docs/talking-with-claude.md",
-         "docs/concepts.md", "docs/writing-requirements.md", "docs/recipes.md", "docs/reference/commands.md",
-         "docs/reference/capability-file.md", "docs/reference/design-model.md", "docs/how-it-works.md",
-         "docs/troubleshooting.md", "docs/upgrading.md", "CHANGELOG.md", "docs/history/README.md")
+PAGES = ("README.md", "docs/index.md", "docs/getting-started.md", "docs/internals-tour.md",
+         "docs/talking-with-claude.md", "docs/concepts.md", "docs/writing-requirements.md", "docs/recipes.md",
+         "docs/reference/commands.md", "docs/reference/capability-file.md", "docs/reference/design-model.md",
+         "docs/how-it-works.md", "docs/troubleshooting.md", "docs/upgrading.md", "CHANGELOG.md",
+         "docs/history/README.md")
 
 
 @pytest.fixture(scope="module")

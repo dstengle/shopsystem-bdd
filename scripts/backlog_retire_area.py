@@ -3,7 +3,7 @@
 `work line <item> --retire-area <area>` keeps `- area `<area>`` in the item's `### retirements` block (backlog_retire),
 refused naming the area when the domain model holds no `spec/model/<area>.md`, naming the model line when its model
 fence declares one, naming the term when its layer holds an entry, and naming the requirement `<cap>#r<n>` when a
-capability of the area (its `area:`, else its own name) holds a live one (`retire_area`). The lay (`lay`) takes out
+capability of the area (its `area:`, else its own name when that has a model file) holds a live one (`retire_area`). The lay (`lay`) takes out
 the area's model file and its layer, the area out of every other model file's `imports:`, and `area:` and
 `specifies:` out of each capability of the area, which holds only retired ids; the Composition is written again by
 the apply (spec_composition)."""
@@ -11,15 +11,15 @@ import re
 from pathlib import Path
 
 from backlog_items import Refused
-from plumbing import shop_files
 
 FIELD = re.compile(r"(?m)^(area|specifies):[^\n]*\n")
 
 
 def capabilities(root, area):
-    """The capability files of `area`: their `area:`, else their own name."""
-    return [p for p in sorted((Path(root) / "spec" / "capabilities").glob("*.md"))
-            if str(shop_files.frontmatter(p.read_text())[0].get("area") or p.stem) == area]
+    """The capability files of `area`: their `area:`, else their own name when it names an area with a model file
+    (spec_read's `area_of`)."""
+    import spec_read
+    return [p for p in sorted((Path(root) / "spec" / "capabilities").glob("*.md")) if spec_read.area_of(root, p) == area]
 
 
 def _held(root, area):

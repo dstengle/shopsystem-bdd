@@ -2,9 +2,11 @@
 
 A Claude Code plugin for building software from what you say you want.
 
-You talk with Claude about what you want. The plugin keeps it as requirement lines: plain English, but a small,
-strict kind that tools parse and check, so a line that could mean two things is refused before anyone builds it.
-It turns each group of lines into a Gherkin scenario, and those scenarios are your acceptance tests. Ready work is
+You talk with Claude about your product first: who it serves and the jobs they want done. The plugin keeps the
+product, its actors and its jobs, and gives each job to the bounded context that does it. Then you say what you want
+of a context, and the plugin keeps it as requirement lines, each group of them serving a job: plain English, but a
+small, strict kind that tools parse and check, so a line that could mean two things is refused before anyone builds
+it. It turns each group of lines into a Gherkin scenario, and those scenarios are your acceptance tests. Ready work is
 built in batches, and each batch ends in one reviewed pull request for you to merge.
 
 This page is for everyone. It shows what the plugin does, how to install it, and where to read next.
@@ -130,7 +132,7 @@ You need:
 | if you want to | read |
 |---|---|
 | set up a repository by talking with Claude and see a first scenario go green | [Getting started](docs/getting-started.md) |
-| follow one feature from an idea to a merged batch | [The tour](docs/tour.md) |
+| see what the session runs underneath, from an idea to a merged batch | [A tour of the internals](docs/internals-tour.md) |
 | know what to say to Claude, and what you will be asked | [Talking with Claude](docs/talking-with-claude.md) |
 | write and review requirement lines | [Writing requirements](docs/writing-requirements.md) |
 | know the four parts of a spec, adapters, catalogues and records | [Concepts](docs/concepts.md) |

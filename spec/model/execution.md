@@ -2,7 +2,7 @@
 id: model/missingmass.io/shopsystem/shopsystem-bdd/execution
 area: execution
 kind: supporting
-imports: [tracking, specification, upgrades, measurement, laying]
+imports: [tracking, specification, upgrades, measurement]
 ---
 
 # Work execution

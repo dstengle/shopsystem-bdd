@@ -2,10 +2,10 @@
 The spec and feature on this page are docs/examples/notes-cli/'s, which the docs test checks; the example keeps no
 test module, so the step bindings of step 6 are a sketch of the module a first batch writes. The pytest outputs are
 from real runs on 2026-11-19: plugin 0.38.0, Python 3.11, pytest 9.1.1, pytest-bdd 8.1.0, in a scratch repository
-built from docs/examples/notes-cli/ with that module. The outputs of steps 3, 4 and 8 are from runs on 2026-11-26,
-plugin 0.44.0; step 8's on a copy of docs/examples/notes-cli/ replayed as talking-with-claude.md says, and its
-before-the-first-batch check in a context `migrate init` had just founded. The home directory is written as ~, and
-long paths are cut with "...".
+built from docs/examples/notes-cli/ with that module. The outputs of steps 3, 4, 5 and 7 are from runs on 2026-11-26,
+plugin 0.44.0; the declarations of step 4 and the plays and trace of step 7 on a copy of docs/examples/notes-cli/
+replayed as talking-with-claude.md says, and step 4's check in a context `migrate init` had just founded. The home
+directory is written as ~, and long paths are cut with "...".
 -->
 
 # Getting started
@@ -16,6 +16,9 @@ scripts inside the plugin, not commands on your `PATH`, and the session knows wh
 
 Each step below is one thing to say, what the session does with it, and what you see. The example is a small notes
 tool, the one kept whole in [`docs/examples/notes-cli/`](examples/notes-cli/README.md).
+
+You start with the product: who the tool is for and the jobs they want done (step 4). What the tool does follows from
+those jobs, as requirement lines the session writes from what you say (step 5).
 
 Here is where you're heading. You say what you want, and the session writes it as lines like this one:
 
@@ -96,7 +99,77 @@ name (*text*, *file*, *version*, *repository*, *bounded context*). The plugin ke
 entry says `Redefines: base.` or `Redefines: request.`; [Vocabulary and packs](concepts.md#vocabulary-and-packs) shows
 one.
 
-## 4. Say what you want
+## 4. Say what the product is for
+
+A bounded context is built for a product: someone it serves and the jobs they want done. Say that first, before what
+the tool does, in your own words:
+
+```text
+The notes tool is for a writer. When a thought comes up, they want to note it down so they can find it later.
+When they sit down to write, they want to see every note they kept. And they clear out the notes they're done with.
+```
+
+The session keeps the product in the shop's product file, `.shop/product/product.toml`: the product, the writer, each
+job with its statement (finding and clearing notes **need** keeping them first), and the domain map that gives the
+jobs to this bounded context. Each declaration is one command and one commit:
+
+<!-- docs: context docs/examples/notes-cli -->
+```console
+$ shop spec product example.org/notes --purpose "Keep a writer's passing thoughts at hand."
+declared the product example.org/notes
+$ shop spec actor "the writer"
+declared the product actor the writer
+$ shop spec job keep-notes --actor "the writer" --statement "When a thought comes up, the writer wants to note it down, so they can find it later."
+declared the job keep-notes
+$ shop spec job find-notes --actor "the writer" --statement "When the writer sits down to write, the writer wants to see every note they kept, so they can pick one up." --needs keep-notes
+declared the job find-notes
+$ shop spec job clear-notes --actor "the writer" --statement "When a note is done with, the writer wants to remove it, so they can keep the list short." --needs keep-notes
+declared the job clear-notes
+$ shop spec subdomain note-keeping --type core --serves keep-notes --serves find-notes --serves clear-notes
+declared the subdomain note-keeping
+$ shop spec context bounded-context/example.org/notes/notes-cli --addresses note-keeping --shop example.org/notes/shop
+declared the bounded context bounded-context/example.org/notes/notes-cli kept by example.org/notes/shop
+$ shop spec assign keep-notes --to bounded-context/example.org/notes/notes-cli
+assigned the job keep-notes to the bounded context bounded-context/example.org/notes/notes-cli
+$ shop spec assign find-notes --to bounded-context/example.org/notes/notes-cli
+assigned the job find-notes to the bounded context bounded-context/example.org/notes/notes-cli
+$ shop spec assign clear-notes --to bounded-context/example.org/notes/notes-cli
+assigned the job clear-notes to the bounded context bounded-context/example.org/notes/notes-cli
+```
+
+- **`--shop`** names the shop that keeps the bounded context: the repositories of one product kept together, here
+  this one alone. Its id is a name you choose, and the plugin checks no form of it; the notes example writes the
+  product's id followed by `/shop`. A bounded context with no `--shop` is a third-party provider, one no shop of the
+  product keeps.
+- **The writer is played after the first merge.** `shop spec plays` maps the product's actor, "the writer", to the
+  actor this context's domain model calls the person, and a new context's model holds no actor until its first batch
+  is merged. The session runs it then (step 7).
+
+Until then `shop spec check` says what is still to do, as warnings, not errors: no actor here plays the writer, and
+no requirement serves the jobs yet:
+
+```console
+$ shop spec check
+warning w_unplayed_actor  a product actor of a job held here that no actor of this bounded context plays  (3)
+    clear-notes, the writer
+    find-notes, the writer
+    keep-notes, the writer
+warning w_unreached_sub  a subdomain of a job held here whose trace reaches no bounded context that addresses it  (3)
+    clear-notes, note-keeping
+    find-notes, note-keeping
+    keep-notes, note-keeping
+warning w_unserved_job  a job nothing serves  (3)
+    job/example.org/notes/notes-cli/clear-notes
+    job/example.org/notes/notes-cli/find-notes
+    job/example.org/notes/notes-cli/keep-notes
+0 violations, 9 warnings, 0 unresolved references, 0 file problems
+```
+
+The jobs are what the context's capabilities follow from: what you say next is shaped into groups of lines, each
+group serving one of these jobs. [Concepts](concepts.md#product-job-and-trace) has the product's words, and
+[the commands](reference/commands.md#shop-spec-product) every option.
+
+## 5. Say what you want
 
 Say it in your own words, as you would to a colleague:
 
@@ -141,19 +214,24 @@ an item in the backlog, and writes on it everything the context needs, in the fo
   bare `<actor>`, so it is told apart from the pack's "the notes service returns ...". The recipe
   [A word a pack already has](recipes.md#add-a-word-to-the-vocabulary) shows it.
 
-- the **requirements**: the rules, one line each, in a new capability `notes`:
+- the **requirements**: the rules, one line each, in a new capability `notes`, each group with the job of step 4
+  it serves (`serves:`):
 
   ```markdown
   ### [g1] A note added with a title and a tag is kept
+  serves: keep-notes
   - [r1] When the person adds a note with a title and a tag, the notes service shall keep the note under the tag.
 
   ### [g2] A note added without a title is refused
+  serves: keep-notes
   - [r2] If the person adds a note without a title, then the notes service shall refuse the request and name the title.
 
   ### [g3] Listing the notes returns every note
+  serves: find-notes
   - [r3] When the person lists the notes, the notes service shall return every note.
 
   ### [g4] Removing a note sets its status to removed
+  serves: clear-notes
   - [r4] When the person removes a note, the notes service shall set the status of the note to `removed`.
   ```
 
@@ -178,7 +256,7 @@ work quote: no session is known: the UserPromptSubmit hook keeps it (work quote 
 
 Give it the session's id with `--session <id>` if you quote by hand; in a session the hook does it for you.
 
-## 5. Ask what a line means
+### Ask what a line means
 
 Ask about any line, in plain words: "what does r4 say exactly?" The session reads it back from its logical form, the
 one meaning the plugin parsed it to:
@@ -251,6 +329,69 @@ In a new context the first batch also makes three things nothing has made yet:
 - **the step bindings**, `tests/scenarios/test_notes.py`: plain pytest-bdd steps, one step definition a step text.
   A When makes the request through the adapter, here by running `notes.py` with the command and options the
   contract names; a Then reads the response: the exit code, what it printed, what it kept.
+
+The program is the example's [`notes.py`](examples/notes-cli/notes.py): one argparse subcommand an operation, the
+notes kept in `notes.json` beside it. Its refusal of a note removed already is r5's, which a later item brought
+(step 7):
+
+<details>
+<summary>The whole program (51 lines)</summary>
+
+```python
+#!/usr/bin/env python3
+"""notes: the example's program, the CLI adapter of the notes service. Each command is a request of one operation
+(spec/adapters/cli.toml): `notes add --title T --tag G`, `notes list`, `notes remove N`. The notes are kept in
+notes.json beside it; a refusal exits 1 and names what is missing."""
+import argparse
+import json
+import sys
+from pathlib import Path
+
+
+def load(root):
+    path = Path(root) / "notes.json"
+    return json.loads(path.read_text()) if path.is_file() else []
+
+
+def save(root, notes):
+    (Path(root) / "notes.json").write_text(json.dumps(notes, indent=1) + "\n")
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(prog="notes")
+    parser.add_argument("--root", default=".")
+    sub = parser.add_subparsers(dest="command", required=True)
+    add = sub.add_parser("add")
+    add.add_argument("--title")
+    add.add_argument("--tag", action="append", default=[])
+    sub.add_parser("list")
+    sub.add_parser("remove").add_argument("note", type=int)
+    args = parser.parse_args(argv)
+    notes = load(args.root)
+    if args.command == "add":
+        if not args.title:
+            print("notes add: a note needs --title", file=sys.stderr)
+            return 1
+        notes.append({"title": args.title, "tags": args.tag, "status": "kept"})
+    elif args.command == "list":
+        for n, note in enumerate(notes, 1):
+            if note["status"] == "kept":
+                print("%d %s %s" % (n, note["title"], " ".join("#" + t for t in note["tags"])))
+        return 0
+    else:
+        if notes[args.note - 1]["status"] == "removed":
+            print("notes remove: note %d is removed already" % args.note, file=sys.stderr)
+            return 1
+        notes[args.note - 1]["status"] = "removed"
+    save(args.root, notes)
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
+```
+
+</details>
 
 The shape of the bindings:
 
@@ -418,87 +559,19 @@ The pull request is merged.
 ```
 
 The session marks the item delivered, cleans up the batch's branches, runs `shop spec check` on the merged spec, and
-runs any `shop spec plays` that waited for the merge (step 8). Then it starts the next batch if anything else is
-ready.
+runs any `shop spec plays` that waited for the merge. Then it starts the next batch if anything else is ready.
 
-## 8. Say what the product is for
-
-The notes tool is a bounded context, and a bounded context is built for a product: someone it serves and the jobs
-they want done. Say it, in your own words:
-
-```text
-The notes tool is for a writer. When a thought comes up, they want to note it down so they can find it later.
-When they sit down to write, they want to see every note they kept. And they clear out the notes they're done with.
-```
-
-The session keeps the product in the shop's product file, `.shop/product/product.toml`: the product, the writer, each
-job with its statement (finding and clearing notes **need** keeping them first), and the domain map that gives the
-jobs to this bounded context. Each declaration is one command and one commit:
+After the first merge the model holds the person, so the session runs the `spec plays` of step 4 that waited:
 
 <!-- docs: context docs/examples/notes-cli -->
 ```console
-$ shop spec product example.org/notes --purpose "Keep a writer's passing thoughts at hand."
-declared the product example.org/notes
-$ shop spec actor "the writer"
-declared the product actor the writer
-$ shop spec job keep-notes --actor "the writer" --statement "When a thought comes up, the writer wants to note it down, so they can find it later."
-declared the job keep-notes
-$ shop spec job find-notes --actor "the writer" --statement "When the writer sits down to write, the writer wants to see every note they kept, so they can pick one up." --needs keep-notes
-declared the job find-notes
-$ shop spec job clear-notes --actor "the writer" --statement "When a note is done with, the writer wants to remove it, so they can keep the list short." --needs keep-notes
-declared the job clear-notes
-$ shop spec subdomain note-keeping --type core --serves keep-notes --serves find-notes --serves clear-notes
-declared the subdomain note-keeping
-$ shop spec context bounded-context/example.org/notes/notes-cli --addresses note-keeping --shop example.org/notes/shop
-declared the bounded context bounded-context/example.org/notes/notes-cli kept by example.org/notes/shop
-$ shop spec assign keep-notes --to bounded-context/example.org/notes/notes-cli
-assigned the job keep-notes to the bounded context bounded-context/example.org/notes/notes-cli
-$ shop spec assign find-notes --to bounded-context/example.org/notes/notes-cli
-assigned the job find-notes to the bounded context bounded-context/example.org/notes/notes-cli
-$ shop spec assign clear-notes --to bounded-context/example.org/notes/notes-cli
-assigned the job clear-notes to the bounded context bounded-context/example.org/notes/notes-cli
 $ shop spec plays "the writer" --in bounded-context/example.org/notes/notes-cli --as "the person"
 mapped the product actor the writer to the person in the bounded context bounded-context/example.org/notes/notes-cli
 ```
 
-- **`--shop`** names the shop that keeps the bounded context: the repositories of one product kept together, here
-  this one alone. Its id is a name you choose, and the plugin checks no form of it; the notes example writes the
-  product's id followed by `/shop`. A bounded context with no `--shop` is a third-party provider, one no shop of the
-  product keeps.
-- **`spec plays` waits for the first merged batch.** It maps the product's actor, "the writer", to the actor this
-  context's domain model calls the person, and the model holds that actor only once the first batch is merged (step
-  7). Here the batch is merged, so it passes. Said earlier, in a new context, before its first batch, the same
-  declarations are kept but `spec plays` is refused, and `shop spec check` warns that no actor here plays the writer;
-  the session runs `spec plays` again after the merge:
-
-  ```console
-  $ shop spec plays "the writer" --in bounded-context/example.org/notes/notes-cli --as "the person"
-  spec: --as 'the person' is no actor of the domain model of bounded-context/example.org/notes/notes-cli; it holds no actor
-  $ shop spec check
-  warning w_unplayed_actor  a product actor of a job held here that no actor of this bounded context plays  (3)
-      clear-notes, the writer
-      find-notes, the writer
-      keep-notes, the writer
-  warning w_unreached_sub  a subdomain of a job held here whose trace reaches no bounded context that addresses it  (3)
-      clear-notes, note-keeping
-      find-notes, note-keeping
-      keep-notes, note-keeping
-  warning w_unserved_job  a job nothing serves  (3)
-      job/example.org/notes/notes-cli/clear-notes
-      job/example.org/notes/notes-cli/find-notes
-      job/example.org/notes/notes-cli/keep-notes
-  0 violations, 9 warnings, 0 unresolved references, 0 file problems
-  ```
-
-With the product declared after the merge, `shop spec check` warns of each job nothing serves yet and of the
-capability that serves none: what is still to do, not errors.
-[Talking with Claude](talking-with-claude.md#your-product-and-its-jobs) replays this step from its start on a copy of
-the example, with every check's output.
-
-Then the session dedicates each group of the capability to the job it does, on an item, and the batch writes that
-as the group's `serves:` line. The example's g5, "a removed note is not removed again", came on that same item, from
-one more thing said ("a note that's already removed can't be removed again"), its group given the job `clear-notes`. From then on, ask "what does keeping notes rest on?" and the session
-answers with the job's **trace**, every requirement that does it:
+The example's g5, "a removed note is not removed again", came on a later item, from one more thing said ("a note
+that's already removed can't be removed again"), its group serving `clear-notes`. Ask "what does keeping notes rest
+on?" and the session answers with the job's **trace**, every requirement that does it:
 
 <!-- docs: context docs/examples/notes-cli -->
 ```console
@@ -510,10 +583,9 @@ the trace of the job keep-notes:
 
 [Talking with Claude](talking-with-claude.md#your-product-and-its-jobs) walks the whole conversation, with what the
 session runs and what you see at each step. [`docs/examples/notes-cli/`](examples/notes-cli/README.md) keeps the
-result: its product file and its capability with each group's job. [Concepts](concepts.md#product-job-and-trace) has
-the product's words, and [the commands](reference/commands.md#shop-spec-product) every option.
+result: its product file and its capability with each group's job.
 
-## 9. From here, keep saying what you want
+## 8. From here, keep saying what you want
 
 You've seen the whole loop once. From now on it's the same: say what you want, in your own words ("listing the notes
 should give their tags too"), and the session shapes an item, readies it and builds it in a batch that ends in one
@@ -522,7 +594,8 @@ pull request for you to merge.
 Next:
 
 - [Talking with Claude](talking-with-claude.md): what to say, what follows, and the few things you're asked.
-- [The tour](tour.md): one feature from an idea to a merged batch, with every command the session runs.
+- [A tour of the internals](internals-tour.md): one feature from an idea to a merged batch, with every command the
+  session runs underneath.
 - [Writing requirements](writing-requirements.md): the language, with "this, not that" pairs.
 - [Commands](reference/commands.md): every command the session runs, for when you want to look or do a step by
   hand.

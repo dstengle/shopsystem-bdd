@@ -60,12 +60,14 @@ def tools():
     toolchain.require()
 
 
-def test_every_requirement_line_of_the_docs_reads_as_the_page_shows_it(tools):
+@pytest.mark.usefixtures("tools")
+def test_every_requirement_line_of_the_docs_reads_as_the_page_shows_it():
     found = [p for page, text in all_pages().items() for p in line_problems(page, text)]
     assert found == [], "\n".join(found)
 
 
-def test_every_gherkin_block_of_the_docs_is_valid_and_its_steps_read(tools):
+@pytest.mark.usefixtures("tools")
+def test_every_gherkin_block_of_the_docs_is_valid_and_its_steps_read():
     found = [p for page, text in all_pages().items() for p in gherkin_problems(page, text)]
     assert found == [], "\n".join(found)
 
@@ -89,47 +91,55 @@ def broken(page, old, new):
     return text.replace(old, new, 1)
 
 
-def test_a_line_that_does_not_parse_is_caught(tools):
+@pytest.mark.usefixtures("tools")
+def test_a_line_that_does_not_parse_is_caught():
     text = broken("docs/how-it-works.md", "shall not return the title of the item.",
                   "shall not return the title of the thing it shows.")
     assert any("refused in this repository" in p for p in line_problems("docs/how-it-works.md", text))
 
 
-def test_a_line_shown_refused_that_parses_is_caught(tools):
+@pytest.mark.usefixtures("tools")
+def test_a_line_shown_refused_that_parses_is_caught():
     text = broken("docs/upgrading.md", "While a shopper does not own a cart",
                   "While a shopper owns no cart")
     assert any("shown refused, but parses in tests/scripts/fixtures/docs-shop" in p
                for p in line_problems("docs/upgrading.md", text))
 
 
-def test_a_sketch_line_read_in_this_repository_is_caught(tools):
+@pytest.mark.usefixtures("tools")
+def test_a_sketch_line_read_in_this_repository_is_caught():
     text = broken("docs/recipes.md", "<!-- docs: context tests/scripts/fixtures/docs-labels -->\n```text", "```text")
     assert any("tags an item with a label" in p for p in line_problems("docs/recipes.md", text))
 
 
-def test_a_scenario_that_is_not_gherkin_is_caught(tools):
+@pytest.mark.usefixtures("tools")
+def test_a_scenario_that_is_not_gherkin_is_caught():
     text = broken("docs/index.md", "Scenario: An idea shaped becomes shaped", "Scenari An idea shaped becomes shaped")
     assert any("not valid Gherkin" in p for p in gherkin_problems("docs/index.md", text))
 
 
-def test_a_scenario_missing_a_given_is_caught(tools):
-    text = broken("docs/tour.md", "    Given an item i1\n    When the person shows the item i1",
+@pytest.mark.usefixtures("tools")
+def test_a_scenario_missing_a_given_is_caught():
+    text = broken("docs/internals-tour.md", "    Given an item i1\n    When the person shows the item i1",
                   "    When the person shows the item i1")
-    assert any("names i1, which no Given brought in" in p for p in gherkin_problems("docs/tour.md", text))
+    assert any("names i1, which no Given brought in" in p for p in gherkin_problems("docs/internals-tour.md", text))
 
 
-def test_a_step_that_does_not_read_is_caught(tools):
+@pytest.mark.usefixtures("tools")
+def test_a_step_that_does_not_read_is_caught():
     text = broken("docs/index.md", "Then the backlog service sets the status of the item i1 to `shaped`",
                   "Then the backlog service shelves the item i1")
     assert any("does not" in p and "shelves the item i1" in p for p in gherkin_problems("docs/index.md", text))
 
 
-def test_a_value_in_the_short_form_is_caught(tools):
+@pytest.mark.usefixtures("tools")
+def test_a_value_in_the_short_form_is_caught():
     text = broken("docs/index.md", "And the status of the item i1 is `idea`", "And the item i1 is `idea`")
     assert any("short form" in p for p in gherkin_problems("docs/index.md", text))
 
 
-def test_a_quote_that_differs_from_its_feature_file_is_caught(tools):
+@pytest.mark.usefixtures("tools")
+def test_a_quote_that_differs_from_its_feature_file_is_caught():
     page = "docs/getting-started.md"
     last = "    Then the notes service sets the status of the note n1 to `removed`\n```"
     text = broken(page, last, last[:-4] + "\n    And the notes service keeps the note n1\n```")
@@ -138,8 +148,9 @@ def test_a_quote_that_differs_from_its_feature_file_is_caught(tools):
     assert any("'Narrator: a person' is not notes.feature's" in p for p in gherkin_problems(page, text))
 
 
+@pytest.mark.usefixtures("tools")
 @pytest.mark.parametrize("fixture", ["docs-shop", "docs-labels"])
-def test_a_sketch_context_s_features_are_current(tools, fixture):
+def test_a_sketch_context_s_features_are_current(fixture):
     """A page's sketch context's feature files are what `features generate` writes of its spec, so a quote of them
     is a quote of the generator."""
     import subprocess

@@ -2,7 +2,9 @@
 
 This is the home of the plugin's documentation. Start here when you want to know which page to read next.
 
-With the plugin, you tell Claude what you want, and it is kept as one plain-English line that a tool can parse:
+With the plugin, you tell Claude what your product is for first: who it serves and the jobs they want done, each job
+given to the bounded context that does it. Then you say what you want of a context, and it is kept as plain-English
+lines that a tool can parse, each group of them serving a job. Here is one:
 
 ```requirement
 While the status of an item is `idea`, when the person shapes the item, the backlog service shall set the status of the item to `shaped`.
@@ -25,7 +27,7 @@ and its scenario in [`features/items.feature`](../features/items.feature).
 ## Where to start
 
 **If you talk with Claude** and let it do the typing:
-[the tour](tour.md), [talking with Claude](talking-with-claude.md), [concepts](concepts.md), then
+[talking with Claude](talking-with-claude.md), [concepts](concepts.md), then
 [troubleshooting and FAQ](troubleshooting.md).
 
 **If you write or review requirement lines**, in the backlog or on a pull request:
@@ -33,8 +35,9 @@ and its scenario in [`features/items.feature`](../features/items.feature).
 [troubleshooting](troubleshooting.md), then the language's reference, [`grammar/language.md`](../grammar/language.md).
 
 **If you build against the generated features**, writing the step handlers and fixing red tests:
-[getting started](getting-started.md), [the tour](tour.md), [the capability file](reference/capability-file.md),
-[commands](reference/commands.md), then [how it works](how-it-works.md).
+[getting started](getting-started.md), [the tour of the internals](internals-tour.md),
+[the capability file](reference/capability-file.md), [commands](reference/commands.md), then
+[how it works](how-it-works.md).
 
 **If you maintain a repository on an older release** and are moving it to this one:
 [upgrading](upgrading.md), [writing requirements](writing-requirements.md),
@@ -45,11 +48,12 @@ and its scenario in [`features/items.feature`](../features/items.feature).
 ```mermaid
 flowchart LR
   R[README] --> I[docs index]
-  I --> GS[Getting started] --> T[The tour] --> C[Concepts] --> W[Writing requirements]
+  I --> GS[Getting started] --> C[Concepts] --> W[Writing requirements]
   I --> TW[Talking with Claude]
   I --> RC[Recipes]
   I --> REF[References]
   I --> TS[Troubleshooting]
+  I --> IT[Tour of the internals]
   I --> UP[Upgrading]
 ```
 
@@ -61,7 +65,8 @@ reach for when you need them.
 **Learning**, step by step, with real commands and output:
 
 - [Getting started](getting-started.md): from an empty repository to a first green scenario.
-- [The tour](tour.md): one small feature followed from an idea to a merged batch.
+- [A tour of the internals](internals-tour.md): what the session runs underneath, one small feature followed from an
+  idea to a merged batch.
 
 **Doing**, answers to "how do I ...":
 
@@ -101,4 +106,5 @@ reach for when you need them.
 - [`CHANGELOG.md`](../CHANGELOG.md): every release, newest first.
 - [`docs/history/`](history/README.md): documents of earlier releases, such as design model v5.
 
-Next: [getting started](getting-started.md), or [the tour](tour.md) if the plugin is already set up.
+Next: [getting started](getting-started.md), or [talking with Claude](talking-with-claude.md) if the plugin is already
+set up.
