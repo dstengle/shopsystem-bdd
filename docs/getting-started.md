@@ -204,8 +204,8 @@ note should be kept for a week". [Writing requirements](writing-requirements.md)
 
 ## 6. The session builds it
 
-Readying an item is the decision to build it, so the session starts a batch without asking. The batch lays the
-item's lines into `spec/`, writes the feature file from them, and hands the work to one fresh agent, which builds
+Readying an item is the decision to build it, so the session starts a batch without asking. The batch applies the
+item's lines to `spec/`, writes the feature file from them, and hands the work to one fresh agent, which builds
 what the lines say and opens one pull request. Nobody writes the feature file by hand:
 
 ```gherkin
@@ -380,7 +380,7 @@ def sets_status(world, n, value):
 
 ### Red, then green
 
-While the lines are laid and the code is not written, the batch keeps their ids in the capability's `unbuilt:` list,
+While the lines are applied and the code is not written, the batch keeps their ids in the capability's `unbuilt:` list,
 and the plugin's pytest plugin runs those scenarios as strict expected failures. The `tests/scenarios/conftest.py`
 that `shop migrate init` wrote loads that plugin, so plain pytest in the project folder runs them, with each `@g` and
 `@r` tag a registered mark:

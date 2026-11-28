@@ -74,7 +74,7 @@ The domain model is the shape of a context, with no rules in it: the objects, th
 relations between them, the services with the operations an actor may request, the events and the actors.
 
 - **Lives in:** `spec/model/<area>.md`, one file per area of the context, in a ` ```model ` block.
-- **Written by:** `shop work line --model` and `shop work line --relation`, on an item, laid into `spec/model/` by a
+- **Written by:** `shop work line --model` and `shop work line --relation`, on an item, applied to `spec/model/` by a
   batch.
 
 From this repository's [`spec/model/tracking.md`](../spec/model/tracking.md):
@@ -112,7 +112,7 @@ ready-made set of words you import.
 
 - **Lives in:** `spec/vocabulary/<area>.md` and `shared.md`. Packs are in the plugin's `grammar/packs/` (`base`,
   `request`, `spec`, `time`, and `cli`, deprecated since 0.38.0 for `request`).
-- **Written by:** `shop work line --term`, on an item, laid into `spec/vocabulary/` by a batch.
+- **Written by:** `shop work line --term`, on an item, applied to `spec/vocabulary/` by a batch.
 
 Each entry says its part of speech and, after the arrow, the element it names:
 
@@ -359,7 +359,7 @@ every requirement that does the job.
 - **Written by:** `shop spec product`, `shop spec actor`, `shop spec job`, `shop spec subdomain`, `shop spec context`,
   `shop spec assign` and `shop spec plays` the product file, one commit each, and `shop spec unassign` and
   `shop spec drop` take a declaration back; `shop work line <b> --serves <cap>#g<n> <job>` a group's job, on an item,
-  which a batch lays as the group's `serves:` line. The trace is never written: `shop spec trace <job>` derives it.
+  which a batch applies as the group's `serves:` line. The trace is never written: `shop spec trace <job>` derives it.
 
 A **job** has an id, its actors and a job statement of one form, `When <situation>, <actor> wants <motivation>, so
 they can <outcome>.`, and may need other jobs first. A **subdomain** is a part of the product's domain (`core`,
@@ -377,8 +377,8 @@ the trace of the job keep-notes:
   notes#r2 (served by notes#g2): If the person adds a note without a title, then the notes service shall refuse the request and name the title.
 ```
 
-A job's groups are dedicated to it on an item; until a batch lays the item, `shop spec trace <job> --item b<n>` reads
-the trace with the item's pairs laid in, as `shop spec check --item b<n>` checks it. The trace follows the requests its lines make to
+A job's groups are dedicated to it on an item; until a batch applies the item, `shop spec trace <job> --item b<n>` reads
+the trace with the item's pairs applied, as `shop spec check --item b<n>` checks it. The trace follows the requests its lines make to
 the lines they reach, the adapter specs that realise its port lines and the jobs it needs, and says the job's
 coordination when it requests a driven port's operations. `shop spec check` warns of a job no group serves, a
 capability that serves no job and a product actor that triggers no line of its job's trace.
@@ -486,7 +486,7 @@ depend`](reference/commands.md#shop-work-depend).
 The readiness bar is the check an item must pass before it can be built.
 
 - **Lives in:** nowhere; it runs when you call `shop work ready`, on a temporary copy of `spec/` with the item's lines
-  laid in.
+  applied to it.
 - **Checks:** every line parses; `shop spec logic` finds no clash with the rest of the spec; `shop features generate`
   writes each group's scenario with no unworded step; every request line behind the item is settled.
 

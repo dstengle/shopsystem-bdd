@@ -118,8 +118,6 @@ forbidden_modules =
     features_vocab4
     features_vocab4_request
     intake_moves
-    laying
-    laying_inprocess
     measure_batch
     measure_batch_read
     measure_batch_sessions
@@ -276,7 +274,7 @@ forbidden_modules =
     work_items
 
 [importlinter:contract:upgrades-apart]
-name = The upgrades area imports no module of the areas spec/model/upgrades.md does not import: registry, laying, measurement (b766)
+name = The upgrades area imports no module of the areas spec/model/upgrades.md does not import: registry, measurement (b766)
 type = forbidden
 source_modules =
     upgrades
@@ -284,8 +282,6 @@ forbidden_modules =
     contract_registry
     contract_registry_folder
     contract_registry_github
-    laying
-    laying_inprocess
     measure_batch
     measure_batch_read
     measure_batch_sessions

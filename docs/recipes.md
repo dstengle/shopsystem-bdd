@@ -59,7 +59,7 @@ b250 "Items carry labels": items#r31 While an item has a label, when the person 
 ```
 
 `--into` names the capability; the model lines and the entry go to its `area:` (here `tracking`), into
-`spec/model/tracking.md` and `spec/vocabulary/tracking.md` when a batch lays them. A model line in the
+`spec/model/tracking.md` and `spec/vocabulary/tracking.md` when a batch applies them. A model line in the
 [model's syntax](reference/domain-model.md) joins the element the area already declares: `item: has → label` adds a
 relation to `object item`. A vocabulary entry has the form `- **<word>** (<part of speech>) → <element>. <one
 sentence>.` Leave off the leading `- ` and `work line` tells you so:
@@ -69,9 +69,9 @@ $ shop work line b250 --into items --term "**label** (noun) → object label. A 
 work line: the vocabulary entry **label** (noun) → object label. A short word. is not `- **<word>** (<part of speech>) → <element>. ...`
 ```
 
-`shop spec parse` in your checkout doesn't know `label` yet: the word lives on the item until a batch lays it into
+`shop spec parse` in your checkout doesn't know `label` yet: the word lives on the item until a batch applies it to
 `spec/`. The [readiness bar](concepts.md#readiness-bar) is where the line is checked, with the item's model lines and
-entries laid in on a copy of `spec/`. Rate the item and ready it:
+entries applied to a copy of `spec/`. Rate the item and ready it:
 
 ```console
 $ shop work rate b250 --value medium-value --urgency low-urgency --size small
@@ -98,7 +98,7 @@ service backlog
 
 `verb, action` is something that happens; `verb, state` is something that holds (it can stand in a While clause).
 The frame names the slots by the model's elements (`<item>`), and the parameters need none: a line says them after
-the object, "with a label", "with the label `l1`", "without a label". With both laid in, a line reads as you'd hope:
+the object, "with a label", "with the label `l1`", "without a label". With both applied, a line reads as you'd hope:
 
 <!-- docs: context tests/scripts/fixtures/docs-labels -->
 ```text
@@ -296,14 +296,14 @@ b252 "Declining an item keeps it": items#r31 While the status of an item is one 
 b252 "Declining an item keeps it": items#r31 retires items#r19
 ```
 
-The item now holds `retired: [r19]` and the new line as `r31`. When a batch lays it, r19 goes into the capability's
+The item now holds `retired: [r19]` and the new line as `r31`. When a batch applies it, r19 goes into the capability's
 `retired:` and stays there for good. Why so strict? An id is a name other things hold on to: scenarios are tagged
 `@r19`, commits and findings cite it, other contexts' requests quote it. If r19 could come back meaning something
 else, every one of those would silently point at the wrong line
 ([decision 0085](../spec/decisions/0085-requirements-retired-never-edited.md)).
 
 Two items each said `r31` on this page. That's fine: `shop work batch start` renumbers each item's ids past the
-capability's and the other picked items' when it lays them. `--retires` names a live line, and only that:
+capability's and the other picked items' when it applies them. `--retires` names a live line, and only that:
 
 ```console
 $ shop work line b252 --into items --retires items#r1000 "When the person shows an item, the backlog service shall return the title of the item."
@@ -317,7 +317,7 @@ $ shop work line b252 --into items --retires items#r19 --no-line
 b252 "Declining an item keeps it": retires items#r19
 ```
 
-The item holds `retired: [r19]` and no new line; when a batch lays it, r19 and its scenario go.
+The item holds `retired: [r19]` and no new line; when a batch applies it, r19 and its scenario go.
 
 ## Refuse a value already in use
 
@@ -365,7 +365,7 @@ purpose: The person gives items short words, labels, to group them, and reads th
 ```
 
 Then add its model lines, vocabulary entries and lines through the same item with `shop work line b260 --into labels`,
-as in the first recipe; they take the ids `g1` and `r1` on. `shop work ready` checks them with the capability laid over
+as in the first recipe; they take the ids `g1` and `r1` on. `shop work ready` checks them with the capability applied to
 a copy of `spec/`. When the batch starts, `shop work batch start` writes `spec/capabilities/labels.md` (its id your
 context's with `capability/` in front and the name at the end, its title, narrator and group, its `area:` and `specifies:`, `language: codified-2`,
 `## Purpose`, `## Behaviour`, the item's lines with their ids in `unbuilt:`), its name in its area's row of the

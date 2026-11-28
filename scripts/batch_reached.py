@@ -1,10 +1,10 @@
-"""What a lay's change of grammar 4's inputs reaches beyond the laid capabilities (b707, laying r17, r18): when laying
-the picked items changed a file grammar 4's vocabulary is read from (spec_held's `inputs`: the domain model, the
-vocabulary, the packs, the index) or `spec/universal.md`, every service capability's feature written again where
-`features generate` now writes it differently, and every block of the spec corpus whose form `spec parse --form` now
-prints differently given that form, its heading, trace and line kept. A capability the lay laid lines of is
-laying_inprocess's prepare's own to generate; a feature that is not there, or that `features generate` refuses, is left
-as it is. `prepared`: of a workspace whose items are laid uncommitted, the change told by git since its HEAD (b758);
+"""What an apply's change of grammar 4's inputs reaches beyond the applied capabilities (b707, applying r46, r47; laying
+r17, r18 before): when applying the picked items changed a file grammar 4's vocabulary is read from (spec_held's
+`inputs`: the domain model, the vocabulary, the packs, the index) or `spec/universal.md`, every service capability's
+feature written again where `features generate` now writes it differently, and every block of the spec corpus whose form `spec parse --form` now
+prints differently given that form, its heading, trace and line kept. A capability the apply applied lines of is
+spec_apply's prepare's own to generate; a feature that is not there, or that `features generate` refuses, is left
+as it is. `prepared`: of a workspace whose items are applied uncommitted, the change told by git since its HEAD (b758);
 `reached`: that change touches one of spec_held's `inputs` under the workspace (the plugin's packs and base grammar
 among them when the workspace is the plugin's own repository, b763) or `spec/universal.md`.
 """
