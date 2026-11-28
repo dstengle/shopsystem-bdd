@@ -15,7 +15,6 @@ from pathlib import Path
 import backlog_adapter_ops
 import backlog_capability
 import backlog_forms
-import backlog_model
 import backlog_port
 import backlog_recodify
 import backlog_renumber
@@ -217,48 +216,6 @@ def lay_onto(into, item, files=None):
     for block in (b for b in blocks if b.new):          # the service its model lines declare (b850)
         backlog_capability.respecify(into, block)
     return [b.capability for b in blocks]
-
-
-def _cut(text, chunk):
-    """`text` less the first `chunk` that is a whole run of lines, with the blank line after it; unchanged when there
-    is none."""
-    found = re.search(r"(?m)^%s(?:\n\n|\n|\Z)" % re.escape(chunk), text)
-    return text if found is None else text[:found.start()] + text[found.end():]
-
-
-@spec_held.writes
-def unlay(into, item, files=None, base=None):
-    """The reverse of `lay_onto` (plan 4 review, B1): the item's pieces taken out of `into/spec` where they are as
-    `lay_onto` laid them, the paths outside spec/capabilities/ changed added to `files`; a capability the item made
-    removed whole, its paths added to `files` too (backlog_capability, b317); its operation tables and the operations
-    its model lines restate put back as the commit `base` held them (backlog_adapter, b479; backlog_model, b485). The
-    names of the capabilities whose file changed."""
-    changed, blocks = [], read(item, "the item %s" % item.name)
-    files = [] if files is None else files
-    for block in blocks:
-        if block.new:
-            backlog_capability.unlay(into, block, files)
-            continue
-        path = capability_file(into, block.capability)
-        was = path.read_text()
-        text = backlog_serves.unlay(was, block.serves, backlog_serves.at_base(path, base))   # before its groups (b641)
-        for chunk in [laid_group(g) for g in block.groups] + block.terms:
-            text = _cut(text, chunk)
-        if block.relations:
-            text = backlog_forms.without_lines(text, "Relations", block.relations, backlog_forms.HEADER)
-        if block.retired:
-            text = backlog_retires.unlay(path, text, block.retired)
-        if block.language:
-            text = backlog_recodify.unlay(text)
-        if text != was:
-            path.write_text(text.rstrip("\n") + "\n")
-            changed.append(block.capability)
-    backlog_forms.unlay_spec(into, blocks, files)
-    backlog_universal.unlay(into, blocks, files)
-    backlog_model.unlay(into, blocks, files, base)
-    backlog_port.unlay(into, blocks, files, base)
-    backlog_adapter_ops.unlay(into, blocks, files, base)
-    return changed
 
 
 def lay(root, item, into, others=()):

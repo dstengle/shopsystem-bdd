@@ -1,5 +1,5 @@
 """`work line --recodify` (CNL 4's I19): the marker written into the item's block, read back byte-stable, laid over a
-spec and taken out again; the refusals; and the readiness bar and a request's lines over a mixed spec, a codified-1
+spec; the refusals; and the readiness bar and a request's lines over a mixed spec, a codified-1
 capability refused naming `migrate upgrade`."""
 import pathlib
 import sys
@@ -75,16 +75,13 @@ def test_a_capability_in_the_new_language_is_refused(ready_repo):
     assert git(ready_repo, "rev-parse", "HEAD") == head
 
 
-def test_the_marker_is_laid_and_taken_out(ready_repo):
+def test_the_marker_is_laid(ready_repo):
     old(ready_repo)
     write_item(ready_repo, "b1", status="shaped")
     assert work(ready_repo, "line", "b1", "--recodify", "work-queue").returncode == 0
-    was = (ready_repo / CAP).read_text()
     item = backlog_items.find(ready_repo, "b1")
     backlog_lines.lay_onto(ready_repo, item)
     assert spec_read.codified(ready_repo / CAP, ("codified-2",))
-    assert backlog_lines.unlay(ready_repo, item) == ["work-queue"]
-    assert (ready_repo / CAP).read_text() == was
 
 
 def _mixed(repo, path="ex.com/prod/ctx"):

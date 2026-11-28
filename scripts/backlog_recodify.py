@@ -2,8 +2,7 @@
 item's block for the capability is given the line `language: codified-2` (backlog_section), so its lines, and the
 capability's own, are read in grammar 4 once the item is laid.
 
-Laid over a spec (`lay`), the capability file's frontmatter says `language: codified-2`; taken out again (`unlay`), it
-says `language: codified-1` again, the one marker a capability is switched from."""
+Laid over a spec (`lay`), the capability file's frontmatter says `language: codified-2`."""
 import re
 
 import spec_read
@@ -44,7 +43,3 @@ def _marked(text, old, new):
 
 def lay(text):
     return _marked(text, OLD, MARKER)
-
-
-def unlay(text):
-    return _marked(text, MARKER, OLD)

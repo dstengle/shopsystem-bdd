@@ -1,15 +1,11 @@
 """The area an item's model lines go to (b387): a capability's `area:` in its file, or, for a capability new to the
 context that a block of the item makes (`work line --capability`, b317), its block's `area:`, else its own name; and the model
 file of an area that `spec/model/` does not hold yet, made by the lay (`made`, with the new capability's purpose as the
-area's, of kind `port` when the block makes it a driven port, b701) and removed again by the unlay when nothing but
-what it made is left, the areas it imports aside (`unmade`); the service the model declares in an area (`service`, b850)."""
-import re
+area's, of kind `port` when the block makes it a driven port, b701); the service the model declares in an area (`service`, b850)."""
 from pathlib import Path
 
 from backlog_items import Refused
 from plumbing import shop_files
-
-IMPORTS = re.compile(r"^imports:\s*\[.*\]\s*$", re.MULTILINE)
 
 
 def _area(block):
@@ -79,17 +75,6 @@ def made(root, area, blocks):
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(_skeleton(root, area, blocks))
     return True
-
-
-def unmade(root, area, blocks):
-    """The model file `made` made removed when it holds nothing more than it did then, the areas it imports aside
-    (backlog_port's, b701); True when it was removed."""
-    path = model_path(root, area)
-    if path.is_file() and area_block(blocks, area) is not None and \
-            IMPORTS.sub("imports: []", path.read_text(), count=1) == _skeleton(root, area, blocks):
-        path.unlink()
-        return True
-    return False
 
 
 def service(root, name, capability):

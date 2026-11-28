@@ -1,5 +1,5 @@
 """decision_successor (b741, batches r173, r174; b750, r177, r178): an accepted decision items' retirements leave unenforced is
-superseded by a successor the lay writes, and the unlay takes the successor out and the decision is accepted again."""
+superseded by a successor the lay writes."""
 import backlog_items
 import decision_successor
 from model_parse import frontmatter
@@ -43,20 +43,10 @@ def test_the_lay_supersedes_the_decision_it_leaves_unenforced(tmp_path):
     assert "kept-in-order-b7" in (root / "spec/decisions/index.md").read_text()
 
 
-def test_the_unlay_takes_the_successor_out_and_accepts_the_decision_again(tmp_path):
-    root, item = tree(tmp_path)
-    decision_successor.lay(root, [item])
-    changed = decision_successor.unlay(root, [item])
-    assert not (root / "spec/decisions/0003-kept-in-order-b7.md").exists()
-    assert (root / "spec/decisions/0001-kept-in-order.md").read_text() == OLD
-    assert "spec/decisions/0003-kept-in-order-b7.md" in changed
-    assert "kept-in-order-b7" not in (root / "spec/decisions/index.md").read_text()
-
-
 def test_an_item_that_retires_nothing_changes_nothing(tmp_path):
     root, _ = tree(tmp_path)
     item = backlog_items.parse(ITEM.replace("retired: [r1]\nretires: [r5 r1]\n\n", ""), ".shop/backlog/b7.md")
-    assert decision_successor.lay(root, [item]) == [] and decision_successor.unlay(root, [item]) == []
+    assert decision_successor.lay(root, [item]) == []
     assert (root / "spec/decisions/0001-kept-in-order.md").read_text() == OLD
 
 
@@ -87,23 +77,9 @@ def test_two_items_retiring_ids_of_one_decision_give_one_successor(tmp_path):
     assert set(decision_successor.entries(body)) == {"item/ex.com/prod/ctx/b7", "item/ex.com/prod/ctx/b8"}
 
 
-def test_the_unlay_of_one_keeps_the_successor_with_the_others_lines(tmp_path):
-    root, first, second = two(tmp_path)
-    decision_successor.lay(root, [first, second])
-    assert JOINT in decision_successor.unlay(root, [first])
-    data, _ = frontmatter((root / JOINT).read_text())
-    assert data["enforced_by"] == ["work-queue#r1", "work-queue#r6"]
-    assert data["source"] == ["item/ex.com/prod/ctx/b8"]
-    assert frontmatter((root / "spec/decisions/0001-kept-in-order.md").read_text())[0]["status"] == "superseded"
-    decision_successor.unlay(root, [second])
-    assert not (root / JOINT).exists()
-    assert (root / "spec/decisions/0001-kept-in-order.md").read_text() == OLD
-
-
 def test_a_relay_lays_the_item_into_the_successor_of_the_batch(tmp_path):
     root, first, second = two(tmp_path)
     decision_successor.lay(root, [first, second])
-    decision_successor.unlay(root, [first])
     decision_successor.lay(root, [first])
     data, _ = frontmatter((root / JOINT).read_text())
     assert sorted(data["enforced_by"]) == ["work-queue#r5", "work-queue#r6"]

@@ -6,8 +6,7 @@ the adapter blocks): term bullets in the glossary's entry form. `work line <item
 keeps each term in the block, refused when the pack (the context's file, or the item's block) has an entry of the
 term's word already, naming the term, and on a name of the plugin's own packs (grammar/packs/), which a context pack
 of that name would shadow whole (spec_packs' `path_of`). `lay` appends each entry to the pack's `## Glossary`, the
-pack made when missing, and adds its name to `spec/index.md`'s `imports:`; `unlay` takes the entries out again, and a
-pack the lay made, left with none, out with its import."""
+pack made when missing, and adds its name to `spec/index.md`'s `imports:`."""
 import re
 from collections import namedtuple
 from pathlib import Path
@@ -145,21 +144,3 @@ def lay(into, blocks, files):
         path.write_text(_glossed(text, block.terms), encoding="utf-8")
         files.append(path.relative_to(into).as_posix())
         _index(into, block.name, True, files)
-
-
-def unlay(into, blocks, files):
-    """The reverse of `lay`: each entry out of its pack; a pack left as the lay makes it, with no entry, removed and
-    its import out."""
-    for block in getattr(blocks, "packs", ()):
-        path = path_of(into, block.name)
-        if not path.is_file():
-            continue
-        text = path.read_text(encoding="utf-8")
-        for term in block.terms:
-            text = re.sub(r"(?m)^%s\n?" % re.escape(term), "", text, count=1)
-        files.append(path.relative_to(into).as_posix())
-        if text.strip() == (MADE % (block.name, block.name)).strip():
-            path.unlink()
-            _index(into, block.name, False, files)
-        else:
-            path.write_text(text, encoding="utf-8")

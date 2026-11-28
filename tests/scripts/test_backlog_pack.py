@@ -1,5 +1,5 @@
 """backlog_pack (b472): an item's pack block read and written back byte-stable, laid into spec/packs/<name>.md with
-the pack imported, and taken out again as laid."""
+the pack imported."""
 import backlog_pack
 import backlog_section
 import pytest
@@ -28,7 +28,7 @@ def test_a_line_of_a_pack_block_that_is_no_term_refused():
         backlog_section.read(Item(SECTION + "\nsomething else"), "b1")
 
 
-def test_lay_makes_the_pack_and_imports_it_and_unlay_takes_both_out(tmp_path):
+def test_lay_makes_the_pack_and_imports_it(tmp_path):
     (tmp_path / "spec").mkdir()
     (tmp_path / "spec" / "index.md").write_text(INDEX)
     blocks = backlog_section.read(Item(SECTION), "b1")
@@ -38,23 +38,6 @@ def test_lay_makes_the_pack_and_imports_it_and_unlay_takes_both_out(tmp_path):
     assert TERM in pack.read_text() and "## Glossary" in pack.read_text()
     assert "imports: [request, household]" in (tmp_path / "spec" / "index.md").read_text()
     assert set(files) == {"spec/packs/household.md", "spec/index.md"}
-    backlog_pack.unlay(tmp_path, blocks, [])
-    assert not pack.exists()
-    assert (tmp_path / "spec" / "index.md").read_text() == INDEX
-
-
-def test_unlay_keeps_a_pack_that_holds_other_entries(tmp_path):
-    (tmp_path / "spec" / "packs").mkdir(parents=True)
-    (tmp_path / "spec" / "index.md").write_text(INDEX.replace("[request]", "[request, household]"))
-    held = "# household\n\n## Glossary\n\n- **cellar** (noun): a room under the house.\n"
-    pack = tmp_path / "spec" / "packs" / "household.md"
-    pack.write_text(held)
-    blocks = backlog_section.read(Item(SECTION), "b1")
-    backlog_pack.lay(tmp_path, blocks, [])
-    assert pack.read_text().index("cellar") < pack.read_text().index("pantry")
-    backlog_pack.unlay(tmp_path, blocks, [])
-    assert pack.read_text().strip() == held.strip()
-    assert "household" in (tmp_path / "spec" / "index.md").read_text()
 
 
 def test_a_plugin_pack_name_refused(tmp_path):

@@ -8,8 +8,7 @@ The item keeps them in a `### <area> model` block of its `## Requirements` (back
 own name of a capability the item makes (backlog_model_area, b387) (`add`), merged:
 an element the block names already gets the new member lines. `lay` puts them into `spec/model/<area>.md` (an element
 the area declares gets the member lines at its end, a new one is appended to the fence) and the entries at the end of
-`## Terms` of `spec/vocabulary/<area>.md` (made when missing); `unlay` takes them out again as `lay` put them."""
-import functools
+`## Terms` of `spec/vocabulary/<area>.md` (made when missing)."""
 import re
 from collections import namedtuple
 from pathlib import Path
@@ -82,33 +81,6 @@ def merged(body, lines):
             while at and not body[at - 1].strip():
                 at -= 1
             body[at:at] = ([""] if at else []) + [header] + members
-    return body
-
-
-def unmerged(body, lines, held=None):
-    """The reverse of `merged`: an object, an event or an actor a chunk restated put back as `held(header, None,
-    members)` gives it, or a new event or actor taken out (backlog_model_elements), each operation a chunk restated put back as `held(header, operation, lines)` gives
-    the model lines before the lay (backlog_model_ops, b463; taken out when it gives None), the chunk's other members
-    taken off its element's end, and an element left with no member taken out whole with the blank line before it
-    (the chunk made it)."""
-    body = list(body)
-    for header, members in reversed(chunks(lines)):
-        at = _at(body, header)
-        if at is None or backlog_model_elements.unrestate(body, at, header, members, held) or \
-                backlog_model_elements.unrestate_lone(body, at, header, held):
-            continue
-        ops, members = backlog_model_ops.restated(members, body, at, _end(body, at))
-        end = _end(body, at)
-        first = end - len(members)
-        if first >= at + 1 and body[first:end] == members:
-            del body[first:end]
-        for op, unit in ops:
-            before = held(header, op, unit) if held else None
-            backlog_model_ops.unrestate(body, at, _end(body, at), header, [(op, unit)], before)
-        if _end(body, at) == at + 1 and (members or ops):
-            del body[at]
-            if at > 0 and not body[at - 1].strip():
-                del body[at - 1]
     return body
 
 
@@ -234,15 +206,6 @@ def with_terms(text, bullets):
     return "\n".join(lines)
 
 
-def without_terms(text, bullets):
-    """The reverse of `with_terms` where the section has more than `bullets` in it."""
-    lines = text.split("\n")
-    for bullet in bullets:
-        if bullet in lines:
-            lines.remove(bullet)
-    return "\n".join(lines)
-
-
 def _skeleton(into, area):
     return ("---\nid: vocabulary/%s/%s\narea: %s\n---\n\n# The words of %s\n\n## Terms\n"
             % (shop_files.context_path(into), area, area, area))
@@ -267,30 +230,3 @@ def lay(into, blocks, files):
                 path.write_text(_skeleton(into, block.area))
             path.write_text(with_terms(path.read_text(), block.terms))
             files.append("spec/vocabulary/%s.md" % block.area)
-
-
-def unlay(into, blocks, files, base=None):
-    """The reverse of `lay`, each path changed added to `files`; a vocabulary file `lay` made removed; an operation a
-    model line restates put back as the commit `base` (the batch's base, b485) held it, else as git's history did."""
-    for block in getattr(blocks, "models", ()):
-        path, rel = model_path(into, block.area), "spec/model/%s.md" % block.area
-        if block.lines and path.is_file():
-            lines, start, end = _fence(path.read_text(), rel)
-            held = (functools.partial(backlog_model_ops.at_base, path, base) if base
-                    else functools.partial(backlog_model_ops.held, path))
-            text = "\n".join(lines[:start] + unmerged(lines[start:end], block.lines, held) + lines[end:])
-            if text != path.read_text():
-                path.write_text(text)
-                files.append(rel)
-            if backlog_model_area.unmade(into, block.area, blocks) and rel not in files:
-                files.append(rel)
-        path = vocabulary_path(into, block.area)
-        if block.terms and path.is_file():
-            text = without_terms(path.read_text(), block.terms)
-            if text.rstrip("\n") == _skeleton(into, block.area).rstrip("\n"):
-                path.unlink()
-            elif text != path.read_text():
-                path.write_text(text)
-            files.append("spec/vocabulary/%s.md" % block.area)
-    for module in ("backlog_retire_lay", "backlog_area_move_unlay"):
-        __import__(module).unlay(into, blocks, files, base)
