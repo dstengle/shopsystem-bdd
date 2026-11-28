@@ -2,7 +2,9 @@
 
 This is the home of the plugin's documentation. Start here when you want to know which page to read next.
 
-With the plugin, you tell Claude what you want, and it is kept as one plain-English line that a tool can parse:
+With the plugin, you tell Claude what your product is for first: who it serves and the jobs they want done, each job
+given to the bounded context that does it. Then you say what you want of a context, and it is kept as plain-English
+lines that a tool can parse, each group of them serving a job. Here is one:
 
 ```requirement
 While the status of an item is `idea`, when the person shapes the item, the backlog service shall set the status of the item to `shaped`.
