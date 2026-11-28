@@ -29,6 +29,20 @@ def stopped():
     return dict(_totals)
 
 
+def running():
+    """Whether the stopwatch runs."""
+    return _running[0]
+
+
+def added(totals, share=1.0):
+    """Each phase's seconds of `totals` (another process's `stopped`), times `share`, added to its name's while the
+    stopwatch runs: the phases of work run side by side in `n` processes added each with a share of 1/n, so that the
+    phases still add up to the time they were run for."""
+    if _running[0]:
+        for name, seconds in totals.items():
+            _totals[name] = _totals.get(name, 0.0) + seconds * share
+
+
 @contextlib.contextmanager
 def phase(name):
     """The block's time, less its nested phases', added to `name`'s while the stopwatch runs."""
