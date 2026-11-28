@@ -2,9 +2,11 @@
 
 A Claude Code plugin for building software from what you say you want.
 
-You talk with Claude about what you want. The plugin keeps it as requirement lines: plain English, but a small,
-strict kind that tools parse and check, so a line that could mean two things is refused before anyone builds it.
-It turns each group of lines into a Gherkin scenario, and those scenarios are your acceptance tests. Ready work is
+You talk with Claude about your product first: who it serves and the jobs they want done. The plugin keeps the
+product, its actors and its jobs, and gives each job to the bounded context that does it. Then you say what you want
+of a context, and the plugin keeps it as requirement lines, each group of them serving a job: plain English, but a
+small, strict kind that tools parse and check, so a line that could mean two things is refused before anyone builds
+it. It turns each group of lines into a Gherkin scenario, and those scenarios are your acceptance tests. Ready work is
 built in batches, and each batch ends in one reviewed pull request for you to merge.
 
 This page is for everyone. It shows what the plugin does, how to install it, and where to read next.
