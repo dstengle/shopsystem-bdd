@@ -35,7 +35,7 @@ and its scenario in [`features/items.feature`](../features/items.feature).
 [troubleshooting](troubleshooting.md), then the language's reference, [`grammar/language.md`](../grammar/language.md).
 
 **If you build against the generated features**, writing the step handlers and fixing red tests:
-[getting started](getting-started.md), [the tour of the internals](internals-tour.md),
+[getting started](getting-started.md), [the tutorial](tutorial.md), [the tour of the internals](internals-tour.md),
 [the capability file](reference/capability-file.md), [commands](reference/commands.md), then
 [how it works](how-it-works.md).
 
@@ -65,6 +65,9 @@ reach for when you need them.
 **Learning**, step by step, with real commands and output:
 
 - [Getting started](getting-started.md): from an empty repository to a first green scenario.
+- [Tutorial: the notes product from an empty folder](tutorial.md): every step of the loop, product, actor and
+  jobs, context, capability, model, lines, batch, merge and plays, with what you say, what the session runs and the
+  files it writes, ending at the notes example; replayed as a test.
 - [A tour of the internals](internals-tour.md): what the session runs underneath, one small feature followed from an
   idea to a merged batch.
 
