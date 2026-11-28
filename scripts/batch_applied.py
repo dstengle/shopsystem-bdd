@@ -7,8 +7,8 @@ completed validates the specification with the item (r195: spec_apply_check's `v
 committed state); an item whose validation fails goes back `shaped` naming each rule it violates (r196), as does one a
 requirement of which, retiring none, has a scenario that passes before it is built (batch_laid, b488). A validated item
 is kept in one commit on its task's branch citing it (r197). An item given back takes its worktree and branch with it,
-and is applied in no other task's workspace: no other item is applied again; an item picked that depends on it is left
-out, `ready`. Nothing is committed on the batch's branch. The worktrees of the tasks kept are numbered in pick order
+and is applied in no other task's workspace: no other item is applied again; an item picked that depends on it is not
+applied, and is given back with it (r203: `work batch start` reopens it). Nothing is committed on the batch's branch. The worktrees of the tasks kept are numbered in pick order
 (`numbered`); an apply refused (an unresponsive feature generator) refuses the opening, naming it (`refused`). The
 items whose picked dependencies are decided are applied side by side, each in a process of its own (`_wave`)."""
 import concurrent.futures
@@ -106,7 +106,7 @@ def drop(root, tree, branch):
 
 def applied(root, name, forked, picked, made):
     """([Applied] of each picked item kept, in pick order, [(item, reasons)] of each given back, [(item, reasons)] of
-    each left out); each worktree and branch made listed in `made` as it is made, for the caller to remove on a
+    each depending on one given back, which the caller reopens with it); each worktree and branch made listed in `made` as it is made, for the caller to remove on a
     failure. The items are applied in waves, side by side: each wave the items whose picked dependencies are all
     decided, a dependent's worktree made from its blocker's task branch once that is committed."""
     kept, held, broken, left, decided = {}, {}, [], [], set()
