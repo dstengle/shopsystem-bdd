@@ -6,7 +6,7 @@ group: service
 area: execution
 specifies: object review, object proposed change, service batches: submit
 language: codified-2
-retired: []
+retired: [g13, r13, g1, r1]
 unbuilt: []
 ---
 
@@ -16,10 +16,6 @@ unbuilt: []
 A batch's change submitted for review once its tasks are done, holding only the kept changes of the items still in it.
 
 ## Behaviour
-
-### [g1] A batch submitted keeps a change that cites its items
-- [r1] While an item in a batch is `in-batch`, when the person submits the batch, the batches service shall keep a
-  proposed change of the batch that cites the item.
 
 ### [g2] A batch's change holds no kept change of a parked item
 - [r2] While the status of an item in a batch is `needs-input` and a kept change cites the item, when the person submits
@@ -58,9 +54,21 @@ A batch's change submitted for review once its tasks are done, holding only the 
 ### [g12] A batch not awaiting its merge is not reopened
 - [r12] While a batch is not `awaiting-merge`, if the person reopens the batch with a review finding, then the batches service shall refuse the request and name the batch.
 
-### [g13] A batch whose amended line its task built is submitted with the line built
-- [r13] While an item in a batch is `in-batch` and every task of the batch is `done` and the workspace of the batch holds an amendment that cites the item and a scenario of the item succeeds in the workspace of a task of the item, when the person submits the batch, the batches service shall keep a proposed change of the batch and set the status of the batch to `in-review`.
-
 ### [g14] A fix after a review of a scenario its item's change broke is accepted on submit
 - [r14] While a batch is `building` and every task of the batch is `done` and a review of the batch exists and an item in the batch is `in-batch` and a scenario of the item succeeds in the workspace of the batch and the workspace of a task of the item holds a kept change that cites the item, when the person submits the batch, the batches service shall keep a proposed change of the batch and set the status of the batch to `in-review`.
+
+### [g15] A batch whose amended line its task built is submitted with the line built in the batch's workspace
+- [r15] While an item in a batch is `in-batch` and every task of the batch is `done` and the workspace of a task of the item holds an amendment that cites the item and a scenario of the item succeeds in the workspace of the batch, when the person submits the batch, the batches service shall keep a proposed change of the batch and set the status of the batch to `in-review`.
+
+### [g17] A batch submitted holds no requirement of a parked item
+- [r17] While the status of an item in a batch is `needs-input` and the item holds a requirement, when the person submits the batch, the batches service shall keep a workspace of the batch that does not hold the requirement.
+
+### [g18] A parked item's superseding decision is left out of the batch submitted
+- [r18] While the status of an item in a batch is `needs-input` and the item holds a requirement and the requirement retires the requirement id of a requirement that enforces a design-decision, when the person submits the batch, the batches service shall keep a workspace of the batch that holds no design-decision that supersedes the design-decision.
+
+### [g19] A batch submitted with a parked and an in-batch item retiring ids of one decision keeps the decision superseded
+- [r19] While the status of an item in a batch is `needs-input` and the item holds a requirement and the requirement retires the requirement id of a requirement that enforces a design-decision and another item in the batch is `in-batch` and the item holds another requirement and the requirement retires the requirement id, when the person submits the batch, the batches service shall keep a workspace of the batch that holds a design-decision that supersedes the design-decision.
+
+### [g20] A batch submitted keeps a change that cites its items, its specification rebuilt from the base with each in-batch item applied
+- [r20] While an item in a batch is `in-batch`, when the person submits the batch, the batches service shall keep a proposed change of the batch that cites the item and apply the item to the specification of the workspace of the batch.
 

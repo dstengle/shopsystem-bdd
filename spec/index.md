@@ -55,7 +55,6 @@ with a `## Moved` table naming each id's new one (`spec/moves.json`).
 | analysis | generic | toolchain, code-analysis, feature-reading |
 | upgrades | generic | upgrades |
 | registry | port | contract-registry |
-| laying | port | laying |
 
 ## Testing
 

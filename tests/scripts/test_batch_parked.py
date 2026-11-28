@@ -1,5 +1,5 @@
-"""A parked item (plan 4 review, B1 and S2): its requirement lines are taken out of the batch branch before the
-review publishes it, so they never reach the base, and once answered it is readied and laid again by the next
+"""A parked item (plan 4 review, B1 and S2; b874): its requirement lines are applied nowhere when the review rebuilds
+the batch's specification, so they never reach the base, and once answered it is readied and laid again by the next
 batch; a park or an abandon refuses a task worktree with uncommitted work, unless `--discard`."""
 import backlog_items
 import batch_plan
@@ -21,8 +21,9 @@ def test_a_parked_item_is_published_without_its_lines_and_laid_again(started, ba
     assert "### [g4] Abandon" in cap and "Exit" not in cap and "[r6]" not in cap and "unbuilt: []" in cap, cap
     feature = git(started, "show", "origin/batch-1:%s" % FEATURE)
     assert "@r5" in feature and "@r6" not in feature
-    taken = git(started, "log", "-1", "--format=%B", "--grep", "taken out", "batch-1")
-    assert taken.startswith('batch-1: the requirement lines of b2 "Exit" taken out') and "Item: b2" in taken, taken
+    rebuilt = git(started, "log", "-1", "--format=%B", "--grep", "rebuilt", "batch-1")      # b874: b2 applied nowhere
+    assert rebuilt.startswith('batch-1: the specification rebuilt from its base with b1 "Abandon"'), rebuilt
+    assert "Item: b1" in rebuilt and "Item: b2" not in rebuilt, rebuilt
     merge(started, batch_outside)
     assert work(started, "batch", "merged", "batch-1").returncode == 0
     assert "[r6]" not in (started / CAP).read_text() and "@r6" not in (started / FEATURE).read_text()
@@ -32,7 +33,7 @@ def test_a_parked_item_is_published_without_its_lines_and_laid_again(started, ba
     again = work(started, "batch", "start")
     assert again.returncode == 0, again.stderr
     assert again.stdout.splitlines()[0] == 'batch-2 building: t1 b2 "Exit"'
-    assert "### [g5] Exit\n- [r6] " in git(started, "show", "batch-2:%s" % CAP)
+    assert "### [g5] Exit\n- [r6] " in git(started, "show", "batch-2-b2:%s" % CAP)
 
 
 def test_park_refuses_uncommitted_work(started):  # noqa: F811

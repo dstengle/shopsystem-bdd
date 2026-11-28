@@ -68,27 +68,42 @@ def scenario_passing(step):
 
 
 def passing_tests(step, task):
-    """`[batch] tests` that run, in the task's worktree, the passing item's scenario of `features/work-queue.feature`
-    under the plugin's pytest plugin, every step bound to a step that passes; the task is the world's own in-batch
-    item's, so the passing scenario is another item's."""
+    """`[batch] tests` that run, in the task's worktree, the passing item's scenario under the plugin's pytest plugin,
+    every step bound to a step that passes; the task is the world's own in-batch item's, so the passing scenario is
+    another item's, which only that item's task workspace holds (b874): its `features/work-queue.feature` read off
+    that task's branch once the batch is made (`passing_feature`)."""
     B.write_item(step, T.OWN_IN, title="an item the world builds", status="in-batch")
     T.given(step, "item", T.OWN_IN)
     T.given(step, "task", task).setdefault("item", T.OWN_IN)
-    found = step.context["given"]["task"][task]
-    tree = step.repo / ".shop" / "worktrees" / ("%s-%s" % (T.batch_name(step, found["batch"]), T.task_id(step, task)))
-    return bound_tests(step, tree / "features" / "work-queue.feature",
+    return bound_tests(step, T.outside(step) / "passing" / "work-queue.feature",
                        step.context["item_fields"][step.context["passing"]]["title"])
+
+
+def passing_feature(step, name):
+    """Once the batch is made, the passing item's feature written beside the bound test, as its task's branch holds
+    it."""
+    item = step.context.get("passing")
+    if not item:
+        return
+    path = T.outside(step) / "passing" / "work-queue.feature"
+    path.parent.mkdir(exist_ok=True)
+    path.write_text(T.git(step, "show", "%s-%s:features/work-queue.feature" % (T.batch_name(step, name),
+                                                                            B.ident(item))))
+
+
+T.AFTER_BATCH.append(passing_feature)
 
 
 def bound_tests(step, feature, title):
     """`[batch] tests` that run the scenario `title` of `feature` under the plugin's pytest plugin, every step bound
-    to a step that passes."""
+    to a step that passes; with no `feature`, the one of the worktree the tests run in."""
     test = T.outside(step) / "passing" / "test_passing.py"
     test.parent.mkdir(exist_ok=True)
-    test.write_text("from pytest_bdd import given, parsers, scenario, then, when\n\n\n@scenario(%r, %r)\n"
+    where = repr(str(feature)) if feature else "__import__('os').path.abspath('features/work-queue.feature')"
+    test.write_text("from pytest_bdd import given, parsers, scenario, then, when\n\n\n@scenario(%s, %r)\n"
                     "def test_passing():\n    pass\n\n\n@given(parsers.re('.*'))\ndef _given():\n    pass\n\n\n"
                     "@when(parsers.re('.*'))\ndef _when():\n    pass\n\n\n@then(parsers.re('.*'))\ndef _then():\n"
-                    "    pass\n" % (str(feature), title))
+                    "    pass\n" % (where, title))
     return "[batch]\ntests = 'python3 -m pytest -q -p work_items -p no:cacheprovider %s'\n" % test
 
 

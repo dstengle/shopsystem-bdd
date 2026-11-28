@@ -2,17 +2,6 @@
 Feature: Reviews
   Narrator: the person
 
-  @g1 @r1
-  Scenario: A batch submitted keeps a change that cites its items
-    Given an item i1
-    And a batch b1
-    And the batch b1 holds the item i1
-    And the status of the item i1 is `in-batch`
-    When the person submits the batch b1
-    Then the batches service keeps the proposed change p1
-    And the batch b1 has the proposed change p1
-    And the proposed change p1 cites the item i1
-
   @g2 @r2
   Scenario: A batch's change holds no kept change of a parked item
     Given an item i1
@@ -188,32 +177,6 @@ Feature: Reviews
     Then the batches service refuses this request
     And the batches service names the batch b1
 
-  @g13 @r13
-  Scenario: A batch whose amended line its task built is submitted with the line built
-    Given an item i1
-    And a batch b1
-    And the batch b1 holds the item i1
-    And the status of the item i1 is `in-batch`
-    And a task t2
-    And the batch b1 has the task t2
-    And the status of the task t2 is `done`
-    And a workspace w1
-    And the batch b1 has the workspace w1
-    And an amendment a1
-    And the amendment a1 cites the item i1
-    And the workspace w1 holds the amendment a1
-    And a scenario s1
-    And the item i1 has the scenario s1
-    And a task t1
-    And the item i1 has the task t1
-    And a workspace w2
-    And the task t1 has the workspace w2
-    And the scenario s1 succeeds in the workspace w2
-    When the person submits the batch b1
-    Then the batches service keeps the proposed change p1
-    And the batch b1 has the proposed change p1
-    And the batches service sets the status of the batch b1 to `in-review`
-
   @g14 @r14
   Scenario: A fix after a review of a scenario its item's change broke is accepted on submit
     Given a batch b1
@@ -243,3 +206,105 @@ Feature: Reviews
     Then the batches service keeps the proposed change p1
     And the batch b1 has the proposed change p1
     And the batches service sets the status of the batch b1 to `in-review`
+
+  @g15 @r15
+  Scenario: A batch whose amended line its task built is submitted with the line built in the batch's workspace
+    Given an item i1
+    And a batch b1
+    And the batch b1 holds the item i1
+    And the status of the item i1 is `in-batch`
+    And a task t2
+    And the batch b1 has the task t2
+    And the status of the task t2 is `done`
+    And a task t1
+    And the item i1 has the task t1
+    And a workspace w1
+    And the task t1 has the workspace w1
+    And an amendment a1
+    And the amendment a1 cites the item i1
+    And the workspace w1 holds the amendment a1
+    And a scenario s1
+    And the item i1 has the scenario s1
+    And a workspace w2
+    And the batch b1 has the workspace w2
+    And the scenario s1 succeeds in the workspace w2
+    When the person submits the batch b1
+    Then the batches service keeps the proposed change p1
+    And the batch b1 has the proposed change p1
+    And the batches service sets the status of the batch b1 to `in-review`
+
+  @g17 @r17
+  Scenario: A batch submitted holds no requirement of a parked item
+    Given an item i1
+    And a batch b1
+    And the batch b1 holds the item i1
+    And the status of the item i1 is `needs-input`
+    And a requirement r1
+    And the item i1 holds the requirement r1
+    When the person submits the batch b1
+    Then the batches service keeps the workspace w1
+    And the batch b1 has the workspace w1
+    And the workspace w1 does not hold the requirement r1
+
+  @g18 @r18
+  Scenario: A parked item's superseding decision is left out of the batch submitted
+    Given an item i1
+    And a batch b1
+    And the batch b1 holds the item i1
+    And the status of the item i1 is `needs-input`
+    And a requirement r1
+    And the item i1 holds the requirement r1
+    And a requirement r2
+    And a design-decision d1
+    And the requirement r2 enforces the design-decision d1
+    And a requirement id r3
+    And the requirement r2 has the requirement id r3
+    And the requirement r1 retires the requirement id r3
+    And a design-decision d2
+    And the design-decision d2 supersedes the design-decision d1
+    When the person submits the batch b1
+    Then the batches service keeps the workspace w1
+    And the batch b1 has the workspace w1
+    And the workspace w1 does not hold the design-decision d2
+
+  @g19 @r19
+  Scenario: A batch submitted with a parked and an in-batch item retiring ids of one decision keeps the decision superseded
+    Given an item i1
+    And a batch b1
+    And the batch b1 holds the item i1
+    And the status of the item i1 is `needs-input`
+    And a requirement r1
+    And the item i1 holds the requirement r1
+    And a requirement r2
+    And a design-decision d1
+    And the requirement r2 enforces the design-decision d1
+    And a requirement id r3
+    And the requirement r2 has the requirement id r3
+    And the requirement r1 retires the requirement id r3
+    And an item i2
+    And the batch b1 holds the item i2
+    And the status of the item i2 is `in-batch`
+    And a requirement r4
+    And the item i2 holds the requirement r4
+    And the requirement r4 retires the requirement id r3
+    And a design-decision d2
+    And a workspace w1
+    When the person submits the batch b1
+    Then the design-decision d2 supersedes the design-decision d1
+    And the batches service keeps the workspace w1
+    And the batch b1 has the workspace w1
+    And the workspace w1 holds the design-decision d2
+
+  @g20 @r20
+  Scenario: A batch submitted keeps a change that cites its items, its specification rebuilt from the base with each in-batch item applied
+    Given an item i1
+    And a batch b1
+    And the batch b1 holds the item i1
+    And the status of the item i1 is `in-batch`
+    When the person submits the batch b1
+    Then the batches service keeps the proposed change p1
+    And the batch b1 has the proposed change p1
+    And the proposed change p1 cites the item i1
+    And the batch b1 has the workspace w1
+    And the batches service applies the item i1 to the specification s1
+    And the workspace w1 has the specification s1

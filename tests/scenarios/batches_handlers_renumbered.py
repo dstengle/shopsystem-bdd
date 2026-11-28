@@ -6,7 +6,7 @@ and `r1`, which its capability holds already (applying_handlers_model's `collidi
 pack `household` (g190, applying_handlers_pieces' block, readiness_world's passing line in work-queue), a table of
 `notes.archive` (g191, the same line, the contract holding another table of it before, as no model declares it on the
 codified spec, which the request pack would not read the line in) or the term `the person` moved from shared to notes
-(g192, notebook's line). The Thens read the batch's branch: the item's line laid under an id the pick gave it, in place
+(g192, notebook's line). The Thens read the item's task branch, its workspace's (b874): the item's line applied under an id the pick gave it, in place
 of `r1`, which the capability keeps, and what the item holds beside it (the pack's term under its `## Glossary`, the
 contract's one table of `notes.archive`, notes' layer holding the term and shared's not)."""
 import re
@@ -100,7 +100,7 @@ def given(step):
 def _branch(step, rel):
     done = step.context["result"]
     assert done.returncode == 0, (step.text, done.stdout, done.stderr)
-    branches = T.git(step, "branch", "--list", "batch-*", "--format=%(refname:short)").split()
+    branches = T.git(step, "branch", "--list", "batch-*-b1", "--format=%(refname:short)").split()
     assert branches, (step.text, done.stdout, done.stderr)
     return T.git(step, "show", "%s:%s" % (branches[0], rel))
 

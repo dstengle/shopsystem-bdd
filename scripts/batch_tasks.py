@@ -1,18 +1,17 @@
 """`work batch resume`, `done` and `park` (capability batches r5, r6; workflow simplification plan 4, D10, D12,
 D15-D18): one task for each item, built on its branch `batch-<n>-b<j>` in the worktree `batch-<n>-t<k>`.
 
-`resume` gives each pending task of an `in-batch` item its worktree and sets it `running`, and gives a running task
-whose worktree is gone its worktree back on its branch, with the commits made so far; it reads no input. `done`
-checks the task's worktree and branch and runs the tests there, every parked item's lines out (batches r18,
-`batch_parked`), before it sets the task `done`. `park` takes an item's lines out of `batch-<n>` at once (batches r17)
-and sets it `needs-input` with its question and its task back to `pending`, its branch kept and its worktree removed;
+`resume` sets each pending task of an `in-batch` item `running` in the worktree `work batch start` made it (b874),
+and gives a task whose worktree is gone its worktree back on its branch, with the commits made so far; it reads no
+input. `done` checks the task's worktree and branch and runs the tests there, where no other item's lines are but
+those of an item it depends on, before it sets the task `done`. `park` sets an item `needs-input` with its question
+and its task back to `pending`, its branch kept and its worktree removed, nothing taken out of any other workspace;
 a worktree with uncommitted changes is refused unless `--discard` (plan 4 review, S2). A path is used as a worktree
 only when it is that worktree on its branch (`batch_git.is_tree`, S1). Each change is one commit of the batch file
 (and the item) on the base branch, made under the lock. The checks shared with
 `work batch review` are here: the lines commit, uncited commits, commits that change `.shop/`, the tests."""
 import re
 import shlex
-import shutil
 import subprocess
 from pathlib import Path
 
@@ -22,7 +21,6 @@ import backlog_lifecycle
 import backlog_lines
 import backlog_moves
 import batch_fix
-import batch_parked
 import batch_plan
 import batch_reach
 import batch_rerun
@@ -37,7 +35,6 @@ from batch_git import (
     scripts_env,
     tree_for,
     trees_dir,
-    trees_path,
     uncommitted,
 )
 from plumbing.shop_files import Refused
@@ -46,11 +43,20 @@ TESTS = "python3 -m pytest -q -p work_items"
 SHOP = (".shop/backlog", ".shop/batches")
 
 
-def lines_commit(root, batch):
-    """The batch branch's first commit after `forked_from`: the commit that laid the lines."""
-    found = git(root, "rev-list", "--reverse", "--first-parent", "%s..%s" % (batch.forked_from, batch.branch)).stdout
+def lines_commit(root, batch, task, last=False):
+    """The commit that keeps the task's item applied at opening (batch_applied, b874): the first on the task's branch
+    after `forked_from` citing its item whose subject says its requirement lines (with `last`, the last such, an
+    amend's too: the task's last apply); the first commit after the fork of a batch laid on its branch before b874."""
+    out = git(root, "log", "--reverse", "--format=%H%x00%s", "--grep=^Item: %s$" % task.item,
+              "%s..%s" % (batch.forked_from, task.branch)).stdout
+    found = [sha for sha, _, subject in (line.partition("\0") for line in out.splitlines())
+             if subject.startswith("%s: the requirement lines of " % batch.name)
+             and (last or not subject.endswith(" amended"))]
+    if found:
+        return found[-1] if last else found[0]
+    found = git(root, "rev-list", "--reverse", "--first-parent", "%s..%s" % (batch.forked_from, task.branch)).stdout
     if not found.split():
-        raise Refused("work batch: %s has no commit after %s" % (batch.branch, batch.forked_from[:7]))
+        raise Refused("work batch: %s has no commit after %s" % (task.branch, batch.forked_from[:7]))
     return found.split()[0]
 
 
@@ -102,6 +108,7 @@ def run_tests(root, tree, strict=True, workspace=None, unreached=(), extra=None,
     env.pop(batch_reach.ENV, None)
     if unreached:
         env[batch_reach.ENV] = "\n".join(unreached)
+    env.setdefault("PYTHONDONTWRITEBYTECODE", "1")      # the tests leave the worktree as they found it
     env.update(extra or {})
     return shlex.join(words), subprocess.run(words, cwd=tree, capture_output=True, text=True, env=env)
 
@@ -149,16 +156,15 @@ def resume(root, name):
     """(the batch, [(task, its worktree or None)]) of `work batch resume` (D16)."""
     with locked(root):
         batch = building(root, name, "work batch resume")
-        lines, moved, out = None, [], []
+        moved, out = [], []
         for task in batch.tasks:
             item = backlog_items.find(root, task.item)
             tree = tree_of(root, batch, task)
             if item.status != "in-batch" or task.status not in ("pending", "running"):
                 out.append((task, None))
                 continue
-            if not is_tree(tree, task.branch):
-                lines = lines or lines_commit(root, batch)
-                tree_for(root, tree, task.branch, "work batch resume", lines)
+            if not is_tree(tree, task.branch):          # made at opening (b874); given back when lost
+                tree_for(root, tree, task.branch, "work batch resume", batch.branch)
             if task.status == "pending":
                 task.status = "running"
                 moved.append(task.task)
@@ -198,7 +204,7 @@ def checked(root, batch, task):
     loose = uncommitted(tree)
     if loose:
         raise Refused("%s: %s has uncommitted changes in %s: %s" % (command, label, tree, ", ".join(loose)))
-    since = lines_commit(root, batch)
+    since = lines_commit(root, batch, task)
     shop = under_shop(root, since, task.branch)
     if shop:
         raise Refused("%s: %s: a commit on %s changes %s, which only the base branch's batch commands change" % (
@@ -216,9 +222,8 @@ def checked(root, batch, task):
         raise Refused("%s: %s: still in unbuilt: %s" % (command, label, ", ".join(unbuilt)))
     head = git(tree, "rev-parse", "HEAD").stdout.strip()
     skipped = batch_reach.unreached(git, tree, since, head, ids)        # only the tests the change reaches (b456)
-    with batch_parked.tested_tree(root, batch, task, tree, head, command) as tested, \
-            batch_timings.timed(root, batch.name, "done", task.task):    # no parked lines (r18); its duration (b73)
-        tests_pass(root, tested, "%s: %s" % (command, label), strict=False, workspace=tree,
+    with batch_timings.timed(root, batch.name, "done", task.task):    # its duration (b73)
+        tests_pass(root, tree, "%s: %s" % (command, label), strict=False, workspace=tree,
                    unreached=skipped, key="%s-%s" % (batch.name, task.task))       # its own ids are built (r19)
     backlog_chore.passes(item, tree, "%s: %s" % (command, label), workspace=tree, root=root)    # after the tests
     return head
@@ -260,7 +265,6 @@ def park(root, name, item_name, question, discard=False):
     `pending`, its worktree removed and its branch kept. Refused while the worktree has uncommitted changes, unless
     `discard`."""
     question = backlog_moves.text_line(question, "question")
-    fresh = not trees_path(root).exists()
     with locked(root):
         batch = building(root, name, "work batch park")
         item = backlog_items.find(root, item_name)
@@ -275,17 +279,7 @@ def park(root, name, item_name, question, discard=False):
         backlog_lifecycle.suspend(item, question, "parked from %s; its work is on branch %s" % (batch.name,
                                                                                                task.branch))
         task.status = "pending"
-        try:
-            before = batch_parked.take_out(root, batch, [item], "work batch park")     # at once (r17)
-        except BaseException:       # the feature generator unresponsive among them (b749): nothing changed (U17)
-            if fresh:
-                shutil.rmtree(trees_path(root), ignore_errors=True)
-            raise
-        remove_tree(root, tree_of(root, batch, task))
-        try:
-            batch_plan.commit(root, batch, [item], "work batch park: %s %s -> needs-input" % (
-                batch.name, backlog_items.label(item)))
-        except BaseException:
-            batch_parked.put_back(root, batch, before)
-            raise
+        remove_tree(root, tree_of(root, batch, task))      # its lines were only ever on its own branch (b874)
+        batch_plan.commit(root, batch, [item], "work batch park: %s %s -> needs-input" % (
+            batch.name, backlog_items.label(item)))
         return item

@@ -6,8 +6,8 @@ own (`workspace`), as a batch's is. The When builds the group's world (`applied`
 `## Requirements` its group's world gives; of g37, this module's own group, readiness_world's PASSING line as
 `work-queue#r5`), applies the item there and keeps the specification service's reply, a domain_envelope Response; the
 Thens read the reply and the specification's files (`kept`, a file the apply done changed): of g37 the capability file
-holding the line under its id and work-queue's feature a scenario tagged with it. `build` is the world of the laying port's lift and of
-checking's apply refused (laying_handlers, checking_handlers_apply)."""
+holding the line under its id and work-queue's feature a scenario tagged with it. `build` is the world of
+checking's apply refused (checking_handlers_apply)."""
 import shutil
 import sys
 from pathlib import Path

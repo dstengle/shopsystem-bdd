@@ -55,12 +55,12 @@ def build(repo, task, item, ids):
 
 
 def test_resume_makes_worktrees_and_runs_pending_tasks(started):
-    lines = git(started, "rev-parse", "batch-1").strip()
+    lines = {i: git(started, "rev-parse", "batch-1-%s" % i).strip() for i in ("b1", "b2")}    # applied at opening
     done = resumed(started)
     assert tasks(started) == {"t1": "running", "t2": "running"}
     for task, item in (("t1", "b1"), ("t2", "b2")):
         assert git(tree(started, task), "symbolic-ref", "--short", "HEAD").strip() == "batch-1-%s" % item
-        assert git(tree(started, task), "rev-parse", "HEAD").strip() == lines
+        assert git(tree(started, task), "rev-parse", "HEAD").strip() == lines[item]
     assert git(started, "log", "-1", "--format=%s").strip().startswith("work batch resume: batch-1")
     assert git(started, "show", "--name-only", "--format=", "HEAD").split() == [".shop/batches/1/plan.md"]
     out = done.stdout.splitlines()
@@ -209,7 +209,7 @@ def test_done_takes_a_merge_of_an_earlier_in_batch_items_branch(started):
     """Plan 4 rulings, Q2: a later item's branch may merge an earlier in-batch item's, to resolve a conflict."""
     resumed(started)
     build(started, "t1", "b1", ["r5"])
-    git(tree(started, "t2"), "merge", "-q", "--no-ff", "batch-1-b1", "-m", "merge b1\n\nItem: b2")
+    git(tree(started, "t2"), "merge", "-q", "--no-ff", "-X", "ours", "batch-1-b1", "-m", "merge b1\n\nItem: b2")
     build(started, "t2", "b2", ["r6"])
     done = work(started, "batch", "done", "batch-1", "t2")
     assert done.returncode == 0, done.stderr
@@ -218,7 +218,7 @@ def test_done_takes_a_merge_of_an_earlier_in_batch_items_branch(started):
 def test_done_refuses_a_merge_of_a_parked_items_branch(started):
     resumed(started)
     build(started, "t1", "b1", ["r5"])
-    git(tree(started, "t2"), "merge", "-q", "--no-ff", "batch-1-b1", "-m", "merge b1\n\nItem: b2")
+    git(tree(started, "t2"), "merge", "-q", "--no-ff", "-X", "ours", "batch-1-b1", "-m", "merge b1\n\nItem: b2")
     build(started, "t2", "b2", ["r6"])
     assert work(started, "batch", "park", "batch-1", "b1", "--question", "Which?").returncode == 0
     done = work(started, "batch", "done", "batch-1", "t2")

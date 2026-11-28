@@ -69,8 +69,9 @@ def prepare(tree, items, unwritten=None, command=COMMAND, superseded=None):
     `unwritten`, `(item, path, old id)` of each decision superseded added to `superseded`; a generator's refusal said
     as `command`'s (b486), an unresponsive one raised as it is; the paths changed."""
     laid, changed = ids(items), []
-    for capability in laid:
-        changed += generated(tree, capability, command)
+    with phases.phase(phases.FEATURES):             # the features written again (b876)
+        for capability in laid:
+            changed += generated(tree, capability, command)
     changed += spec_corpus_write.write(tree, items)
     changed += decision_successor.lay(tree, items, superseded)
     changed += batch_reached.prepared(tree, set(laid))

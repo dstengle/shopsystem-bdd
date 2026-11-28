@@ -19,9 +19,9 @@ from pathlib import Path
 
 import backlog_items
 import backlog_lines
+import batch_applied
 import batch_git
-import batch_start
-import laying_inprocess
+import spec_apply
 import spec_unbuilt
 
 STUB = Path(__file__).resolve().parents[1] / "scripts" / "stub_gh.py"
@@ -175,16 +175,16 @@ def give_batch_lines(step, items):
         B().write_item(step, item, sections=dict(fields.get("sections", {}), Requirements=lines), **recorded)
 
 
-def lay(step, tree, items):
-    """The lines commit of a batch, as `work batch start` makes it: every item's lines laid, their ids unbuilt, the
-    features written again, citing each item (plan 4 review, B1)."""
-    found = [backlog_items.find(step.repo, B().ident(i)) for i in items]
-    changed = laying_inprocess.lay_lines(tree, found)
+def lay(step, tree, batch, item):
+    """The commit that keeps an item applied to its task's workspace, as `work batch start` makes it (b874): the item's
+    lines applied by the specification service, their ids unbuilt, the features written again, citing the item."""
+    found = backlog_items.find(step.repo, B().ident(item))
+    changed = spec_apply.apply(tree, [found]).content["changed"]
     if changed:
-        git(step, "add", "--", *changed, cwd=tree)
-    git(step, "commit", "-q", "--allow-empty", "-m", "%s: the requirement lines\n%s" % (tree.name, batch_start.cites(found)), cwd=tree)
-    step.context.setdefault("laid", {}).update(
-        {i: [g.id for b in backlog_lines.read(f, i) for g in b.groups] for i, f in zip(items, found)})
+        git(step, "add", "-A", "--", *changed, cwd=tree)
+    git(step, "commit", "-q", "--allow-empty", "-m", "%s\n\nItem: %s" % (batch_applied.subject(batch, found), found.name),
+        cwd=tree)
+    step.context.setdefault("laid", {})[item] = [g.id for b in backlog_lines.read(found, item) for g in b.groups]
 
 
 def built(tree, item):
@@ -195,8 +195,8 @@ def built(tree, item):
 
 
 def make_batch(step, name):
-    """The batch `name` written by hand: `batch-<n>` made from main with the lines commit of its items (`lay`), one
-    branch for each item with one commit adding `src/b<j>.txt` and taking its ids out of `unbuilt:` (citing it unless
+    """The batch `name` written by hand: `batch-<n>` made from main with no commit of its own, one branch for each
+    item with the commit that keeps it applied (`lay`) and one commit adding `src/b<j>.txt` and taking its ids out of `unbuilt:` (citing it unless
     a Given made the commit uncited; none on the branch of an item no kept change cites), and `plan.md` with its tasks, committed on main."""
     n, found = batch_name(step, name), step.context["given"]["batch"][name]
     items = [i for i, f in step.context["given"]["item"].items() if f["batch"] == name]
@@ -205,19 +205,17 @@ def make_batch(step, name):
     W().init(step.repo)
     forked = git(step, "rev-parse", "HEAD").strip()
     git(step, "branch", n, forked)
-    tree = outside(step) / n
-    git(step, "worktree", "add", "-q", str(tree), n)
-    lay(step, tree, items)
-    git(step, "worktree", "remove", "--force", str(tree))
     commits = step.context.setdefault("commits", {})
     for item in items:
         b = B().ident(item)
         branch = "%s-%s" % (n, b)
         git(step, "branch", branch, n)
-        if step.context["given"]["item"][item].get("unbuilt"):     # no kept change cites it: nothing built (b692)
-            continue
         tree = outside(step) / ("tree-%s" % branch)
         git(step, "worktree", "add", "-q", str(tree), branch)
+        lay(step, tree, n, item)
+        if step.context["given"]["item"][item].get("unbuilt"):     # no kept change cites it: nothing built (b692)
+            git(step, "worktree", "remove", "--force", str(tree))
+            continue
         (tree / "src").mkdir(exist_ok=True)
         (tree / "src" / ("%s.txt" % b)).write_text("built %s\n" % b)
         built(tree, backlog_items.find(step.repo, b))

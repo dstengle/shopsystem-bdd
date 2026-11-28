@@ -1,18 +1,17 @@
 """The merge of an item's branch into its batch's branch (capability batches; workflow simplification plan 4, D5,
-D6; reviews r7, r8, b491), in the batch's worktree, with `--no-ff` and a message citing the item, each task's branch
-after the ones before it. git's rerere is on for the merge and its commit, so a resolution recorded before (a driver
-settling a conflict by hand) is used again and one settled now is recorded.
+D6; reviews r7, r8, b491, b874), in the batch's worktree, with `--no-ff` and a message citing the item, each task's
+branch after the ones before it. git's rerere is on for the merge and its commit, so a resolution recorded before (a
+driver settling a conflict by hand) is used again and one settled now is recorded.
 
-Every item's ids are in its capability's `unbuilt:` on the batch branch, and each task takes its own out. Two items
-of one capability so change the same line of the same file, which git cannot merge; that conflict alone is settled
-here: when a conflicted file merges cleanly with its `unbuilt:` line set aside, the line is written with the base's
-ids still unbuilt on both sides, then each id either side added (plan 4 review, M6). Any other conflict aborts the merge and is refused, naming each file left unsettled, the item merged and every other item whose
-branch conflicts with its branch in that file (`clashing`).
-
-An id of the item that its branch holds as a line and has taken out of `unbuilt:` is built: once merged it is out of
-the batch branch's `unbuilt:` too (`built`, reviews r13, b600). An amend lays a line on the batch branch and on the
-task's branch in two commits, neither an ancestor of the other, so git keeps the batch branch's `unbuilt:` entry of
-a line the task then built."""
+The paths the specification service's apply writes (`OWNED`: `spec/`, `features/`, the spec corpus and the
+catalogues, and any other path the batch's rebuild changed) are the batch branch's own: `work batch review` rebuilt
+them from the base with every in-batch item applied (batch_rebuild), so a merge keeps the batch branch's side of each
+(`merge`'s `owned`) with what the task changed there after its last apply (`since`: a corrected corpus block, a
+decision, a catalogue row, features of a generator it changed) merged onto it (`_kept`, review f1 of batch-178), a
+change that does not merge refused naming the path; only the ids a task built leave `unbuilt:` (`built`, reviews r15,
+b600). Any other conflict
+aborts the merge and is refused, naming each file left unsettled, the item merged and every other item whose branch
+conflicts with its branch in that file (`clashing`, of code paths only)."""
 import re
 import subprocess
 import tempfile
@@ -22,15 +21,11 @@ import spec_unbuilt
 from batch_git import git
 from plumbing.shop_files import Refused
 
+CONFLICT = object()
 RERERE = ("-c", "rerere.enabled=true", "-c", "rerere.autoUpdate=true")
 
 UNBUILT = re.compile(r"(?m)^unbuilt:[ \t]*\[(.*)\][ \t]*$")
-MARK = "unbuilt: [<set aside by work batch review>]"
-
-
-def _stage(tree, n, path):
-    done = subprocess.run(["git", "show", ":%d:%s" % (n, path)], cwd=tree, capture_output=True, text=True)
-    return done.stdout if done.returncode == 0 else None
+OWNED = ("spec/", "features/", "grammar/corpus/spec/", "grammar/rules.md", "grammar/constructs.md")
 
 
 def _ids(text):
@@ -38,51 +33,28 @@ def _ids(text):
     return [one.strip() for one in found.group(1).split(",") if one.strip()] if found else None
 
 
-def settled(tree, path):
-    """The text of the conflicted `path` with its `unbuilt:` lines reconciled, or None when it has another
-    conflict."""
-    return reconciled(*(_stage(tree, n, path) for n in (1, 2, 3)))
-
-
-def reconciled(base, ours, theirs):
-    """The merge of three texts of a file with its `unbuilt:` lines reconciled, or None when it has another
-    conflict."""
-    if None in (base, ours, theirs) or None in map(_ids, (base, ours, theirs)):
-        return None
-    with tempfile.TemporaryDirectory(prefix="batch-merge-") as tmp:
-        files = []
-        for name, text in (("ours", ours), ("base", base), ("theirs", theirs)):
-            files.append(Path(tmp) / name)
-            files[-1].write_text(UNBUILT.sub(MARK, text, count=1))
-        done = subprocess.run(["git", "merge-file", "-p", *map(str, files)], capture_output=True, text=True)
-    if done.returncode != 0:
-        return None
-    was, mine, other = _ids(base), _ids(ours), _ids(theirs)
-    left = [one for one in was if one in mine and one in other]
-    left += [one for one in mine + other if one not in was and one not in left]
-    return done.stdout.replace(MARK, "unbuilt: [%s]" % ", ".join(left), 1)
-
-
-def _blob(tree, oid):
-    return subprocess.run(["git", "cat-file", "blob", oid], cwd=tree, capture_output=True, text=True).stdout
+def is_owned(path, owned=()):
+    """Whether the path is one the specification service's apply writes (`OWNED`, or one of `owned`)."""
+    return path in owned or any(path == o.rstrip("/") or path.startswith(o) for o in OWNED if o.endswith("/")) or \
+        path in OWNED
 
 
 def clashes(tree, branch, other):
-    """The paths in which `branch` and `other` conflict, other than in their `unbuilt:` lines (git merge-tree)."""
+    """The paths in which `branch` and `other` conflict, other than those the apply writes (git merge-tree)."""
     done = subprocess.run(["git", "merge-tree", "--write-tree", "--no-messages", branch, other], cwd=tree,
                           capture_output=True, text=True)
     if done.returncode != 1:
         return []
-    stages = {}
+    names = []
     for line in done.stdout.splitlines()[1:]:
         info, _, name = line.partition("\t")
-        if name and len(info.split()) == 3:
-            stages.setdefault(name, {})[int(info.split()[2])] = _blob(tree, info.split()[1])
-    return [name for name, found in stages.items() if reconciled(*(found.get(n) for n in (1, 2, 3))) is None]
+        if name and len(info.split()) == 3 and not is_owned(name) and name not in names:
+            names.append(name)
+    return names
 
 
 def clashing(tree, branch, other, path):
-    """Whether `branch` and `other` conflict in `path`, other than in its `unbuilt:` line (git merge-tree)."""
+    """Whether `branch` and `other` conflict in `path`, a path the apply does not write (git merge-tree)."""
     return path in clashes(tree, branch, other)
 
 
@@ -91,28 +63,94 @@ def _merging(tree):
                           capture_output=True).returncode == 0
 
 
-def merge(tree, branch, message, item=None, others=()):
-    """`branch` (of `item`, a label) merged into the worktree's branch; refused, when a conflict is left, naming each
-    file, the item and each of `others` ((label, branch) of the batch's other items) whose branch conflicts with
-    `branch` there."""
-    done = subprocess.run(["git", *RERERE, "merge", "-q", "--no-ff", "-m", message, branch], cwd=tree,
+def _ours(tree, owned):
+    """Each path the apply writes taken as the worktree's branch holds it, a file only the merged branch added there
+    taken out."""
+    held = set(git(tree, "ls-tree", "-r", "--name-only", "HEAD").stdout.splitlines())
+    staged = set(git(tree, "ls-files").stdout.splitlines()) | set(
+        git(tree, "diff", "--name-only", "--diff-filter=U").stdout.splitlines())
+    mine = sorted(p for p in held if is_owned(p, owned))
+    for k in range(0, len(mine), 200):
+        git(tree, "checkout", "HEAD", "--", *mine[k:k + 200])
+    added = sorted(p for p in staged - held if is_owned(p, owned))
+    if added:
+        git(tree, "rm", "-q", "-f", "--", *added)
+
+
+def _show(tree, commit, path):
+    done = subprocess.run(["git", "show", "%s:%s" % (commit, path)], cwd=tree, capture_output=True, text=True)
+    return done.stdout if done.returncode == 0 else None
+
+
+def _unbuilt_as(text, held):
+    """`text` with its `unbuilt:` line as `held` has it, so a task's built ids are `built`'s and never conflict."""
+    line = UNBUILT.search(held or "")
+    return UNBUILT.sub(lambda _: line.group(0), text, count=1) if text and line and UNBUILT.search(text) else text
+
+
+def _three_way(ours, base, theirs):
+    """The text `git merge-file` makes of the three (a file absent, or taken out, is None), or `CONFLICT`."""
+    if theirs == base or ours == theirs:
+        return ours
+    if ours == base:
+        return theirs
+    if None in (ours, base, theirs):
+        return CONFLICT
+    with tempfile.TemporaryDirectory() as there:
+        names = []
+        for name, text in (("ours", ours), ("base", base), ("theirs", theirs)):
+            Path(there, name).write_text(text)
+            names.append(str(Path(there, name)))
+        done = subprocess.run(["git", "merge-file", "-p", *names], capture_output=True, text=True)
+    return done.stdout if done.returncode == 0 else CONFLICT
+
+
+def _kept(tree, branch, since, owned):
+    """Each path the apply writes that `branch` changed after `since` (its last apply's commit) merged onto the
+    worktree's side and staged; the paths that do not merge."""
+    paths = git(tree, "diff", "--name-only", "--no-renames", since, branch).stdout.splitlines()
+    left = []
+    for path in [p for p in paths if is_owned(p, owned)]:
+        file = Path(tree) / path
+        ours = file.read_text() if file.is_file() else None
+        made = _three_way(ours, _unbuilt_as(_show(tree, since, path), ours),
+                          _unbuilt_as(_show(tree, branch, path), ours))
+        if made is CONFLICT:
+            left.append(path)
+        elif made is None and ours is not None:
+            git(tree, "rm", "-q", "-f", "--", path)
+        elif made != ours:
+            file.parent.mkdir(parents=True, exist_ok=True)
+            file.write_text(made)
+            git(tree, "add", "--", path)
+    return left
+
+
+def merge(tree, branch, message, item=None, others=(), owned=(), since=None):
+    """`branch` (of `item`, a label) merged into the worktree's branch, the paths the apply writes kept as the
+    worktree's branch holds them with what `branch` changed there after `since` (its last apply's commit) merged onto
+    them; refused, when such a change does not merge, naming each path and the item, and when another conflict is
+    left, naming each file, the item and each of `others` ((label, branch) of the batch's other items) whose branch
+    conflicts with `branch` there."""
+    done = subprocess.run(["git", *RERERE, "merge", "-q", "--no-ff", "--no-commit", branch], cwd=tree,
                           capture_output=True, text=True)
-    if done.returncode == 0:
-        return
-    conflicted = git(tree, "diff", "--name-only", "--diff-filter=U").stdout.split()
-    texts = {path: settled(tree, path) for path in conflicted}
-    if _merging(tree) and None not in texts.values():
-        for path, text in texts.items():
-            (Path(tree) / path).write_text(text)
-        if conflicted:
-            git(tree, "add", "--", *conflicted)
-        git(tree, *RERERE, "commit", "-q", "--no-edit")
-        return
-    subprocess.run(["git", "merge", "--abort"], cwd=tree, capture_output=True)
-    left = [path for path, text in texts.items() if text is None]
-    if not left:
+    if not _merging(tree):
+        if done.returncode == 0:
+            return              # merged before: nothing to merge
         said = [line for line in (done.stdout + done.stderr).splitlines() if line.strip()]
         raise Refused("%s does not merge: %s" % (branch, said[0] if said else "exit %d" % done.returncode))
+    _ours(tree, owned)
+    lost = _kept(tree, branch, since, owned) if since else []
+    if lost:
+        subprocess.run(["git", "merge", "--abort"], cwd=tree, capture_output=True)
+        raise Refused("%s does not merge: %s" % (branch, "; ".join(
+            "%s, as %s changed it after its lines, conflicts with the batch's rebuilt specification" % (
+                path, item or branch) for path in lost)))
+    left = git(tree, "diff", "--name-only", "--diff-filter=U").stdout.split()
+    if not left:
+        git(tree, *RERERE, "commit", "-q", "-m", message)
+        return
+    subprocess.run(["git", "merge", "--abort"], cwd=tree, capture_output=True)
     raise Refused("%s does not merge: %s" % (branch, "; ".join(
         "%s conflicts between %s and %s" % (path, item or branch, ", ".join(
             [label for label, other in others if clashing(tree, branch, other, path)]) or "the batch's branch")
@@ -125,6 +163,15 @@ def built(tree, branch, ids):
     second = subprocess.run(["git", "rev-parse", "-q", "--verify", "HEAD^2"], cwd=tree, capture_output=True, text=True)
     if second.stdout.strip() != git(tree, "rev-parse", branch).stdout.strip():
         return []           # no merge commit of the branch made: it was merged before
+    changed = built_on(tree, branch, ids)
+    if changed:
+        git(tree, "commit", "-q", "--amend", "--no-edit")
+    return changed
+
+
+def built_on(tree, branch, ids):
+    """Each of `ids` that `branch` holds as a line and lists no more as unbuilt taken out of the worktree's
+    `unbuilt:`, staged; the paths changed."""
     caps = {}
     for ident in ids:
         cap, _, rid = ident.partition("#")
@@ -143,5 +190,4 @@ def built(tree, branch, ids):
             changed.append(rel)
     if changed:
         git(tree, "add", "--", *changed)
-        git(tree, "commit", "-q", "--amend", "--no-edit")
     return changed
