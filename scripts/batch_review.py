@@ -6,7 +6,8 @@ commit must cite its item (or an earlier in-batch item, whose branch it merged) 
 batch's worktree, the specification is rebuilt from the batch's base with every in-batch item applied in task order,
 in one commit citing them (batch_rebuild, reviews r17-r20, b874: a parked item applied nowhere), each in-batch item's
 branch is merged into `batch-<n>` with `--no-ff` in task order, each after the ones before, the paths the apply writes
-kept as the rebuild holds them (batch_merge) (a parked item's branch never is, so its commits stay out), the
+kept as the rebuild holds them with what the task changed there after its last apply, a change that does not merge
+refused naming the path (batch_merge) (a parked item's branch never is, so its commits stay out), the
 tests run there (the ids a failed run names kept under the batch's name, batch_rerun, for the poll's `fix task`:
 batch_broken, b696, with each task branch's head as submitted, so that a later commit reads as a fix, b713), the branch is pushed to the base's remote, and a draft pull request is created through gh unless the
 batch has one already (plan 5's fix loop pushes only, once each commit since the last review cites an open finding
@@ -97,7 +98,8 @@ def _merge(root, tree, batch, task, item, mine, owned):
     others = [(backlog_items.label(i), t.branch) for t, i in mine if t.branch != task.branch]
     try:
         batch_merge.merge(tree, task.branch, "%s: %s\n\nItem: %s" % (batch.name, backlog_items.label(item), item.name),
-                          backlog_items.label(item), others, owned)
+                          backlog_items.label(item), others, owned,
+                          lines_commit(root, batch, task, last=True))     # its own changes kept (review f1)
         batch_merge.built(tree, task.branch, item_ids(root, item))     # a line its task built after an amend (b600)
     except Refused as refused:
         raise Refused("%s: %s: %s into %s" % (COMMAND, task_label(root, task), refused, batch.branch)) from None

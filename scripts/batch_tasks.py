@@ -43,16 +43,17 @@ TESTS = "python3 -m pytest -q -p work_items"
 SHOP = (".shop/backlog", ".shop/batches")
 
 
-def lines_commit(root, batch, task):
+def lines_commit(root, batch, task, last=False):
     """The commit that keeps the task's item applied at opening (batch_applied, b874): the first on the task's branch
-    after `forked_from` citing its item whose subject says its requirement lines; the first commit after the fork of
-    a batch laid on its branch before b874."""
+    after `forked_from` citing its item whose subject says its requirement lines (with `last`, the last such, an
+    amend's too: the task's last apply); the first commit after the fork of a batch laid on its branch before b874."""
     out = git(root, "log", "--reverse", "--format=%H%x00%s", "--grep=^Item: %s$" % task.item,
               "%s..%s" % (batch.forked_from, task.branch)).stdout
-    for line in out.splitlines():
-        sha, _, subject = line.partition("\0")
-        if subject.startswith("%s: the requirement lines of " % batch.name) and not subject.endswith(" amended"):
-            return sha
+    found = [sha for sha, _, subject in (line.partition("\0") for line in out.splitlines())
+             if subject.startswith("%s: the requirement lines of " % batch.name)
+             and (last or not subject.endswith(" amended"))]
+    if found:
+        return found[-1] if last else found[0]
     found = git(root, "rev-list", "--reverse", "--first-parent", "%s..%s" % (batch.forked_from, task.branch)).stdout
     if not found.split():
         raise Refused("work batch: %s has no commit after %s" % (task.branch, batch.forked_from[:7]))
