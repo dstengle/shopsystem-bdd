@@ -211,3 +211,12 @@ when the change is merged.
 ### [g202] A dependent item's task workspace holds the lines of the item it depends on
 - [r202] While an item in a batch is `in-batch` and a task of the item has a workspace and the item has a dependency on an item that holds a requirement, when the person opens the batch, the batches service shall keep the workspace that holds the requirement.
 
+### [g203] An item reopened at opening reopens each item of the batch that depends on it
+- [r203] When the batches service reopens an item in a batch, the batches service shall reopen every item in the batch that has a dependency on the item.
+
+### [g204] An amended item is applied again to the task workspace of each item that depends on it
+- [r204] While an item in a batch is `in-batch` and a task of the item is `running` and the item has a dependency on an item in the batch, when the person amends the item, the batches service shall apply the item to the specification of the workspace of the task.
+
+### [g205] A task whose change touches a feature is not finished
+- [r205] While a task of an item is `running` and the workspace of the task holds a kept change that touches a feature, if a session finishes the task, then the batches service shall refuse the request and name the kept change.
+

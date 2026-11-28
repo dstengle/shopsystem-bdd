@@ -1274,3 +1274,62 @@ shall [x8: agent the person (constant), x9: service the batches service (constan
     in(x7, x4)
     keep(e2, subject: x9, object: x4)
 ```
+
+## r203
+From: b889 r203.
+
+```reading
+When the batches service reopens an item in a batch, the batches service shall reopen every item in the batch that has a dependency on the item.
+shall [x1: service the batches service (constant)]
+  when [x2: item, x3: batch]
+    in(x2, x3)
+    request(e1, backlog.reopen, subject: x1, object: x2)
+  response
+    every [x4: item, x5: dependency]
+      in(x4, x3)
+      on(x5, x2)
+      of(x5, x4)
+      scope
+        reopen#2(e2, subject: x1, object: x4)
+```
+
+## r204
+From: b889 r204.
+
+```reading
+While an item in a batch is `in-batch` and a task of the item is `running` and the item has a dependency on an item in the batch, when the person amends the item, the batches service shall apply the item to the specification of the workspace of the task.
+shall [x6: agent the person (constant), x7: service the batches service (constant)]
+  while [x1: item, x2: batch, x3: task, x4: dependency, x5: item]
+    in(x1, x2)
+    status(x1) = `in-batch`
+    of(x3, x1)
+    status(x3) = `running`
+    in(x5, x2)
+    on(x4, x5)
+    of(x4, x1)
+  when
+    request(e1, batches.amend, subject: x6, object: x5)
+  response [x8: workspace, x9: specification]
+    of(x8, x3)
+    of(x9, x8)
+    apply(e2, subject: x7, object: x5, to: x9)
+```
+
+## r205
+From: b889 r205.
+
+```reading
+While a task of an item is `running` and the workspace of the task holds a kept change that touches a feature, if a session finishes the task, then the batches service shall refuse the request and name the kept change.
+shall [x7: service the batches service (constant), x8: request "the request the trigger makes" (indexical)]
+  while [x1: task, x2: item, x3: workspace, x4: kept change, x5: feature]
+    of(x1, x2)
+    status(x1) = `running`
+    of(x3, x1)
+    touch(subject: x4, object: x5)
+    in(x4, x3)
+  if [x6: session]
+    request(e1, batches.finish, subject: x6, object: x1)
+  response
+    refuse(e2, subject: x7, object: x8)
+    name(e3, subject: x7, object: x4)
+```
