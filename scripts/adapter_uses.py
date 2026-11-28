@@ -43,12 +43,9 @@ def _ported(parent):
     if not domain_model.exists(parent):
         return set()
     ports = {name for name, area in domain_model.load(parent).areas.items() if area.kind == "port"}
-    out = set()
-    for path in sorted((Path(parent) / "spec" / "capabilities").glob("*.md")):
-        area = str(frontmatter(path.read_text())[0].get("area", "") or path.stem)
-        if area in ports:
-            out.add(path.stem)
-    return out
+    import spec_read
+    return {path.stem for path in sorted((Path(parent) / "spec" / "capabilities").glob("*.md"))
+            if spec_read.area_of(parent, path) in ports}
 
 
 def realised(root, governing=None):

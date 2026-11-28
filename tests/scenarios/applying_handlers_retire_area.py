@@ -1,20 +1,22 @@
-"""Handlers of applying's scenarios of an item that retires an area (r48-r50, b898), `work_queue_world.local`s tried
+"""Handlers of applying's scenarios of an item that retires an area (r48-r50, b898; r51, b903), `work_queue_world.local`s tried
 before applying_handlers' own, each taking only a step of a scenario of one of their groups (`mine`). The world, built
 at the When (applying_handlers' `applied`) on readiness_world's codified spec with the domain-model fixture beside it
 (applying_handlers' `fixture`), so the Givens record nothing: an area a1 `shelving`, an empty model file of kind port
 and an empty layer (the area a2 of g49), notes' model (g49's a1) and labels' (g49's a3) importing it, and two capabilities of it, c1 `shelves` and c2 `racks`, each holding
 only retired ids; the item i1 (`b1`) holding a line of notebook and the retirement `- area `shelving``. The Thens
 read the reply's changed paths and the specification's files: no model file and no layer of the area (g48), no area
-that imports it (g49), the capabilities kept in the specification, in no area (g50)."""
+that imports it (g49), the capabilities kept in the specification, in no area (g50); in g51 c1 is `shelving`, the
+stem of the area, and no capability is read in the area by backlog_retire_area's `capabilities`."""
 import re
 import sys
 
+import backlog_retire_area
 from plumbing import shop_files
 
 A = next(m for m in list(sys.modules.values())
          if str(getattr(m, "__file__", "") or "").endswith("/applying_handlers.py"))   # loaded before this, by name
 W, world = A.W, A.world
-GROUPS = ("g48", "g49", "g50")
+GROUPS = ("g48", "g49", "g50", "g51")
 AREA = "shelving"
 CAPS = {"c1": "shelves", "c2": "racks"}
 NOTEBOOK = ("### notebook\n\n#### [g10] An active note archived is kept\n- [r10] While a note is `active`, when the "
@@ -27,6 +29,11 @@ LAYER = "---\nid: vocabulary/example.org/fixture/shelving\narea: shelving\n---\n
 CAPABILITY = ("---\nid: capability/example.org/fixture/%s\ntitle: %s\nnarrator: the person\ngroup: service\n"
               "area: shelving\nspecifies: service notes\nlanguage: codified-2\nretired: [g1, r1]\nunbuilt: []\n---\n\n"
               "# %s\n\n## Purpose\n\nShelves.\n\n## Behaviour\n")
+
+
+def _caps(step):
+    """{name: file stem} of the capabilities of the scenario's world: c1 the area's stem in g51."""
+    return dict(CAPS, c1=AREA) if A.group(step, GROUPS) == "g51" else CAPS
 
 
 def mine(step):
@@ -48,7 +55,7 @@ def _world(step):
     (spec / "model" / "labels.md").write_text(LABELS)
     notes = spec / "model" / "notes.md"
     notes.write_text(notes.read_text().replace("imports: []", "imports: [%s]" % AREA))
-    for name in CAPS.values():
+    for name in _caps(step).values():
         (spec / "capabilities" / ("%s.md" % name)).write_text(CAPABILITY % (name, name.title(), name.title()))
     return NOTEBOOK
 
@@ -62,7 +69,7 @@ def requests(step):
 
 def _capability(step, name):
     """(frontmatter, path) of the capability `name` in the specification."""
-    path = world(step)["tree"] / "spec" / "capabilities" / ("%s.md" % CAPS[name])
+    path = world(step)["tree"] / "spec" / "capabilities" / ("%s.md" % _caps(step)[name])
     return (shop_files.frontmatter(path.read_text())[0] if path.is_file() else None), path
 
 
@@ -96,6 +103,8 @@ def then(step):
         head, path = _capability(step, name)
         assert head is None or head.get("area") != AREA, (path, head)
         assert all(_capability(step, n)[0].get("area") != AREA for n in CAPS), "a capability is kept in the area"
+        read = [p.name for p in backlog_retire_area.capabilities(tree, AREA)]
+        assert read == [], "a capability is read in the area: %s" % read
     else:
         raise AssertionError("applying_handlers_retire_area takes no Then %s: %s" % (step.template, step.text))
 

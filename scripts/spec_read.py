@@ -7,8 +7,8 @@ bullets, each with an optional `Relied on by: <cap>#r<n>, ...` line after it, a 
 supports (b548), and an optional fenced `given` block, read by spec_read_given), its `## Dropped` bullets and its `retired:`
 ids. A statement kept out of a group's requirements (no id,
 or an id used before) is in the group's `odd`, beside its problem. `## Terms` is not read here: spec_lexicon is the
-one reader of term entries. `universal(root)` reads `spec/universal.md`, `restated(root)` reads `spec/restated.json`.
-Nothing is refused: what is malformed is a problem `<line>: <what>`, with the file's own line number.
+one reader of term entries. `universal(root)` reads `spec/universal.md`, `restated(root)` reads `spec/restated.json`. `area_of(root, path)` is a
+capability's area. Nothing is refused: what is malformed is a problem `<line>: <what>`, with the file's own line number.
 """
 import json
 import re
@@ -250,6 +250,16 @@ def restated(root):
     """spec/restated.json: each 0.29 id `<capability>#r<n>` with its `text` and `line`, frozen from 96818f71."""
     path = Path(root) / "spec" / "restated.json"
     return json.loads(path.read_text()) if path.is_file() else {}
+
+
+def area_of(root, path):
+    """The area of the capability file at `path` under `root`: its `area:`, else its own name when that names an area
+    with a model file (`spec/model/<name>.md`), else None, a capability in no area (b903)."""
+    path = Path(path)
+    area = str(frontmatter(path.read_text())[0].get("area") or "")
+    if area:
+        return area
+    return path.stem if (Path(root) / "spec" / "model" / ("%s.md" % path.stem)).is_file() else None
 
 
 def is_guarantees(root, capability):
