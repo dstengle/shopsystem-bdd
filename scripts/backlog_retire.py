@@ -6,7 +6,8 @@ it, after the imports block), one bullet a retirement: `- model line `<element h
 the model file of the capability's area declares (backlog_model_area's `area_of`), refused naming the model line when
 that file does not declare it; `work line <item> --retire-term "<word>"` (or `"<word> → <element>"`) retires the
 entry of a layer, shared.md among them, refused naming the term when no layer holds it (backlog_area_move's
-`_entry`). backlog_retire_lay lays the retirements and takes them out again."""
+`_entry`); `work line <item> --retire-area <area>` (`- area `<area>``) retires an area that holds nothing
+(backlog_retire_area). backlog_retire_lay lays the retirements and takes them out again."""
 import re
 from collections import namedtuple
 
@@ -14,8 +15,9 @@ from backlog_items import Refused, commit, find, label, one_line
 
 HEAD = "### retirements"
 LINE = re.compile(r"^- (model line|term) `(.+)` in ([a-z0-9]+(?:-[a-z0-9]+)*)$")
+AREA = re.compile(r"^- area `([a-z0-9]+(?:-[a-z0-9]+)*)`$")
 Retirement = namedtuple("Retirement", "kind what area")
-FLAGS = ("retire_model", "retire_term")
+FLAGS = ("retire_model", "retire_term", "retire_area")
 
 
 def add_arguments(p):
@@ -25,6 +27,9 @@ def add_arguments(p):
                    "vocabulary entries that mean it once the item is laid")
     p.add_argument("--retire-term", metavar="TERM", help="a vocabulary entry (its word, or `<word> → <element>`) "
                    "taken out of its layer once the item is laid")
+    p.add_argument("--retire-area", metavar="AREA", help="an area of the domain model that holds no model line, no "
+                   "term and no capability with a requirement, taken out with its model file and its layer once the "
+                   "item is laid")
 
 
 def given(args):
@@ -41,18 +46,22 @@ class Lines:
     def line(self, line):
         if line == HEAD or not line.strip():
             return
-        found = LINE.match(line.strip())
-        if not found:
-            self.refuse("a line of the retirements block that is no `- model line `<header>` in <area>` or "
-                        "`- term `<word> → <element>` in <layer>`: %s" % line)
-        retirement = Retirement(*found.groups())
+        found, area = LINE.match(line.strip()), AREA.match(line.strip())
+        if not found and not area:
+            self.refuse("a line of the retirements block that is no `- model line `<header>` in <area>`, "
+                        "`- term `<word> → <element>` in <layer>` or `- area `<area>``: %s" % line)
+        retirement = Retirement(*found.groups()) if found else Retirement("area", area.group(1), area.group(1))
         if any(r[:2] == retirement[:2] for r in self.retirements):
             self.refuse("the retirement of the %s %s is there twice" % retirement[:2])
         self.retirements.append(retirement)
 
 
 def render(retirements):
-    return HEAD + "\n\n" + "\n".join("- %s `%s` in %s" % r for r in retirements) if retirements else ""
+    return HEAD + "\n\n" + "\n".join(_line(r) for r in retirements) if retirements else ""
+
+
+def _line(retirement):
+    return "- area `%s`" % retirement.what if retirement.kind == "area" else "- %s `%s` in %s" % retirement
 
 
 def retire_model(root, name, header, into):
@@ -107,7 +116,11 @@ def cmd(args):
     others = [k for k in PIECES + ("retires", "reword", "remove", "group", "in_group")
               if getattr(args, k, None) is not None]
     if len(flags) != 1 or others or (flags[0] == "retire_model") != (args.into is not None):
-        raise Refused("work line: --retire-model takes --into and --retire-term none, each alone")
+        raise Refused("work line: --retire-model takes --into and --retire-term or --retire-area none, each alone")
+    if flags[0] == "retire_area":
+        item, retirement = __import__("backlog_retire_area").retire_area(args.root, args.name, args.retire_area)
+        print("%s: retires the area %s" % (label(item), retirement.what))
+        return 0
     if flags[0] == "retire_model":
         item, retirement = retire_model(args.root, args.name, args.retire_model, args.into)
     else:
