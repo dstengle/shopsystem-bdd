@@ -26,7 +26,7 @@ import batch_reach
 import batch_rerun
 import batch_timings
 import spec_unbuilt
-from batch_commits import touching_feature, uncited, under_shop  # noqa: F401  (work batch review's too)
+from batch_commits import touching_feature, uncited, under_shop
 from batch_git import (
     delivery,
     git,

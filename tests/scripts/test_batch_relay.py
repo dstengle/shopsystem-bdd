@@ -7,12 +7,11 @@ import backlog_items
 import batch_plan
 import batch_relay
 import pytest
+import toolchain
 from backlog_testing import git, work
 from batch_testing import ready_item
 from test_backlog_lines import ABANDON
 from test_batch_pick import SECOND, THIRD
-
-import toolchain
 
 CAP = "spec/capabilities/work-queue.md"
 OTHER = "While an initiative is `abandoned`, when the person runs `work abandon` on the initiative, `work` shall print the initiative."
