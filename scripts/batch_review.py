@@ -3,8 +3,10 @@ published as one pull request.
 
 Under the lock: every task of an `in-batch` item must be `done`, and every commit on their branches since the lines
 commit must cite its item (or an earlier in-batch item, whose branch it merged) and leave `.shop/` alone. Then, in the
-batch's worktree, one commit takes every parked item's lines out of `spec/` (plan 4 review, B1), each in-batch item's
-branch is merged into `batch-<n>` with `--no-ff` in task order, each after the ones before (batch_merge) (a parked item's branch never is, so its commits stay out), the
+batch's worktree, the specification is rebuilt from the batch's base with every in-batch item applied in task order,
+in one commit citing them (batch_rebuild, reviews r17-r20, b874: a parked item applied nowhere), each in-batch item's
+branch is merged into `batch-<n>` with `--no-ff` in task order, each after the ones before, the paths the apply writes
+kept as the rebuild holds them (batch_merge) (a parked item's branch never is, so its commits stay out), the
 tests run there (the ids a failed run names kept under the batch's name, batch_rerun, for the poll's `fix task`:
 batch_broken, b696, with each task branch's head as submitted, so that a later commit reads as a fix, b713), the branch is pushed to the base's remote, and a draft pull request is created through gh unless the
 batch has one already (plan 5's fix loop pushes only, once each commit since the last review cites an open finding
@@ -19,9 +21,8 @@ import batch_base_merge
 import batch_broken
 import batch_fix
 import batch_merge
-import batch_parked
 import batch_plan
-import batch_start
+import batch_rebuild
 import batch_timings
 from batch_git import (
     git,
@@ -77,8 +78,8 @@ def checked(root, batch):
         raise Refused("\n".join(late))
     if not mine:
         raise Refused("%s: %s has no item that is in-batch" % (COMMAND, batch.name))
-    since = lines_commit(root, batch)
     for task, item in mine:
+        since = lines_commit(root, batch, task)
         shop = under_shop(root, since, task.branch)
         if shop:
             raise Refused("%s: %s: a commit on %s changes %s, which only the base branch's batch commands change" % (
@@ -90,27 +91,16 @@ def checked(root, batch):
     return mine
 
 
-def _merge(root, tree, batch, task, item, mine):
+def _merge(root, tree, batch, task, item, mine, owned):
     """The item's branch merged after the ones before it; a conflict left names the other items whose branches
     conflict with it (reviews r8)."""
     others = [(backlog_items.label(i), t.branch) for t, i in mine if t.branch != task.branch]
     try:
         batch_merge.merge(tree, task.branch, "%s: %s\n\nItem: %s" % (batch.name, backlog_items.label(item), item.name),
-                          backlog_items.label(item), others)
+                          backlog_items.label(item), others, owned)
         batch_merge.built(tree, task.branch, item_ids(root, item))     # a line its task built after an amend (b600)
     except Refused as refused:
         raise Refused("%s: %s: %s into %s" % (COMMAND, task_label(root, task), refused, batch.branch)) from None
-
-
-def _take_out_parked(root, tree, batch):
-    """One commit on the batch branch taking every parked item's lines out of `spec/`, citing them; none when they are
-    out already. Each is taken out as it was laid, not as it now reads (b324)."""
-    parked = batch_parked.parked(root, batch)
-    changed = batch_parked.lifted(root, batch, parked, tree, COMMAND)
-    if changed and git(tree, "status", "--porcelain", "--", *changed).stdout.strip():
-        git(tree, "add", "--", *changed)
-        git(tree, "commit", "-q", "-m", "%s: the requirement lines of %s taken out\n%s" % (
-            batch.name, batch_start.labels(parked), batch_start.cites(parked)))
 
 
 def _put_back(root, tree, before, name, branch, remote_before, pushed):
@@ -140,9 +130,10 @@ def review(root, name):
         where = remote(root, batch.base)
         remote_before, pushed = remote_head(root, where, batch.branch), False
         try:
-            _take_out_parked(root, tree, batch)
+            owned = batch_rebuild.rebuild(root, tree, batch, list({i.name: i for _, i in mine}.values()),
+                                          [(t.branch, item_ids(root, i)) for t, i in mine], COMMAND)   # r17-r20
             for task, item in mine:
-                _merge(root, tree, batch, task, item, mine)
+                _merge(root, tree, batch, task, item, mine, owned)
             batch_broken.submitted(root, batch, [t for t, _ in mine])      # a later commit a fix (b713)
             with batch_timings.timed(root, batch.name, "review"):       # the test run's duration (b73)
                 tests_pass(root, tree, "%s: %s" % (COMMAND, batch.name), key=batch.name)   # its failures kept (b696)

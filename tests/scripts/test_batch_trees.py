@@ -25,7 +25,6 @@ def test_is_tree_is_the_worktree_on_its_branch(started):  # noqa: F811
 
 def test_review_makes_its_worktree_in_an_empty_directory(both_done):  # noqa: F811
     batch_tree = both_done / ".shop" / "worktrees" / "batch-1"
-    git(both_done, "worktree", "remove", "--force", str(batch_tree))
     batch_tree.mkdir()
     failing(both_done)
     was, head = dirty(both_done), git(both_done, "rev-parse", "HEAD")
@@ -37,7 +36,6 @@ def test_review_makes_its_worktree_in_an_empty_directory(both_done):  # noqa: F8
 
 def test_review_refuses_a_directory_that_is_not_its_worktree(both_done):  # noqa: F811
     batch_tree = both_done / ".shop" / "worktrees" / "batch-1"
-    git(both_done, "worktree", "remove", "--force", str(batch_tree))
     batch_tree.mkdir()
     (batch_tree / "mine.txt").write_text("x\n")
     dirty(both_done)

@@ -152,7 +152,6 @@ def test_review_leaves_the_checkout_alone(both_done):
 
 def test_a_failed_review_removes_the_worktree_it_made(both_done):
     tree = both_done / ".shop" / "worktrees" / "batch-1"
-    git(both_done, "worktree", "remove", "--force", str(tree))
     conflict(both_done)
     done = work(both_done, "batch", "review", "batch-1")
     assert done.returncode == 1 and "does not merge" in done.stderr, done.stderr

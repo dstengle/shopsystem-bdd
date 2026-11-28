@@ -1,30 +1,27 @@
-"""`work batch start` (capability batches r1-r3; workflow simplification plan 4, D4-D9, D18): the pick laid on a new
-branch `batch-<n>` made at the base's HEAD, and the batch file with the moved items committed on the base.
+"""`work batch start` (capability batches r1-r3; workflow simplification plan 4, D4-D9, D18; b874): the pick, a new
+branch `batch-<n>` made at the base's HEAD with no commit of its own, each picked item applied to the specification of
+its task's workspace, and the batch file with the moved items committed on the base.
 
-On `batch-<n>`, in its own worktree, the batch's workspace, each picked item is laid by the laying service, a driven
-port (laying, b611: its lines into `spec/`, their ids into `unbuilt:`), the workspace prepared for the batch once
-every lay is done (b758: the features written again, the corpus, the catalogues, the Composition), and each item
-checked there; one commit then keeps the lay, citing every item it carries. Then the
-base gets one commit: `plan.md` with a `pending` task for each item, the picked items `in-batch`, and the items the
-pick returned `shaped`. The base checkout's own `spec/` and `features/` are never written, and its branch never
-switched; a failure once the branch is made removes its worktree and the branch before it is raised again.
-
-Before the lay is committed (batches r179-r181, r184, r188, r189): an item whose check the laying service fails (a requirement
-of it violates a rule of severity error on the laid workspace, which the readiness bar's copy of `spec/` alone could
-not find, b478) goes back to `shaped` naming each rule its failure names, and the batch is laid again without it; so does an item one of whose requirements, retiring
-none, has a scenario that already passes on the lay, naming the scenario (batch_laid, b488)."""
+Each picked item gets its task's worktree `batch-<n>-t<k>` on its branch at opening, where the specification service
+applies it alone (an item it depends on picked before it applied there first), the specification is validated with it
+and one commit on the task's branch keeps it (batch_applied; batches r194-r197, r202). An item whose validation fails
+(a requirement of it violates a rule of severity error on its workspace, which the readiness bar's copy of `spec/`
+alone could not find, b478) goes back to `shaped` naming each rule, as does one a requirement of which, retiring none,
+has a scenario that already passes before it is built (batch_laid, b488); no other item is applied again. Then the base
+gets one commit: `plan.md` with a `pending` task for each kept item, the kept items `in-batch`, and the items given
+back `shaped`. The base checkout's own `spec/` and `features/` are never written, and its branch never switched; a
+failure once the branch is made removes the worktrees and branches made before it is raised again."""
 import time
 from pathlib import Path
 
 import backlog_items
 import backlog_lifecycle
+import batch_applied
 import batch_driver
-import batch_laid
 import batch_pick
 import batch_timings
 import decision_successor
-import laying
-from batch_git import add_tree, current_branch, git, locked, remove_tree, trees_dir
+from batch_git import current_branch, git, locked, remove_tree, trees_dir
 from batch_plan import Batch, Task, commit, next_name, open_batch
 from plumbing import phases, shop_files
 from plumbing.shop_files import Refused
@@ -48,71 +45,53 @@ def _returns(root, returned):
                         write)
 
 
-class _Broken(Exception):
-    """The lay broke a rule: (item, reasons) of each picked item whose requirement violates one."""
-
-
-def _laid(tree, name, picked):
-    """Each picked item laid in the batch's workspace by the laying service (batches r179), the workspace prepared for
-    the batch once every lay is done (r188), and each item checked there on prepare's reply (r180, r189: one check
-    answers both): (the paths changed, the catalogues not written, the decisions superseded, (item, reasons) of each
-    item whose check it failed, naming each rule, r181)."""
-    changed, broken = [], []
-    for item in picked:
-        with phases.phase(phases.LAY):
-            changed += laying.changed(laying.lay(item, tree))
-    with phases.phase(phases.FEATURES):
-        reply = laying.prepare(tree, name, picked)
-    changed += laying.changed(reply)
-    unwritten, superseded = reply.content.get("unwritten", []), reply.content.get("superseded", [])
-    for item in picked:
-        with phases.phase(phases.CHECK):
-            reply = laying.check(item, tree)
-        if reply.outcome == "failed":
-            broken.append((item, laying.reasons(reply)))
-        elif reply.outcome != "done":
-            laying.changed(reply)
-    return list(dict.fromkeys(changed)), unwritten, superseded, broken
-
-
-def _build(root, base, picked, returned):
+def _build(root, base, pick):
+    """(the batch or None, the Pick): the batch's branch made at the base's HEAD, each picked item applied to its
+    task's workspace (batch_applied), the items given back reopened; the batch and its plan committed on the base once
+    an item is kept. A failure removes every worktree and branch made before it is raised again."""
     batch_driver.push_prefix(root)      # a malformed `[batch] push` refused before anything is written
     batch_driver.batch_rules(root)      # and a malformed `[batch] rules`
     name = next_name(root)
     forked = git(root, "rev-parse", "HEAD").stdout.strip()
-    tree = trees_dir(root) / name
+    made = []
     try:
+        git(root, "branch", name, forked)
+        kept, broken, left = batch_applied.applied(root, name, forked, pick.picked, made)
+        for item, reasons in broken:
+            backlog_lifecycle.reopen(item, "returned by work batch start: %s" % "; ".join(reasons))
+        pick = pick._replace(picked=[d.item for d in kept], returned=pick.returned + broken,
+                             left_out=pick.left_out + left)
+        if not kept:
+            _removed(root, name, made)
+            return None, pick
         with phases.phase(phases.COMMIT):
-            add_tree(root, tree, name, forked)
-        changed, unwritten, superseded, broken = _laid(tree, name, picked)
-        if not broken:
-            with phases.phase(phases.SCENARIOS):
-                broken = batch_laid.passing(root, tree, picked)
-        if broken:
-            raise _Broken(broken)
-        with phases.phase(phases.COMMIT):
-            batch = _committed(root, base, name, forked, tree, changed, picked, returned)
+            kept = batch_applied.numbered(root, name, kept)
+            batch = _committed(root, base, name, forked, kept, pick.returned)
     except BaseException:
         with phases.phase(phases.COMMIT):
-            remove_tree(root, tree)
-            if git(root, "branch", "--list", name).stdout.strip():
-                git(root, "branch", "-D", name)
+            _removed(root, name, made)
         raise
-    said = decision_successor.said(superseded)
-    batch_driver.write(root, batch, picked, unwritten, said)
-    return batch, said
+    said = decision_successor.said([s for d in kept for s in d.superseded])
+    batch_driver.write(root, batch, pick.picked, [u for d in kept for u in d.unwritten], said)
+    return batch, pick._replace(superseded=tuple(said))
 
 
-def _committed(root, base, name, forked, tree, changed, picked, returned):
-    """The lay committed on the batch's branch, then the batch's plan with the moved items on the base; the batch."""
-    if changed:                 # a pick of chore items only lays no line (b316): the commit is still made
-        git(tree, "add", "--", *changed)
-    git(tree, "commit", "-q", "--allow-empty", "-m", "%s: the requirement lines of %s\n%s" % (
-        name, labels(picked), cites(picked)))
+def _removed(root, name, made):
+    for tree, branch in made:
+        batch_applied.drop(root, tree, branch)
+    for tree in trees_dir(root).glob("%s-t*" % name) if trees_dir(root).is_dir() else ():
+        remove_tree(root, tree)
+    if git(root, "branch", "--list", name).stdout.strip():
+        git(root, "branch", "-D", name)
+
+
+def _committed(root, base, name, forked, kept, returned):
+    """The batch's plan, a `pending` task of each kept item on its branch, with the moved items, on the base."""
     context = shop_files.context_path(root)
     batch = Batch(name=name, ident="batch/%s/%s" % (context, name), status="building", base=base,
                   forked_from=forked, branch=name, pull_request=None,
-                  tasks=[Task("t%d" % k, i.name, "pending", "%s-%s" % (name, i.name)) for k, i in enumerate(picked, 1)])
+                  tasks=[Task("t%d" % k, d.item.name, "pending", d.branch) for k, d in enumerate(kept, 1)])
+    picked = [d.item for d in kept]
     for item in picked:
         backlog_lifecycle.allocate(item)
     commit(root, batch, picked + [i for i, _ in returned], "work batch start: %s %s" % (name, labels(picked)))
@@ -148,19 +127,13 @@ def _start(root, began):
             raise Refused("work batch start: no item is ready")
         with phases.phase(phases.PICK):
             pick = batch_pick.pick(root)
-        while pick.picked:
-            try:
-                batch, said = _build(root, base, pick.picked, pick.returned)
-                batch_timings.kept_phases(root, batch.name, phases.stopped())
-                batch_timings.kept(root, batch.name, "opening", time.monotonic() - began)
-                return batch, pick._replace(superseded=tuple(said))
-            except _Broken as err:          # laid again without the items whose lines broke a rule (b478)
-                broken = err.args[0]
-            for item, reasons in broken:
-                backlog_lifecycle.reopen(item, "returned by work batch start: %s" % "; ".join(reasons))
-            gone = {i.name for i, _ in broken}
-            pick = pick._replace(picked=[i for i in pick.picked if i.name not in gone],
-                                 returned=pick.returned + broken)
+        batch = None
+        if pick.picked:
+            batch, pick = _build(root, base, pick)
+        if batch is not None:
+            batch_timings.kept_phases(root, batch.name, phases.stopped())
+            batch_timings.kept(root, batch.name, "opening", time.monotonic() - began)
+            return batch, pick
         if pick.returned:
             _returns(root, pick.returned)
         return None, pick

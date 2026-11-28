@@ -105,7 +105,7 @@ def _reached(root, batch, task, ids, path):
     if path in {"tests/scenarios/test_%s.py" % i.split("#")[0].replace("-", "_") for i in ids}:
         return True
     try:
-        since = batch_tasks.lines_commit(root, batch)
+        since = batch_tasks.lines_commit(root, batch, task)
         return path not in batch_reach.unreached(git, root, since, task.branch, ids)
     except Refused:
         return False

@@ -100,3 +100,30 @@ def workspace_holds(step):
         assert "[%s] %s" % (rid, text) in spec, (step.text, branch, rid, spec)
         unbuilt = re.search(r"(?m)^unbuilt: \[(.*)\]$", spec).group(1)
         assert rid in [i.strip() for i in unbuilt.split(",")], (step.text, branch, unbuilt)
+
+
+@four("ThenDoes", "apply", *BOTH)
+def applies(step):
+    """`the batches service applies the item i1 to the specification s1`: the amend exited 0; the specification is
+    read by the `has` Then after it."""
+    if "amended" not in step.context or "result" not in step.context:
+        return False
+    assert step.context["result"].returncode == 0, (step.text, step.context["result"].stderr)
+
+
+@four("ThenDoes", "has", *BOTH)
+def workspace_has_specification(step):
+    """`the workspace w1 has the specification s1`: the task's branch (the workspace an earlier Then named the task's)
+    holds each reworded line under its id, unbuilt, and its commit since the batch's base cites the item, the batch's
+    branch none."""
+    (k1, n1), (k2, _) = parts(step)
+    if (k1, k2) != ("worktree", "specification") or "amended" not in step.context:
+        return False
+    batch = T.batch_name(step, next(iter(step.context["given"]["batch"])))
+    branch = T.task_row(step, step.context["workspace_of"][n1])[1]
+    for capability, rid, text in step.context["amended"]:
+        spec = T.git(step, "show", "%s:spec/capabilities/%s.md" % (branch, capability))
+        unbuilt = re.search(r"(?m)^unbuilt: \[(.*)\]$", spec).group(1)
+        assert "[%s] %s" % (rid, text) in spec and rid in [i.strip() for i in unbuilt.split(",")], (step.text, spec)
+    assert T.git(step, "log", "--format=%s", "%s..%s" % (T.plan_field(step, "b1", "forked_from"), batch)) == "", \
+        (step.text, "the batch's branch changed")

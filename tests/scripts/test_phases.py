@@ -24,3 +24,14 @@ def test_nothing_is_timed_while_stopped():
     with phases.phase("lay"):
         pass
     assert phases.stopped() == {}
+
+
+def test_phases_of_another_process_are_added_with_their_share():
+    """b874: the phases of applies run side by side in n processes are added each with a share of 1/n."""
+    from plumbing import phases
+    phases.added({"x": 1.0})
+    assert not phases.running()
+    phases.started()
+    phases.added({"x": 2.0}, 0.5)
+    phases.added({"x": 2.0, "y": 1.0}, 0.5)
+    assert phases.running() and phases.stopped() == {"x": 2.0, "y": 0.5}

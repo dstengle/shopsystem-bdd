@@ -1,7 +1,7 @@
-"""The corpus of an amended item in features/batches.feature (r172, b740): the scenario repository given a corpus
-(`grammar/corpus/spec/`, the one corpus file `work-queue.md`), which the amend's lay writes the item's block into;
-the Thens read off the batch's branch after `work batch amend`: the corpus ending its last block with one newline,
-holding the amended line. The lay's bookkeeping of a batch opened is laying's (laying_handlers_prepare, b758)."""
+"""The corpus of an amended item in features/batches.feature (r200, b740, b874): the scenario repository given a
+corpus (`grammar/corpus/spec/`, the one corpus file `work-queue.md`), which the amend's apply writes the item's block
+into; the Thens read off the item's task branch, its workspace's, after `work batch amend`: the corpus ending its last
+block with one newline, holding the amended line. What an apply prepares is applying's (applying_handlers_prepare)."""
 import sys
 
 import backlog_items
@@ -50,17 +50,20 @@ def _line(step, name):
 
 
 def _amended_corpus(step):
-    """The corpus on the batch's branch after `work batch amend` (r172, b740), or None under another command."""
+    """The corpus on the amended item's task branch after `work batch amend` (r200, b740), or None under another
+    command."""
     done = step.context.get("result")
     if done is None or "amend" not in done.args or not (step.repo / CORPUS).is_file():
         return None
     assert done.returncode == 0, (step.text, done.stdout, done.stderr)
-    return T.git(step, "show", "%s:%s" % (T.batch_name(step, next(iter(step.context["given"]["batch"]))), CORPUS))
+    batch = T.batch_name(step, next(iter(step.context["given"]["batch"])))
+    item = B.ident(next(iter(step.context["proposed"].values())))
+    return T.git(step, "show", "%s-%s:%s" % (batch, item, CORPUS))
 
 
 @four("ThenDoes", "conform", *BOTH)
 def corpus_conforms(step):
-    """`the corpus c1 conforms to the corpus form`: the batch branch's corpus ends its last block with no blank line
+    """`the corpus c1 conforms to the corpus form`: the task branch's corpus ends its last block with no blank line
     after it, the file ending in one newline."""
     text = _amended_corpus(step) if (parts(step)[0][0], step.nps[0]) == ("corpus", "the corpus form") else None
     if text is None:
@@ -70,7 +73,7 @@ def corpus_conforms(step):
 
 @four("ThenDoes", "holds", *BOTH)
 def workspace_holds_corpus(step):
-    """`the workspace w1 holds the corpus c1`: the batch's branch holds the corpus, with the amended item's line."""
+    """`the workspace w1 holds the corpus c1`: the task's branch holds the corpus, with the amended item's line."""
     (k1, _), (k2, _) = parts(step)
     text = _amended_corpus(step) if (k1, k2) == ("worktree", "corpus") else None
     if text is None:

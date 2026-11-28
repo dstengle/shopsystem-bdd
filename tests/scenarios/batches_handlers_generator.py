@@ -1,11 +1,11 @@
-"""The feature generator a batch's workspace holds (batches r170, b740), over batches_handlers_amend's world: once
-the batch is made (T.AFTER_BATCH), its branch `batch-<n>` given a commit of a stand-in generator, as the plugin's own
-repository holds one: `scripts/features_generate.py` and an executable `scripts/features` whose `generate` (with
+"""The feature generator a task's workspace holds (batches r199, b740, b874), over batches_handlers_amend's world: once
+the batch is made (T.AFTER_BATCH), each of its task branches `batch-<n>-<item>` given a commit of a stand-in
+generator, as the plugin's own repository holds one: `scripts/features_generate.py` and an executable `scripts/features` whose `generate` (with
 `--root`, `--preview FILE` or capability names, and `features --dir DIR`) writes each feature as the one line
-`MARK`. `work batch amend` run from the base's checkout then writes the item's capability's feature on the batch's
-branch with that generator, not its own; the Thens read the feature on `batch-<n>`. An `unresponsive` generator
-(r175, r176, b749) sleeps `STALL` seconds before it writes, and the run's time limit `$SHOPSYSTEM_GENERATE_TIMEOUT` is
-one second, so `work batch amend` and `park` refuse naming the feature generator."""
+`MARK`. `work batch amend` run from the base's checkout then writes the item's capability's feature on its task's
+branch with that generator, not its own; the Thens read the feature there. An `unresponsive` generator (r201, b749)
+sleeps `STALL` seconds before it writes, and the run's time limit `$SHOPSYSTEM_GENERATE_TIMEOUT` is one second, so
+`work batch amend` refuses naming the feature generator."""
 import sys
 
 W, B, T, F = (sys.modules[n] for n in ("shop_work_queue_world", "shop_backlog_world", "shop_batches_world",
@@ -48,7 +48,7 @@ def given_named(step):
 
 @four("GivenDoes", "has", *BOTH)
 def has_generator(step):
-    """`the workspace w1 has the feature generator f1`: the batch's workspace holds a generator of its own."""
+    """`the workspace w1 has the feature generator f1`: the task's workspace holds a generator of its own."""
     (k1, _), (k2, n2) = parts(step)
     if (k1, k2) != ("worktree", "feature generator"):
         return False
@@ -66,11 +66,17 @@ def responsiveness(step):
 
 
 def generator(step, name):
-    """The stand-in generator committed on the batch's branch (T.AFTER_BATCH), after the task branches are made."""
+    """The stand-in generator committed on each task branch of the batch (T.AFTER_BATCH), once they are made."""
     if "generator" not in step.context:
         return
-    tree = T.outside(step) / ("generator-%s" % T.batch_name(step, name))
-    T.git(step, "worktree", "add", "-q", str(tree), T.batch_name(step, name))
+    batch = T.batch_name(step, name)
+    for branch in T.git(step, "branch", "--list", "%s-b*" % batch, "--format=%(refname:short)").split():
+        _commit_generator(step, branch)
+
+
+def _commit_generator(step, branch):
+    tree = T.outside(step) / ("generator-%s" % branch)
+    T.git(step, "worktree", "add", "-q", str(tree), branch)
     scripts = tree / "scripts"
     scripts.mkdir(exist_ok=True)
     (scripts / "features_generate.py").write_text('"""A stand-in of the feature generator."""\n')
@@ -78,7 +84,8 @@ def generator(step, name):
                                       if step.context.get("stalled") else FEATURES)
     (scripts / "features").chmod(0o755)
     T.git(step, "add", "-A", cwd=tree)
-    T.git(step, "commit", "-q", "-m", "the workspace's feature generator", cwd=tree)
+    T.git(step, "commit", "-q", "-m", "the workspace's feature generator\n\nItem: %s" % branch.rsplit("-", 1)[1],
+          cwd=tree)
     T.git(step, "worktree", "remove", "--force", str(tree))
 
 
@@ -86,11 +93,13 @@ T.AFTER_BATCH.append(generator)
 
 
 def _feature(step):
-    """The amended item's capability's feature on the batch's branch, once the amend exited 0."""
+    """The amended item's capability's feature on its task's branch, once the amend exited 0."""
     done = step.context["result"]
     assert done.returncode == 0, (step.text, done.stdout, done.stderr)
     capability = step.context["amended"][0][0]
-    branch = T.batch_name(step, next(iter(step.context["given"]["batch"])))
+    batch = T.batch_name(step, next(iter(step.context["given"]["batch"])))
+    branch = "%s-%s" % (batch, B.ident(next(n for n, f in step.context["given"]["item"].items()
+                                             if T.status_of(step, n) == "in-batch")))
     return T.git(step, "show", "%s:features/%s.feature" % (branch, capability))
 
 
@@ -105,7 +114,7 @@ def names_generator(step):
 
 @four("ThenDoes", "has", *BOTH)
 def generator_has(step):
-    """`the feature generator f1 has the feature f2`: the batch branch's feature is the one its generator writes."""
+    """`the feature generator f1 has the feature f2`: the task branch's feature is the one its generator writes."""
     (k1, _), (k2, _) = parts(step)
     if (k1, k2) != ("feature generator", "feature") or "generator" not in step.context:
         return False
@@ -115,7 +124,7 @@ def generator_has(step):
 
 @four("ThenDoes", "holds", *BOTH)
 def workspace_holds(step):
-    """`the workspace w2 holds the feature f2`: the batch's branch holds the item's capability's feature."""
+    """`the workspace w2 holds the feature f2`: the task's branch holds the item's capability's feature."""
     (k1, _), (k2, _) = parts(step)
     if (k1, k2) != ("worktree", "feature") or "generator" not in step.context:
         return False
