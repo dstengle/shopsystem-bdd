@@ -495,3 +495,20 @@ Feature: Applying
     Then the specification s1 holds the capability c1
     And the specification service keeps the capability c1
     And the specification service does not keep the capability c2
+
+  @g51 @r51
+  Scenario: An item applied that retires an area keeps in no area a capability with the stem of the area
+    Given an item i1
+    And an area a1
+    And the item i1 retires the area a1
+    And a stem s1
+    And the area a1 has the stem s1
+    And a capability c1
+    And the capability c1 has the stem s1
+    And a specification s2
+    And a capability c2
+    And the area a1 holds the capability c2
+    When the batches service applies the item i1 to the specification s2
+    Then the specification s2 holds the capability c1
+    And the specification service keeps the capability c1
+    And the specification service does not keep the capability c2
