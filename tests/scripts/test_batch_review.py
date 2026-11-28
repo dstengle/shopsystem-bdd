@@ -56,6 +56,14 @@ def test_review_publishes_the_pull_request(both_done, batch_outside):
     assert any('batch-1: b1 "Abandon"' in m and "Item: b1" in m for m in merges), merges
 
 
+def test_a_tasks_own_change_under_spec_is_kept_over_the_rebuild(both_done, batch_outside):
+    """Review f1 of batch-178: a file a task wrote under `spec/` after its lines is in the batch's branch at submit."""
+    commit_on(both_done, "batch-1-b1", "spec/decisions/9999-kept.md", "kept\n", "a decision\n\nItem: b1")
+    done = work(both_done, "batch", "review", "batch-1")
+    assert done.returncode == 0, done.stderr
+    assert git(both_done, "show", "batch-1:spec/decisions/9999-kept.md") == "kept\n"
+
+
 def test_a_parked_items_commits_are_not_published(both_done, batch_outside):
     parked = commit_on(both_done, "batch-1-b2", "src/b2.txt", "more\n", "more b2\n\nItem: b2")
     assert work(both_done, "batch", "park", "batch-1", "b2", "--question", "Which?").returncode == 0

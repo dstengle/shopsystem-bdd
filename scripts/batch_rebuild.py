@@ -4,7 +4,8 @@ from, and the paths the apply writes (batch_merge's `OWNED`, and every other pat
 the batch's worktree as the rebuild holds them, in one commit citing each item (`rebuild`), none when they are so
 already. A parked item is applied nowhere, so its requirements and the design-decisions its retirements would supersede
 are not in the batch's workspace (r17, r18), while a decision an in-batch item's retirement leaves unenforced is
-superseded once, by the rebuild (r19). The task branches are merged after it keeping those paths (batch_merge)."""
+superseded once, by the rebuild (r19). The task branches are merged after it keeping those paths, with
+what each task changed there after its last apply merged onto them (batch_merge)."""
 import backlog_items
 import batch_merge
 import spec_apply
