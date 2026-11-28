@@ -7,7 +7,7 @@ area: execution
 specifies: object batch, object task, service batches
 language: codified-2
 retired: [g69, r69, g82, r82, g88, r88, g53, r53, g59, r59, g51, r51, g103, r103, g50, r50, g54, r54, g55, r55, g57, r57, g58, r58, g65, r65, g89, r89, g93, r93, g94, r94, g97, r97, g101, r101, g107, r107, g138, r138, g140, r140, g139, r139, g136, r136, g137, r137, g145, r145, g146, r146, g152, r152, g149, r149, g154, r154, g160, r160, g166, r166, g108, r108, g106, r106, g60, r60, g130, r130, g71, r71, g72, r72, g73, r73, g74, r74, g75, r75, g113, r113, g114, r114, g115, r115, g157, r157, g164, r164, g167, r167, g169, r169, g64, r64, g95, r95, g128, r128, g132, r132, g76, r76, g124, r124, g129, r129, g151, r151, g79, r79, g80, r80, g92, r92, g126, r126, g87, r87, g116, r116, g120, r120, g121, r121, g117, r117, g118, r118, g127, r127, g133, r133, g134, r134, g142, r142, g81, r81, g90, r90, g156, r156, g91, r91, g119, r119, g155, r155, g179, r179, g180, r180, g181, r181, g184, r184, g188, r188, g189, r189, g185, r185, g170, r170, g172, r172, g175, r175, g174, r174, g178, r178, g182, r182, g183, r183, g176, r176]
-unbuilt: []
+unbuilt: [r203, r204, r205]
 ---
 
 # Batches
@@ -210,4 +210,13 @@ when the change is merged.
 
 ### [g202] A dependent item's task workspace holds the lines of the item it depends on
 - [r202] While an item in a batch is `in-batch` and a task of the item has a workspace and the item has a dependency on an item that holds a requirement, when the person opens the batch, the batches service shall keep the workspace that holds the requirement.
+
+### [g203] An item reopened at opening reopens each item of the batch that depends on it
+- [r203] When the batches service reopens an item in a batch, the batches service shall reopen every item in the batch that has a dependency on the item.
+
+### [g204] An amended item is applied again to the task workspace of each item that depends on it
+- [r204] While an item in a batch is `in-batch` and a task of the item is `running` and the item has a dependency on an item in the batch, when the person amends the item, the batches service shall apply the item to the specification of the workspace of the task.
+
+### [g205] A task whose change touches a feature is not finished
+- [r205] While a task of an item is `running` and the workspace of the task holds a kept change that touches a feature, if a session finishes the task, then the batches service shall refuse the request and name the kept change.
 

@@ -1000,3 +1000,64 @@ Feature: Batches
     When the person opens the batch b1
     Then the workspace w1 holds the requirement r1
     And the batches service keeps the workspace w1
+
+  @g203 @r203
+  Scenario: An item reopened at opening reopens each item of the batch that depends on it
+    Given an item i1
+    And a batch b1
+    And the batch b1 holds the item i1
+    And an item i2
+    And a dependency d1
+    And the batch b1 holds the item i2
+    And the dependency d1 is on the item i1
+    And the item i2 has the dependency d1
+    And an item i3
+    And a dependency d2
+    And the batch b1 holds the item i3
+    And the dependency d2 is on the item i1
+    And the item i3 has the dependency d2
+    And an item i4
+    And a dependency d3
+    And the batch b1 holds the item i4
+    And the dependency d3 is on the item i1
+    And the item i4 does not have the dependency d3
+    When the batches service reopens the item i1
+    Then the batches service reopens the item i2
+    And the batches service reopens the item i3
+    And the batches service does not reopen the item i4
+
+  @g204 @r204
+  Scenario: An amended item is applied again to the task workspace of each item that depends on it
+    Given an item i1
+    And a batch b1
+    And the batch b1 holds the item i1
+    And the status of the item i1 is `in-batch`
+    And a task t1
+    And the item i1 has the task t1
+    And the status of the task t1 is `running`
+    And an item i2
+    And the batch b1 holds the item i2
+    And a dependency d1
+    And the dependency d1 is on the item i2
+    And the item i1 has the dependency d1
+    When the person amends the item i2
+    Then the task t1 has the workspace w1
+    And the batches service applies the item i2 to the specification s1
+    And the workspace w1 has the specification s1
+
+  @g205 @r205
+  Scenario: A task whose change touches a feature is not finished
+    Given a task t1
+    And an item i1
+    And the item i1 has the task t1
+    And the status of the task t1 is `running`
+    And a workspace w1
+    And the task t1 has the workspace w1
+    And a kept change k1
+    And a feature f1
+    And the kept change k1 touches the feature f1
+    And the workspace w1 holds the kept change k1
+    And a session s1
+    When the session s1 finishes the task t1
+    Then the batches service refuses this request
+    And the batches service names the kept change k1
