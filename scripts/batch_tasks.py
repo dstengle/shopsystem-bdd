@@ -9,8 +9,8 @@ and its task back to `pending`, its branch kept and its worktree removed, nothin
 a worktree with uncommitted changes is refused unless `--discard` (plan 4 review, S2). A path is used as a worktree
 only when it is that worktree on its branch (`batch_git.is_tree`, S1). Each change is one commit of the batch file
 (and the item) on the base branch, made under the lock. The checks shared with
-`work batch review` are here: the lines commit, uncited commits, commits that change `.shop/`, the tests."""
-import re
+`work batch review` are here: the lines commit and the tests, and from batch_commits uncited commits and commits that
+change `.shop/`; `done` refuses a kept change that touches a feature (batches r205, b889), naming it."""
 import shlex
 import subprocess
 from pathlib import Path
@@ -26,6 +26,7 @@ import batch_reach
 import batch_rerun
 import batch_timings
 import spec_unbuilt
+from batch_commits import touching_feature, uncited, under_shop  # noqa: F401  (work batch review's too)
 from batch_git import (
     delivery,
     git,
@@ -40,7 +41,6 @@ from batch_git import (
 from plumbing.shop_files import Refused
 
 TESTS = "python3 -m pytest -q -p work_items"
-SHOP = (".shop/backlog", ".shop/batches")
 
 
 def lines_commit(root, batch, task, last=False):
@@ -58,27 +58,6 @@ def lines_commit(root, batch, task, last=False):
     if not found.split():
         raise Refused("work batch: %s has no commit after %s" % (task.branch, batch.forked_from[:7]))
     return found.split()[0]
-
-
-def uncited(root, since, branch, names):
-    """`<short sha> "<subject>"` of each commit on `branch` after `since` with no `Item: <item>` line for one of the
-    item names `names` (D10)."""
-    out = git(root, "log", "--format=%h%x00%s%x00%(trailers:key=Item,valueonly,separator=%x2c)%x00%B%x1e",
-              "%s..%s" % (since, branch)).stdout
-    found = []
-    for entry in filter(str.strip, out.split("\x1e")):
-        sha, subject, cited, body = entry.strip("\n").split("\x00")
-        if not set(names) & {c.strip() for c in cited.split(",")}:
-            unread = re.search(r"(?m)^Item: ", body) and not cited.strip()
-            found.append('%s "%s"%s' % (sha, subject, " (its Item: line is not in the message's last paragraph, "
-                                        "and git reads trailers from the last paragraph only)" if unread else ""))
-    return found
-
-
-def under_shop(root, since, branch):
-    """The paths under `.shop/backlog/` or `.shop/batches/` a commit on `branch` after `since` changes (D4)."""
-    out = git(root, "log", "--format=", "--name-only", "%s..%s" % (since, branch), "--", *SHOP).stdout
-    return sorted(set(filter(None, out.splitlines())))
 
 
 def interpreter(*places):
@@ -213,6 +192,12 @@ def checked(root, batch, task):
     if bare:
         raise Refused("%s: %s: a commit on %s cites no item (an `Item: %s` line): %s" % (
             command, label, task.branch, task.item, "; ".join(bare)))
+    touching = touching_feature(root, since, task.branch, batch.name)
+    if touching:
+        raise Refused("%s: %s: a kept change on %s touches a feature, which only the specification service's apply "
+                      "writes (the batch's are rebuilt from the base at submit): %s" % (
+                          command, label, task.branch, "; ".join(touching)),
+                      reason="kept change touching a feature", names=["kept change:%s" % touching[0].split()[0]])
     item = backlog_items.find(root, task.item)
     backlog_chore.in_scope(root, since, task.branch, item, "%s: %s" % (command, label))      # b316
     left = spec_unbuilt.unbuilt(tree)

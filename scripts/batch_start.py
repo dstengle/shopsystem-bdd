@@ -7,7 +7,8 @@ applies it alone (an item it depends on picked before it applied there first), t
 and one commit on the task's branch keeps it (batch_applied; batches r194-r197, r202). An item whose validation fails
 (a requirement of it violates a rule of severity error on its workspace, which the readiness bar's copy of `spec/`
 alone could not find, b478) goes back to `shaped` naming each rule, as does one a requirement of which, retiring none,
-has a scenario that already passes before it is built (batch_laid, b488); no other item is applied again. Then the base
+has a scenario that already passes before it is built (batch_laid, b488), and so does each picked item that depends
+on it, directly or not (batches r203, b889); no other item is applied again. Then the base
 gets one commit: `plan.md` with a `pending` task for each kept item, the kept items `in-batch`, and the items given
 back `shaped`. The base checkout's own `spec/` and `features/` are never written, and its branch never switched; a
 failure once the branch is made removes the worktrees and branches made before it is raised again."""
@@ -57,10 +58,9 @@ def _build(root, base, pick):
     try:
         git(root, "branch", name, forked)
         kept, broken, left = batch_applied.applied(root, name, forked, pick.picked, made)
-        for item, reasons in broken:
+        for item, reasons in broken + left:         # an item depending on one reopened is reopened with it (r203)
             backlog_lifecycle.reopen(item, "returned by work batch start: %s" % "; ".join(reasons))
-        pick = pick._replace(picked=[d.item for d in kept], returned=pick.returned + broken,
-                             left_out=pick.left_out + left)
+        pick = pick._replace(picked=[d.item for d in kept], returned=pick.returned + broken + left)
         if not kept:
             _removed(root, name, made)
             return None, pick
