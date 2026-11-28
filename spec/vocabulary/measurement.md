@@ -32,10 +32,10 @@ area: measurement
 - **compare** (verb, action) → operation measurement.compare. Forms: compares, compared. Frame: <actor> compares <batch> with <batch>. Frame: <actor> compares <measurement> with <measurement>.
 - **test run** (noun) → object test run. One run of the tests of a batch when `work` finishes a task of the batch or submits the batch.
 - **duration** (noun) → object duration. The time a thing took from its start to its end.
-- **opening time** (noun) → object opening time. The time `work` takes to open a batch: its readiness check of the items again, its lay of their lines and its run of their scenarios.
 - **dispatch** (noun) → object dispatch. A session another session starts with its Agent tool, and the transcript it leaves. Plural: dispatches. Not: subagent.
 - **measurement** (noun) → object measurement. A record under `.shop/records/measurements/` of the figures of one batch, of one earlier delivery or of a trial, written by `measure` or by the trial. Not: facts file.
 - **trial** (noun) → object trial. One run by the `trial-runner` of a plugin tool or `work run` on a real target or a fixture repository, measuring what its input names.
 - **target** (noun) → object target. The real target or the fixture repository a trial runs on, with the plugin's scripts.
 - **`trial-runner`** (proper noun) → object trial-runner. The agent that conducts a trial.
-- **opening phase** (noun) → object opening phase. One part of the time `work` takes to open a batch: the pick of its items with their readiness checks, the compile of grammar 4, the parse of the lines, the lay, the features and corpus written again, the catalogues and the Composition, the check of each item, the run of the laid scenarios, or the worktree and the commit.
+- **opening time** (noun) → object opening time. The time `work` takes to open a batch: its readiness check of the items again, its application of each item to its task's workspace and its run of their scenarios.
+- **opening phase** (noun) → object opening phase. One part of the time `work` takes to open a batch: the pick of its items with their readiness checks, the compile of grammar 4, the parse of the lines, the apply, the features and corpus written again, the catalogues and the Composition, the check of each item, the run of the applied scenarios, or the worktree and the commit.
