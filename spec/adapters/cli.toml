@@ -497,6 +497,7 @@ reason = { option = "--reason" }
 [operations."backlog.reopen"]
 command = "work reopen"
 requirements = [
+  "batches#r203: When the batches service reopens an item in a batch, the batches service shall reopen every item in the batch that has a dependency on the item.",
   "items#r31: While an item is `ready`, when the person reopens the item, the backlog service shall set the status of the item to `shaped` and keep the item.",
   "items#r32: While an item is not `ready`, if the person reopens the item, then the backlog service shall refuse the request and name the item.",
 ]
@@ -954,6 +955,7 @@ requirements = [
   "batches#r70: While an item in a batch is `in-batch` and a task of the item is `running` and the status of an item in the batch is `needs-input` and the item has a requirement that is not in the workspace of the batch and a scenario of the item breaks in the workspace of the task, when a session finishes the task, the batches service shall set the status of the task to `done`.",
   "batches#r77: While a task of an item is `running` and the workspace of the task holds a virtual environment and a scenario of the item succeeds in the workspace of the task, when a session finishes the task, the batches service shall set the status of the task to `done`.",
   "batches#r78: While a task of an item is `running` and a scenario breaks in the workspace of the task and the scenario has a capability and the item holds no requirement id that is in the capability and no kept change in the workspace of the task touches the feature of the capability, when a session finishes the task, the batches service shall set the status of the task to `done`.",
+  "batches#r205: While a task of an item is `running` and the workspace of the task holds a kept change that touches a feature, if a session finishes the task, then the batches service shall refuse the request and name the kept change.",
 ]
 [operations."batches.finish".parameters]
 task = { positional = 2 }
@@ -978,6 +980,7 @@ requirements = [
   "batches#r199: While an item in a batch is `in-batch` and a task of the item is `running` and the item holds a requirement and the workspace of the task has a feature generator, when the person amends the item, the batches service shall keep a workspace of the task that holds a feature of the feature generator.",
   "batches#r200: While an item in a batch is `in-batch` and a task of the item is `running` and the item holds a requirement and this corpus holds the requirement, when the person amends the item, the batches service shall keep a corpus that conforms to the corpus form and keep a workspace of the task that holds the corpus.",
   "batches#r201: While an item in a batch is `in-batch` and a task of the item is `running` and the workspace of the task has a feature generator and the feature generator is `unresponsive`, if the person amends the item, then the batches service shall refuse the request, name the feature generator and change nothing.",
+  "batches#r204: While an item in a batch is `in-batch` and a task of the item is `running` and the item has a dependency on an item in the batch, when the person amends the item, the batches service shall apply the item to the specification of the workspace of the task.",
 ]
 [operations."batches.amend".parameters]
 item = { positional = 1 }

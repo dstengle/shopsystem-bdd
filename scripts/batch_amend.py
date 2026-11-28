@@ -1,37 +1,33 @@
-"""`work batch amend <item>` (batches r81-r83, b460; r198-r201, b874): an `in-batch` item whose lines changed (`work
-line` on it, drafting r38-r40) applied again to the specification of its task's workspace, and nowhere else: the
-batch's own specification is rebuilt from the base at submit (batch_rebuild).
+"""`work batch amend <item>` (batches r81-r83, b460; r198-r201, b874; r204, b889): an `in-batch` item whose lines
+changed (`work line` on it, drafting r38-r40) applied again to the specification of its task's workspace and of the
+task's workspace of each in-batch item depending on it, and nowhere else: the batch's own specification is rebuilt
+from the base at submit (batch_rebuild).
 
 In the task's worktree (made, and removed again, when it is not there) the paths the specification service's apply
-writes are put back as the commit the task's branch was made at holds them, the item's new ids renumbered past that
+writes are put back as the commit the batch forks from holds them, the item's new ids renumbered past that
 specification's and the batch's other in-batch items', the item checked by the readiness bar over it (r96, b486) and
-applied by the specification service (spec_apply's `apply`: its features by the workspace's own feature generator, its
-corpus, r199, r200), in one commit citing the item whose `Applied:` line names that commit; the item committed on the
-base when its ids move. A line applied before with the same text keeps its place in `unbuilt:`, built or not; a new or
+applied by the specification service after the in-batch items it depends on, so that every blocker's lines stay
+(batch_relay; spec_apply's `apply`: its features by the workspace's own feature generator, its corpus, r199, r200), in
+one commit citing the item whose `Applied:` line names that commit; the item committed on the base when its ids move.
+Each in-batch item depending on it, directly or not, is applied again so in its own task's worktree, with its blockers
+as the base now holds them, in a commit citing it and the amended item (r204), its task too set `running` when `done`. A line applied before with the same text keeps its place in `unbuilt:`, built or not; a new or
 changed line is unbuilt, and a line the item no longer holds is gone with the put back. A `done` task is set `running`
 again, so that its new lines are built. Refused, changing nothing, unless the item is `in-batch` (naming it, r83), its
-batch `building` on its base, its task's branch there, the item's file committed and the task's worktree free of
-uncommitted changes; refused too when the item's lines do not meet the readiness bar, or the workspace's feature
+batch `building` on its base, its task's branch there, the item's file committed and the task's worktree, and each
+dependent's, free of uncommitted changes; refused too when the item's lines do not meet the readiness bar, or the workspace's feature
 generator is unresponsive (r201, naming it). All or nothing: the base's commit is made once the worktree is applied,
 and a failure after it puts it back in a commit of its own with the branch reset; a refusal is said as `work batch
 amend`'s. With `--finding f<m>` (batches r125, b600), an amend that fixes an open review finding of the batch cites it
 (`Finding: f<m>`), so that `work batch review`'s fix loop (batch_fix) takes the commit as the finding's; a finding the
 batch holds no open one of is refused naming it. With none given, the commit cites every open finding of the amended
 item (r171, b740)."""
-import re
 import shutil
 from pathlib import Path
 
 import backlog_items
-import backlog_lines
-import batch_applied
 import batch_findings
 import batch_plan
-import batch_rebuild
-import readiness_bar
-import spec_apply
-import spec_read
-import spec_unbuilt
+import batch_relay
 from batch_git import (
     git,
     has_branch,
@@ -42,7 +38,8 @@ from batch_git import (
     trees_path,
     uncommitted,
 )
-from batch_tasks import building, lines_commit, tree_of
+from batch_relay import relay  # batches_handlers_amended's too
+from batch_tasks import building, tree_of
 from plumbing import shop_files
 from plumbing.shop_files import Refused
 
@@ -50,95 +47,32 @@ COMMAND = "work batch amend"
 APPLIED = "Applied: "
 
 
-def _lines(item):
-    """{capability: {r<n>: text}} of the item's requirement lines."""
-    out = {}
-    for block in backlog_lines.read(item, backlog_items.rel_of(item.name)):
-        out.setdefault(block.capability, {}).update((r, t) for g in block.groups for r, t in g.requirements)
-    return out
-
-
-def _unbuilt(tree, capabilities):
-    """{capability: [its `unbuilt:` ids]} of each capability file the tree holds."""
-    out = {}
-    for name in capabilities:
-        path = Path(tree) / "spec" / "capabilities" / ("%s.md" % name)
-        found = re.search(r"(?m)^unbuilt:[ \t]*\[(.*)\][ \t]*$", path.read_text()) if path.is_file() else None
-        out[name] = [one.strip() for one in found.group(1).split(",") if one.strip()] if found else []
-    return out
-
-
-def _keep_built(tree, old, new, before):
-    """Each capability's `unbuilt:` as it was before the relay, less the ids the item no longer holds, with each new
-    or reworded id of the item after them; the paths changed."""
-    changed = []
-    for name, lines in new.items():
-        path = Path(tree) / "spec" / "capabilities" / ("%s.md" % name)
-        if not path.is_file():
-            continue
-        had, was = before.get(name, []), old.get(name, {})
-        wanted = [i for i in had if i not in was or i in lines]
-        wanted += [i for i in lines if i not in had and was.get(i) != lines[i]]
-        text = path.read_text()
-        now = spec_unbuilt.without_unbuilt(text, _unbuilt(tree, [name])[name])
-        now = spec_unbuilt.with_unbuilt(now, wanted)
-        if now != text:
-            path.write_text(now)
-            changed.append(path.relative_to(tree).as_posix())
-    return changed
-
-
-def _held(tree, capabilities):
-    """{capability: {r<n>: text}} of the requirement lines each capability file of the tree holds."""
-    out = {}
-    for name in capabilities:
-        path = Path(tree) / "spec" / "capabilities" / ("%s.md" % name)
-        found = spec_read.capability(path) if path.is_file() else None
-        out[name] = {r.id: r.text for g in (found.groups if found else []) for r in g.requirements}
-    return out
-
-
-def relay(tree, item, base, root=None, taken=None):
-    """The item applied again to the task's worktree (batches r198-r200): the paths the apply writes put back as the
-    task's starting commit `base` holds them (batch_rebuild's `taken`), its new ids renumbered past the worktree's and
-    `taken`'s ({capability: ids} of the batch's other items) when it is given, checked by the readiness bar over the
-    worktree with `root` (b486), applied by the specification service, and each line applied before with the same
-    text kept as built as it was; the paths changed and the renumbered pairs."""
-    touched = git(tree, "diff", "--name-only", base, "HEAD", "--", "spec/capabilities").stdout.split()
-    caps = set(_lines(item)) | {Path(p).stem for p in touched}
-    before, had = _unbuilt(tree, caps), _held(tree, caps)
-    batch_rebuild.taken(tree, base, ())
-    now = _held(tree, caps)
-    old = {c: {r: t for r, t in lines.items() if now[c].get(r) != t} for c, lines in had.items()}
-    pairs = backlog_lines.renumber(tree, item, taken) if taken is not None else []
-    if root is not None:
-        _bar(root, tree, item)
-    changed = list(batch_applied.refused(spec_apply.apply(tree, [item], COMMAND), COMMAND)["changed"])
-    changed += _keep_built(tree, old, _lines(item), before)
-    return list(dict.fromkeys(changed)), pairs
-
-
-def _bar(root, tree, item):
-    """The item's lines checked as `work ready` checks them, the batch's workspace less the lines it laid before in
-    place of `spec/` (batches r96); an item left with no line passes, its lines taken out (r90). Refused naming the
-    item and the bar's reasons."""
-    blocks = backlog_lines.read(item, backlog_items.rel_of(item.name))
-    lined = backlog_lines.ids(blocks) or any(b.retired for b in blocks) or blocks.adapters
-    reasons = (readiness_bar.unsettled(root, item) + (readiness_bar.well_formed(tree, item)[0] if lined else [])
-               + readiness_bar.decision_reasons(root, blocks))
-    if reasons:
-        raise Refused("%s: %s does not meet the readiness bar:\n%s" % (
-            COMMAND, backlog_items.label(item), "\n".join("  " + r for r in reasons)),
-            reason="item not ready", names=["item:%s" % item.name])
-
-
-def _commit(tree, batch, item, changed, base, findings=()):
+def _commit(tree, batch, item, changed, base, findings=(), cites=()):
     """The amendment's commit, citing the item and each review finding it is for (b600, b740), its `Applied:` line
-    the commit its paths were put back as."""
+    the commit its paths were put back as; on a dependent's task branch, citing the dependent first (`cites`)."""
     if changed:
         git(tree, "add", "-A", "--", *changed)
-    git(tree, "commit", "-q", "--allow-empty", "-m", "%s: the requirement lines of %s amended\n\n%s%s\nItem: %s%s" % (
-        batch.name, backlog_items.label(item), APPLIED, base, item.name, "".join("\nFinding: %s" % f for f in findings)))
+    git(tree, "commit", "-q", "--allow-empty", "-m", "%s: the requirement lines of %s amended\n\n%s%s%s\nItem: %s%s" % (
+        batch.name, backlog_items.label(item), APPLIED, base, "".join("\nItem: %s" % c.name for c in cites), item.name,
+        "".join("\nFinding: %s" % f for f in findings)))
+
+
+def _followed(root, batch, item, heads, made):
+    """[(task, its worktree, its item)] of each in-batch item of the batch depending on the item, directly or not
+    (batches r204), its worktree made when it is not there; refused while one has uncommitted changes."""
+    out = []
+    for dependent in batch_relay.dependents(root, batch, item):
+        task = next(t for t in batch.tasks if t.item == dependent.name)
+        if not has_branch(root, task.branch):
+            continue
+        tree = tree_of(root, batch, task)
+        loose = uncommitted(tree) if is_tree(tree, task.branch) else []
+        if loose:
+            raise Refused("%s: %s, which depends on %s, has uncommitted changes in %s: %s; commit them on %s first" % (
+                COMMAND, backlog_items.label(dependent), backlog_items.label(item), tree, ", ".join(loose),
+                task.branch))
+        out.append((task, _tree(root, tree, task.branch, heads, made), dependent))
+    return out
 
 
 def _finding(root, batch, item, finding):
@@ -183,7 +117,7 @@ def _others(root, batch, item):
     for task in batch.tasks:
         other = backlog_items.find(root, task.item)
         if other.name != item.name and other.status == "in-batch":
-            for capability, lines in _lines(other).items():
+            for capability, lines in batch_relay.item_lines(other).items():
                 taken.setdefault(capability, set()).update(lines)
     return taken
 
@@ -201,15 +135,21 @@ def amend(root, name, finding=None):
         heads, made, laid_on, undo = {}, [], [], None
         try:
             there = _tree(root, tree_of(root, batch, task), task.branch, heads, made)
-            base = git(root, "rev-parse", "%s^" % lines_commit(root, batch, task)).stdout.strip()
-            changed, pairs = relay(there, item, base, root=root, taken=_others(root, batch, item))
-            reopened = task.status == "done"
-            if reopened:
-                task.status = "running"
+            base = batch.forked_from
+            changed, pairs = relay(there, item, base, root=root, taken=_others(root, batch, item),
+                                   before=batch_relay.blockers(root, batch, item))
+            followed = _followed(root, batch, item, heads, made)
+            reopened = [t for t in [task] + [t for t, _, _ in followed] if t.status == "done"]
+            for one in reopened:
+                one.status = "running"
             if pairs or reopened:
                 undo = _based(root, batch, item)
             _commit(there, batch, item, changed, base, findings)
             laid_on.append(task.branch)
+            for other, where, dependent in followed:     # each dependent applied again with it, as the base holds it
+                changed, _ = relay(where, dependent, base, before=batch_relay.blockers(root, batch, dependent))
+                _commit(where, batch, item, changed, base, cites=[dependent])
+                laid_on.append(other.branch)
         except BaseException:
             for branch, (where, head) in heads.items():
                 if is_tree(where, branch):

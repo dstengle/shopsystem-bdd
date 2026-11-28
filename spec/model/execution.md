@@ -62,7 +62,7 @@ object shared workspace kind of workspace
 service batches
   operation open(batch)  outcomes: done → the batch
   operation resume(batch)  outcomes: done
-  operation finish(task)  outcomes: done | refused: chore breaking, file outside the chore
+  operation finish(task)  outcomes: done | refused: chore breaking, file outside the chore, kept change touching a feature
   operation park(item)  outcomes: done
   operation submit(batch)  outcomes: done → the proposed change | refused: task not done, kept change citing no item, batch with no base merge
   operation merge(proposed change)  outcomes: done
