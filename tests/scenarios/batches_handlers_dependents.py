@@ -6,12 +6,19 @@ line its applied workspace finds broken (applied's `BROKEN`, the rule catalogue 
 reopens it; each other item the scenario names `ready` with a passing line of its own (`LINES`), a dependency on i1 of
 those the Givens say have one; the Thens read each item's status and the batch's plan.
 
+g204: over batches_world's batch, the item the dependent depends on made `in-batch` before the batch is made, and
+amended (batches_handlers_amend's When: its lines reworded on main); the dependent's task branch is read for its own
+lines beside the amended ones, which batches_handlers_amend's Then after it reads.
+
 g205: over batches_world's batch, the running task's branch is given one more commit after the world's, citing its
 item, that touches `features/work-queue.feature` (the kept change touching a feature); `work batch done` is run on the
 task (batches_handlers_parked's When) and the Then reads the kept change's short sha in what it printed."""
 import re
 import sys
 from pathlib import Path
+
+import backlog_items
+import backlog_lines
 
 W, B, T, F = (sys.modules[n] for n in ("shop_work_queue_world", "shop_backlog_world", "shop_batches_world",
                                        "shop_world_four"))
@@ -103,6 +110,41 @@ def then_reopens(step):
         assert status == "shaped" and _row(step, name) == (None, None), (step.text, status, done.stdout)
     else:
         assert status == "in-batch" and _row(step, name)[0], (step.text, status, done.stdout)
+
+
+def _blocker_in_batch(step):
+    """Before the batch is made (g204): each item a dependency is on, of an item of the batch, `in-batch` too."""
+    if not mine(step) or "g204" not in _tags(step):
+        return
+    for dep in step.context.get("deps", {}).values():
+        if dep.get("on") and B.status_of(step, B.ident(dep["on"])) != "in-batch":
+            B.write_item(step, dep["on"], status="in-batch")
+
+
+T.BEFORE_BATCH.append(_blocker_in_batch)
+
+
+def _tags(step):
+    return set(sys.modules["vocab"].vocab4.requested.scenario(step.request.node).tags)
+
+
+@first("ThenDoes", "has")
+def then_has_own(step):
+    """`the workspace w1 has the specification s1` (g204): the dependent's task branch still holds each of its own
+    lines; then batches_handlers_amend's handler reads the amended item's lines there (the chain goes on)."""
+    if not mine(step) or "g204" not in _tags(step):
+        return False
+    (k1, n1), (k2, _) = parts(step)
+    if (k1, k2) != ("worktree", "specification"):
+        return False
+    task = step.context["workspace_of"][n1]
+    item = backlog_items.find(step.repo, B.ident(step.context["given"]["task"][task]["item"]))
+    branch = T.task_row(step, task)[1]
+    for block in backlog_lines.read(item, item.name):
+        spec = T.git(step, "show", "%s:spec/capabilities/%s.md" % (branch, block.capability))
+        for rid, text in [r for g in block.groups for r in g.requirements]:
+            assert "[%s] %s" % (rid, text) in spec, (step.text, "the dependent's own line", rid, spec[-800:])
+    return False
 
 
 @first("GivenK", "feature")
