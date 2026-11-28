@@ -27,12 +27,12 @@ GROUPS = {"g203", "g204", "g205"}
 FEATURE = "features/work-queue.feature"
 # Passing lines of the other items g203 names, no two sharing a condition and a trigger (v15n), nor one with i1's
 # broken line or the world's own item's (batches_handlers_applied's BROKEN and PASS).
-LINES = ("While an initiative is `proposed`, when the person runs `work tidy` on the initiative, `work` shall exit "
-         "successfully.",
-         "While an initiative is `started`, when the person runs `work tidy` on the initiative, `work` shall exit "
-         "successfully.",
-         "While an initiative is `started`, when the person runs `work abandon` on the initiative, `work` shall set the "
-         "status of the initiative to `abandoned`.")
+LINES = (("While an initiative is `proposed`, when the person runs `work tidy` on the initiative, `work` shall exit "
+          "successfully."),
+         ("While an initiative is `started`, when the person runs `work tidy` on the initiative, `work` shall exit "
+          "successfully."),
+         ("While an initiative is `started`, when the person runs `work abandon` on the initiative, `work` shall set "
+          "the status of the initiative to `abandoned`."))
 
 
 def mine(step):
@@ -180,7 +180,7 @@ def _touching(step, name):
     if not step.context.get("touching"):
         return
     n = T.batch_name(step, name)
-    for task, found in step.context["given"]["task"].items():
+    for found in step.context["given"]["task"].values():
         if found["status"] != "running" or found["batch"] != name:
             continue
         b = B.ident(found["item"])

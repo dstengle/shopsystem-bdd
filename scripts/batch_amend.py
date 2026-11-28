@@ -38,7 +38,7 @@ from batch_git import (
     trees_path,
     uncommitted,
 )
-from batch_relay import relay  # noqa: F401  (batches_handlers_amended's too)
+from batch_relay import relay  # batches_handlers_amended's too
 from batch_tasks import building, tree_of
 from plumbing import shop_files
 from plumbing.shop_files import Refused
