@@ -39,6 +39,7 @@ object item kind of file
   relations: moves → term (many)
   relations: holds → area (many)
   relations: imports → pack (many); retires → model line | term (many)
+  relations: retires → area (many)
 
 object backlog
 
@@ -163,6 +164,7 @@ service drafting
   operation reinstate term(term, item)  outcomes: done | refused: term not retired by the item
   operation remove import(pack, item)  outcomes: done | refused: pack not imported by the item
   operation reinstate requirement(requirement id, item)  outcomes: done | refused: requirement id not retired by the item
+  operation retire area(area, item)  outcomes: done | refused: area not in the domain model, area holding a model line, area holding a term, area holding a requirement
 
 service context requests
   operation raise(context request, origin, thread, text, bounded context)
@@ -207,6 +209,7 @@ object domain model kind of file
   relations: holds → model line | operation (many)
   relations: holds → element (many)
   relations: holds → member line (many)
+  relations: holds → area (many)
 
 object operation-table form kind of artifact
 

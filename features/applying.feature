@@ -456,3 +456,42 @@ Feature: Applying
     Then this corpus holds the requirement r1
     And the specification service keeps the logical form l1
     And the requirement r1 has the logical form l1
+
+  @g48 @r48
+  Scenario: An item applied that retires an area keeps a domain model without it
+    Given an item i1
+    And an area a1
+    And the item i1 retires the area a1
+    And a specification s1
+    When the batches service applies the item i1 to the specification s1
+    Then the specification service keeps the domain model d1
+    And the domain model d1 does not hold the area a1
+
+  @g49 @r49
+  Scenario: An item applied that retires an area keeps no area importing it
+    Given an item i1
+    And an area a1
+    And the item i1 retires the area a1
+    And an area a2
+    And the area a2 imports the area a2
+    And a specification s1
+    And an area a3
+    And the area a3 imports the area a2
+    When the batches service applies the item i1 to the specification s1
+    Then the specification service keeps the domain model d1
+    And the domain model d1 does not hold the area a3
+
+  @g50 @r50
+  Scenario: An item applied that retires an area keeps its capabilities in no area
+    Given an item i1
+    And an area a1
+    And the item i1 retires the area a1
+    And a capability c1
+    And the area a1 holds the capability c1
+    And a specification s1
+    And a capability c2
+    And the area a1 holds the capability c2
+    When the batches service applies the item i1 to the specification s1
+    Then the specification s1 holds the capability c1
+    And the specification service keeps the capability c1
+    And the specification service does not keep the capability c2

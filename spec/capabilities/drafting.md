@@ -7,7 +7,7 @@ area: tracking
 specifies: service drafting
 language: codified-2
 retired: [g99, r99, g100, r100, g49, r49, g14, r14]
-unbuilt: []
+unbuilt: [r114, r115, r116, r117, r118]
 ---
 
 # Drafting
@@ -359,4 +359,19 @@ capabilities, retirements, rewordings and chores.
 
 ### [g113] A line drafted into one capability that retires a requirement of another is kept in the item
 - [r113] When the person drafts an item with the requirement id of a requirement of a capability and another capability, the drafting service shall keep an item that holds a requirement of the capability that retires the requirement id.
+
+### [g114] An area retired in an item is kept
+- [r114] When the person retires an area in an item, the drafting service shall keep an item that retires the area.
+
+### [g115] Retiring an area that the domain model does not hold is refused
+- [r115] If the person retires an area that the domain model does not hold in an item, then the drafting service shall refuse the request and name the area.
+
+### [g116] Retiring an area that holds a model line is refused
+- [r116] If the person retires an area that holds a model line in an item, then the drafting service shall refuse the request and name the model line.
+
+### [g117] Retiring an area that holds a term is refused
+- [r117] If the person retires an area that holds a term in an item, then the drafting service shall refuse the request and name the term.
+
+### [g118] Retiring an area that holds a capability with a requirement is refused
+- [r118] If the person retires an area that holds a capability that has a requirement in an item, then the drafting service shall refuse the request and name the requirement.
 
