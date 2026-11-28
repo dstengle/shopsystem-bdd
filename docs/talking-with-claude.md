@@ -27,7 +27,8 @@ When the person shows an item, the backlog service shall return the status of th
 ```
 
 Claude checks the line, readies the item and builds it in a batch. The next thing you see is a pull request,
-reviewed and ready to merge. [The tour](tour.md) follows this exact feature from start to finish.
+reviewed and ready to merge. [The tour of the internals](internals-tour.md) follows this exact feature underneath,
+with every command the session runs.
 
 ## Each skill, in plain words
 
@@ -370,4 +371,4 @@ b7 "Close the generator gaps in spec_steps" shaped
 To stop work you don't want, say so: Claude withdraws an item (`shop work withdraw`) or abandons a batch
 (`shop work batch abandon`). [Recipes](recipes.md) has the steps.
 
-Next: [the tour](tour.md) · [recipes](recipes.md) · [concepts](concepts.md)
+Next: [the tour of the internals](internals-tour.md) · [recipes](recipes.md) · [concepts](concepts.md)

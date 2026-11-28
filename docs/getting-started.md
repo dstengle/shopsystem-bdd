@@ -522,7 +522,8 @@ pull request for you to merge.
 Next:
 
 - [Talking with Claude](talking-with-claude.md): what to say, what follows, and the few things you're asked.
-- [The tour](tour.md): one feature from an idea to a merged batch, with every command the session runs.
+- [A tour of the internals](internals-tour.md): one feature from an idea to a merged batch, with every command the
+  session runs underneath.
 - [Writing requirements](writing-requirements.md): the language, with "this, not that" pairs.
 - [Commands](reference/commands.md): every command the session runs, for when you want to look or do a step by
   hand.
