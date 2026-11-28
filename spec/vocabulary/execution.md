@@ -43,7 +43,6 @@ area: execution
 - **the capability form** (proper noun) → object capability form. A capability file as 0.38 keeps it: its frontmatter names its `area:` and what it `specifies:`, and it holds no empty section.
 - **the index form** (proper noun) → object index form. `spec/index.md` as 0.38 keeps it: one `## Composition` section, whose table `| area | kind | capabilities |` has a row for each area, naming its capabilities.
 - **virtual environment** (noun) → object virtual environment. The directory `.venv` at the top of a workspace, whose `bin/python` runs the tests of a task and of a batch in place of the `python3` on `PATH`.
-- **amend** (verb, action) → operation batches.amend. An item's lines laid again on the workspaces of its batch and of its task after they changed. Forms: amends, amended. Frame: <actor> amends <item>.
 - **configure** (verb, action) → operation batches.configure. Forms: configures, configured. Frame: <actor> configures <setting>.
 - **setting** (noun) → object setting. One key of `.shop/delivery.toml` that the plugin reads, under the table it belongs to, as `batch_size` or `[review] checks`. Plural: settings.
 - **setting value** (noun) → object setting value. The value a setting is given, of the type the plugin reads it as, as `7` for `batch_size`. Plural: setting values.
@@ -69,7 +68,6 @@ area: execution
 - **observation** (noun) → value review finding.triage observation.
 - **shared workspace** (noun) → object shared workspace. The workspace a workspace is shared to, in the shared store.
 - **cite** (verb, state) → relation kept change.cites. A thing names another as what it stands on. Forms: cites, cited. Frame: <kept change> cites <item>. Frame: <proposed change> cites <item>. Frame: <quote> cites <message>. Frame: <thing> cites <observation>.
-- **amendment** (noun) → object amendment. A kept change that work batch amend makes on the workspace of a batch or of its task, laying an amended item's requirements again. Plural: amendments.
 - **the shop service** (proper noun) → service shop.
 - **entrust** (verb, action) → operation shop.keep. The person gives a bounded context to the shop to keep under its id, beside the bounded contexts the shop keeps already. Forms: entrusts, entrusted. Frame: <actor> entrusts <bounded context>.
 - **list** (verb, action) → operation shop.list. The person asks which bounded contexts a shop keeps. Forms: lists, listed. Frame: <actor> lists <shop>.
@@ -96,3 +94,5 @@ area: execution
 - **responsiveness** (attribute) → attribute feature generator.responsiveness. Whether a run of the feature generator ends within its time limit.
 - **responsive** (adjective) → value feature generator.responsiveness responsive.
 - **unresponsive** (adjective) → value feature generator.responsiveness unresponsive. A run of it does not end within its time limit or cannot be started.
+- **amend** (verb, action) → operation batches.amend. An item's lines applied again, after they changed, to the specification of the workspace of its task and of the task of each item that depends on it. Forms: amends, amended. Frame: <actor> amends <item>.
+- **amendment** (noun) → object amendment. A kept change that work batch amend makes on the workspace of a task, applying an amended item's requirements again. Plural: amendments.

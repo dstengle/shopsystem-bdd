@@ -131,7 +131,6 @@ area: tracking
 - **rejecting** (adjective) → value repository.store rejecting.
 - **turn** (noun) → object turn. Whose move a context request waits on, the asker's or the upstream's.
 - **write** (verb, action) → operation drafting.write. Forms: writes, wrote, written. Frame: <actor> writes <term> into <item>.
-- **model line** (noun) → object model line. A line of the domain model's syntax, an element with its members or a relation, that an item keeps for the area of one of its capabilities until its batch lays it into `spec/model/<area>.md`. Plural: model lines.
 - **declare** (verb, action) → operation drafting.declare. Forms: declares, declared. Frame: <actor> declares <model line> in <item>.
 - **reopen** (verb, action) → operation backlog.reopen. Forms: reopens, reopened. Frame: <actor> reopens <item>.
 - **retirement list** (noun) → object retirement list. A file of pairs, each a requirement id and the requirement that retires it, which an item takes in one request.
@@ -180,7 +179,6 @@ area: tracking
 - **session** (noun) → object session. One Claude Code conversation with its own id and transcript: the person's, a stage or a dispatch. This: the session that runs the command. Not: conversation, chat.
 - **item** (noun) → object item. One file of the backlog, `.shop/backlog/b<n>.md`: work this bounded context may do, with its requirement lines, its provenance and its ratings, named by its id `b<n>` and its title.
 - **workspace name** (noun) → object workspace name. The name a git branch or an upstream branch is known by.
-- **readiness bar** (noun) → object readiness bar. The checks `work ready` makes of an item on a copy of `spec/` with its lines laid in: its request lines settled, its lines parsed, no L0 and no L1 of `model logic` naming them, their scenarios written by `features generate`, and the `check` design-decisions its capabilities rest on passing. This: the readiness bar of the plugin that runs the command.
 - **chore** (noun) → object chore. What an item with no requirement line names in their place: the files its work changes and the command whose exit code 0 shows the work done.
 - **observation** (noun) → object observation. An entry of `.shop/records/observations.md`, with its id and its date.
 - **thread** (noun) → object thread. The GitHub issue, on the GitHub repository of a request's upstream, that carries the request's conversation.
@@ -198,8 +196,11 @@ area: tracking
 - **retire** (verb, action) → operation drafting.retire model line. Forms: retires, retired. Frame: <actor> retires <model line> in <item>.
 - **retire** (verb, action) → operation drafting.retire term. Forms: retires, retired. Frame: <actor> retires <term> in <item>.
 - **import** (verb, state) → relation item.imports. An item names a plugin pack that its batch adds to the imports of this bounded context's index. Forms: imports, imported. Frame: <item> imports <pack>.
-- **retire** (verb, state) → relation item.retires. An item names an element the domain model declares, or a vocabulary entry, that its batch takes out of its area's model file or its layer, an element with the entries that mean it. Forms: retires, retired. Frame: <item> retires <model line>. Frame: <item> retires <term>.
 - **reinstate** (verb, action) → operation drafting.reinstate model line. The person takes a model line's retirement back out of an item, so that its batch keeps the element. Forms: reinstates, reinstated. Frame: <actor> reinstates <model line> in <item>.
 - **reinstate** (verb, action) → operation drafting.reinstate term. The person takes a term's retirement back out of an item, so that its batch keeps the entry. Forms: reinstates, reinstated. Frame: <actor> reinstates <term> in <item>.
 - **remove** (verb, action) → operation drafting.remove import. The person takes a pack's import back out of an item, so that its batch does not import the pack. Forms: removes, removed. Frame: <actor> removes <pack> from <item>.
 - **reinstate** (verb, action) → operation drafting.reinstate requirement. The person takes a live requirement's retirement back out of an item, so that its batch keeps the requirement. Forms: reinstates, reinstated. Frame: <actor> reinstates <requirement id> in <item>.
+- **model line** (noun) → object model line. A line of the domain model's syntax, an element with its members or a relation, that an item keeps for the area of one of its capabilities until its batch applies it to `spec/model/<area>.md`. Plural: model lines.
+- **readiness bar** (noun) → object readiness bar. The checks `work ready` makes of an item on a copy of `spec/` with the item applied to it: its request lines settled, its lines parsed, no L0 and no L1 of `model logic` naming them, their scenarios written by `features generate`, and the `check` design-decisions its capabilities rest on passing. This: the readiness bar of the plugin that runs the command.
+- **retire** (verb, action) → operation drafting.retire area. Forms: retires, retired. Frame: <actor> retires <area> in <item>.
+- **retire** (verb, state) → relation item.retires. An item names an element the domain model declares, a vocabulary entry or an area that holds neither, that its batch takes out of its area's model file or its layer, an element with the entries that mean it, an area with its model file and its layer. Forms: retires, retired. Frame: <item> retires <model line>. Frame: <item> retires <term>. Frame: <item> retires <area>.

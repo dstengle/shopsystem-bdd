@@ -121,3 +121,12 @@ An item applied to a specification: its requirements, groups, capabilities, mode
 ### [g47] An item applied keeps in the corpus the logical form of a requirement that uses a verb it gives a sense
 - [r47] While an item holds a verb that has a sense and a requirement of a capability uses the verb and the item holds no requirement id that is in the capability, when the batches service applies the item to a specification, the specification service shall keep the logical form of the requirement in the corpus.
 
+### [g48] An item applied that retires an area keeps a domain model without it
+- [r48] While an item retires an area, when the batches service applies the item to a specification, the specification service shall keep a domain model that does not hold the area.
+
+### [g49] An item applied that retires an area keeps no area importing it
+- [r49] While an area imports an area and an item retires the area, when the batches service applies the item to a specification, the specification service shall keep a domain model that holds no area that imports the area.
+
+### [g50] An item applied that retires an area keeps its capabilities in no area
+- [r50] While an item retires an area and a capability is in the area, when the batches service applies the item to a specification, the specification service shall keep the capability in the specification and keep no capability in the area.
+

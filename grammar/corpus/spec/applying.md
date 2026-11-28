@@ -340,7 +340,7 @@ From: b872 r21.
 While an item retires a model line, when the batches service applies the item to a specification, the specification service shall keep an area that does not hold the model line.
 shall [x3: service the batches service (constant), x5: service the specification service (constant)]
   while [x1: item, x2: model line]
-    retire#4(subject: x1, object: x2)
+    retire#5(subject: x1, object: x2)
   when [x4: specification]
     request(e1, specification.apply, subject: x3, object: x1, to: x4)
   response [x6: area]
@@ -356,7 +356,7 @@ From: b872 r22.
 While an item retires a term, when the batches service applies the item to a specification, the specification service shall keep an area that does not hold the term.
 shall [x3: service the batches service (constant), x5: service the specification service (constant)]
   while [x1: item, x2: term]
-    retire#4(subject: x1, object: x2)
+    retire#5(subject: x1, object: x2)
   when [x4: specification]
     request(e1, specification.apply, subject: x3, object: x1, to: x4)
   response [x6: area]
@@ -373,9 +373,9 @@ While an item retires a model line that restates an element and the item retires
 shall [x5: service the batches service (constant), x7: service the specification service (constant)]
   while [x1: item, x2: model line, x3: element, x4: term]
     restate(subject: x2, object: x3)
-    retire#4(subject: x1, object: x2)
+    retire#5(subject: x1, object: x2)
     mean(subject: x4, object: x3)
-    retire#4(subject: x1, object: x4)
+    retire#5(subject: x1, object: x4)
   when [x6: specification]
     request(e1, specification.apply, subject: x5, object: x1, to: x6)
   response [x8: area]
@@ -613,4 +613,57 @@ shall [x7: service the batches service (constant), x9: service the specification
     in(x4, x10)
     of(x11, x4)
     keep(e2, subject: x9, object: x11)
+```
+
+## r48
+From: b898 r48.
+
+```reading
+While an item retires an area, when the batches service applies the item to a specification, the specification service shall keep a domain model that does not hold the area.
+shall [x3: service the batches service (constant), x5: service the specification service (constant)]
+  while [x1: item, x2: area]
+    retire#5(subject: x1, object: x2)
+  when [x4: specification]
+    request(e1, specification.apply, subject: x3, object: x1, to: x4)
+  response [x6: domain model]
+    not
+      in(x2, x6)
+    keep(e2, subject: x5, object: x6)
+```
+
+## r49
+From: b898 r49.
+
+```reading
+While an area imports an area and an item retires the area, when the batches service applies the item to a specification, the specification service shall keep a domain model that holds no area that imports the area.
+shall [x4: service the batches service (constant), x6: service the specification service (constant)]
+  while [x1: area, x2: area, x3: item]
+    import#3(subject: x1, object: x2)
+    retire#5(subject: x3, object: x2)
+  when [x5: specification]
+    request(e1, specification.apply, subject: x4, object: x3, to: x5)
+  response [x7: domain model]
+    not [x8: area]
+      import#3(subject: x8, object: x2)
+      in(x8, x7)
+    keep(e2, subject: x6, object: x7)
+```
+
+## r50
+From: b898 r50.
+
+```reading
+While an item retires an area and a capability is in the area, when the batches service applies the item to a specification, the specification service shall keep the capability in the specification and keep no capability in the area.
+shall [x4: service the batches service (constant), x6: service the specification service (constant)]
+  while [x1: item, x2: area, x3: capability]
+    retire#5(subject: x1, object: x2)
+    in(x3, x2)
+  when [x5: specification]
+    request(e1, specification.apply, subject: x4, object: x1, to: x5)
+  response
+    in(x3, x5)
+    keep(e2, subject: x6, object: x3)
+    not [x7: capability]
+      in(x7, x2)
+      keep(e3, subject: x6, object: x7)
 ```

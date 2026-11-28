@@ -201,7 +201,6 @@ area: specification
 - **amend** (verb, action) → operation decisions.amend. Forms: amends, amended. Frame: <actor> amends <design-decision>.
 - **enforcer** (noun) → object enforcer. A test or a requirement id that a design-decision names under its `enforced_by` as what holds it. Plural: enforcers.
 - **foundation** (noun) → object foundation. An id that a design-decision names under its `rests_on` as what it rests on, such as the universal condition it routes. Plural: foundations.
-- **preview** (verb, action) → operation language.preview. A person parses a requirement as it reads once the terms and model lines an item holds are laid into the specification, as `spec parse --item` does. Forms: previews, previewed. Frame: <actor> previews <text> for <item>.
 - **operation table** (noun) → object operation table. How an adapter requests one operation of the domain model, kept in its adapter contract: for the CLI adapter, the command, each parameter as a positional argument or an option with its example, its flags and its cli-only options. Plural: operation tables.
 - **describe** (verb, action) → operation specification.describe. Forms: describes, described. Frame: <actor> describes <catalogue entry>.
 - **node** (noun) → object node. A thing of the design model that `spec` gives an id, such as a capability, a requirement or a design-decision.
@@ -352,3 +351,4 @@ area: specification
 - **specify** (verb, state) → relation capability.specifies. A capability is about the service whose operations its requirements request, as its frontmatter's specifies: names it. Forms: specifies, specified. Frame: <capability> specifies <service>.
 - **0.45.0** (noun) → value repository.release 0.45.0.
 - **apply** (verb, action) → operation specification.apply. Someone has an item's lines, model lines, terms and other pieces taken into a specification and the specification made whole for them. Forms: applies, applied. Frame: <actor> applies <item> to <specification>.
+- **preview** (verb, action) → operation language.preview. A person parses a requirement as it reads once the terms and model lines an item holds are applied to the specification, as `spec parse --item` does. Forms: previews, previewed. Frame: <actor> previews <text> for <item>.

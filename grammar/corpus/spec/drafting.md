@@ -1184,7 +1184,7 @@ shall [x1: agent the person (constant), x4: service the drafting service (consta
     request(e1, drafting.reinstate model line, subject: x1, object: x2, in: x3)
   response [x5: item]
     not
-      retire#4(subject: x5, object: x2)
+      retire#5(subject: x5, object: x2)
     keep(e2, subject: x4, object: x5)
 ```
 
@@ -1196,7 +1196,7 @@ If the person reinstates a model line in an item that does not retire the model 
 shall [x1: agent the person (constant), x4: service the drafting service (constant), x5: request "the request the trigger makes" (indexical)]
   if [x2: model line, x3: item]
     not
-      retire#4(subject: x3, object: x2)
+      retire#5(subject: x3, object: x2)
     request(e1, drafting.reinstate model line, subject: x1, object: x2, in: x3)
   response
     refuse(e2, subject: x4, object: x5)
@@ -1213,7 +1213,7 @@ shall [x1: agent the person (constant), x4: service the drafting service (consta
     request(e1, drafting.reinstate term, subject: x1, object: x2, in: x3)
   response [x5: item]
     not
-      retire#4(subject: x5, object: x2)
+      retire#5(subject: x5, object: x2)
     keep(e2, subject: x4, object: x5)
 ```
 
@@ -1225,7 +1225,7 @@ If the person reinstates a term in an item that does not retire the term, then t
 shall [x1: agent the person (constant), x4: service the drafting service (constant), x5: request "the request the trigger makes" (indexical)]
   if [x2: term, x3: item]
     not
-      retire#4(subject: x3, object: x2)
+      retire#5(subject: x3, object: x2)
     request(e1, drafting.reinstate term, subject: x1, object: x2, in: x3)
   response
     refuse(e2, subject: x4, object: x5)
@@ -1732,4 +1732,75 @@ shall [x1: agent the person (constant), x7: service the drafting service (consta
     retire(subject: x9, object: x5)
     in(x9, x8)
     keep(e2, subject: x7, object: x8)
+```
+
+## r114
+From: b898 r114.
+
+```reading
+When the person retires an area in an item, the drafting service shall keep an item that retires the area.
+shall [x1: agent the person (constant), x4: service the drafting service (constant)]
+  when [x2: area, x3: item]
+    request(e1, drafting.retire area, subject: x1, object: x2, in: x3)
+  response [x5: item]
+    retire#5(subject: x5, object: x2)
+    keep(e2, subject: x4, object: x5)
+```
+
+## r115
+From: b898 r115.
+
+```reading
+If the person retires an area that the domain model does not hold in an item, then the drafting service shall refuse the request and name the area.
+shall [x1: agent the person (constant), x3: domain model "the domain model of this bounded context" (indexical), x5: service the drafting service (constant), x6: request "the request the trigger makes" (indexical)]
+  if [x2: area, x4: item]
+    not
+      in(x2, x3)
+    request(e1, drafting.retire area, subject: x1, object: x2, in: x4)
+  response
+    refuse(e2, subject: x5, object: x6)
+    name(e3, subject: x5, object: x2)
+```
+
+## r116
+From: b898 r116.
+
+```reading
+If the person retires an area that holds a model line in an item, then the drafting service shall refuse the request and name the model line.
+shall [x1: agent the person (constant), x5: service the drafting service (constant), x6: request "the request the trigger makes" (indexical)]
+  if [x2: area, x3: model line, x4: item]
+    in(x3, x2)
+    request(e1, drafting.retire area, subject: x1, object: x2, in: x4)
+  response
+    refuse(e2, subject: x5, object: x6)
+    name(e3, subject: x5, object: x3)
+```
+
+## r117
+From: b898 r117.
+
+```reading
+If the person retires an area that holds a term in an item, then the drafting service shall refuse the request and name the term.
+shall [x1: agent the person (constant), x5: service the drafting service (constant), x6: request "the request the trigger makes" (indexical)]
+  if [x2: area, x3: term, x4: item]
+    in(x3, x2)
+    request(e1, drafting.retire area, subject: x1, object: x2, in: x4)
+  response
+    refuse(e2, subject: x5, object: x6)
+    name(e3, subject: x5, object: x3)
+```
+
+## r118
+From: b898 r118.
+
+```reading
+If the person retires an area that holds a capability that has a requirement in an item, then the drafting service shall refuse the request and name the requirement.
+shall [x1: agent the person (constant), x6: service the drafting service (constant), x7: request "the request the trigger makes" (indexical)]
+  if [x2: area, x3: capability, x4: requirement, x5: item]
+    of(x4, x3)
+    in(x3, x2)
+    request(e1, drafting.retire area, subject: x1, object: x2, in: x5)
+  response
+    refuse(e2, subject: x6, object: x7)
+    name(e3, subject: x6, object: x4)
 ```
