@@ -2,7 +2,7 @@
 id: design-decision/missingmass.io/shopsystem/shopsystem-bdd/the-laying-port-is-wired-to-the-in-process-adapter
 summary: "The batches service reaches the specification through the laying port, wired to its in-process adapter."
 date: 2026-11-26
-status: accepted
+status: superseded
 tier: judgement
 ---
 
