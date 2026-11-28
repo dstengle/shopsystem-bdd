@@ -1,8 +1,6 @@
-"""The rest of batch-4 review 1 on `work line`'s spec pieces (b476): the universal file a lay made taken out by the
-unlay (f2), an upstream another item laid refused by the readiness bar (f3), a docstring given block's blank lines kept
-by the writer and the item's reader (f4), and `--group` or `--in` beside a piece other than a requirement line refused
-(f5)."""
-import shutil
+"""The rest of batch-4 review 1 on `work line`'s spec pieces (b476): an upstream another item laid refused by the
+readiness bar (f3), a docstring given block's blank lines kept by the writer and the item's reader (f4), and `--group`
+or `--in` beside a piece other than a requirement line refused (f5)."""
 
 import backlog_forms
 import backlog_items
@@ -13,34 +11,6 @@ from backlog_testing import state, work, write_item
 from test_backlog_forms import ABANDON, ROW, UNIVERSAL, UPSTREAM
 
 SPACED = "the file `notes.md` holds:\n  The first line.\n\n  The third line."
-
-
-def test_the_unlay_takes_out_the_universal_file_the_lay_made(ready_repo, tmp_path):
-    write_item(ready_repo, "b1", status="shaped")
-    assert work(ready_repo, "line", "b1", "--universal", UNIVERSAL).returncode == 0
-    item = backlog_items.find(ready_repo, "b1")
-    into = tmp_path / "copy"
-    shutil.copytree(ready_repo / "spec", into / "spec")
-    assert not (into / "spec" / "universal.md").exists()
-    backlog_lines.lay_onto(into, item, [])
-    assert (into / "spec" / "universal.md").is_file()
-    files = []
-    backlog_lines.unlay(into, item, files)
-    assert not (into / "spec" / "universal.md").exists() and files == ["spec/universal.md"]
-
-
-def test_the_unlay_keeps_a_universal_file_the_spec_had(ready_repo, tmp_path):
-    write_item(ready_repo, "b1", status="shaped")
-    assert work(ready_repo, "line", "b1", "--universal", UNIVERSAL).returncode == 0
-    item = backlog_items.find(ready_repo, "b1")
-    into = tmp_path / "copy"
-    shutil.copytree(ready_repo / "spec", into / "spec")
-    backlog_forms._universal_file(into)
-    had = (into / "spec" / "universal.md").read_text().replace("Universal conditions\n\n", "The conditions\n\n")
-    (into / "spec" / "universal.md").write_text(had)
-    backlog_lines.lay_onto(into, item, [])
-    backlog_lines.unlay(into, item, [])
-    assert (into / "spec" / "universal.md").read_text().rstrip("\n") == had.rstrip("\n")
 
 
 def test_the_bar_refuses_an_upstream_an_item_picked_before_lays(ready_repo):

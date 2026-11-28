@@ -1,7 +1,5 @@
 """A driven port an item makes (b701): laid over a spec, the port's model file importing the areas whose words its
-lines say, and taken out again, the model files byte for byte as they were, a port area spec/model/ held already
-among them (f1)."""
-import subprocess
+lines say, a port area spec/model/ held already among them (f1)."""
 from types import SimpleNamespace
 
 import backlog_port
@@ -22,56 +20,16 @@ def _repo(tmp_path, stock=STOCK):
                       ("vocabulary/notes.md", WORDS)):
         (spec / rel).parent.mkdir(parents=True, exist_ok=True)
         (spec / rel).write_text(text)
-    for args in (["init", "-q"], ["add", "-A"], ["-c", "user.name=t", "-c", "user.email=t@t", "commit", "-qm", "base"]):
-        subprocess.run(["git", "-C", str(tmp_path), *args], check=True)
     return read(SimpleNamespace(sections={"Requirements": REQUIREMENTS}, name="b1"), "the item b1")
 
 
-def test_an_existing_port_area_comes_back_byte_for_byte(tmp_path):
+def test_an_existing_port_area_imports_the_area_its_lines_say(tmp_path):
     blocks = _repo(tmp_path)
-    base = subprocess.run(["git", "-C", str(tmp_path), "rev-parse", "HEAD"], capture_output=True, text=True,
-                          check=True).stdout.strip()
     files = []
     backlog_port.lay(tmp_path, blocks, files)
     stock = tmp_path / "spec" / "model" / "stock.md"
     assert "imports: [notes]\n" in stock.read_text(), stock.read_text()
-    files = []
-    backlog_port.unlay(tmp_path, blocks, files, base)
-    assert stock.read_text() == STOCK
-    assert (tmp_path / "spec" / "model" / "notes.md").read_text() == NOTES
     assert "spec/model/stock.md" in files
-
-
-OTHER = ("---\narea: stock\nlanguage: codified-2\nretired: []\n---\n\n# Stock other\n\n## Behaviour\n\n### [g1] A note "
-         "released\n- [r1] When the notes service releases a note, the stock service shall not refuse the request.\n")
-
-
-def test_an_import_another_line_of_the_port_says_is_kept_without_a_base(tmp_path):
-    """b704: per item, never reset to the base: an import a line left in the port says stays, and with no base the
-    unlay takes out an import only this item's lines said."""
-    blocks = _repo(tmp_path)
-    stock = tmp_path / "spec" / "model" / "stock.md"
-    backlog_port.lay(tmp_path, blocks, [])
-    other = tmp_path / "spec" / "capabilities" / "stock-other.md"
-    other.parent.mkdir(parents=True, exist_ok=True)
-    other.write_text(OTHER)
-    backlog_port.unlay(tmp_path, blocks, [])
-    assert "imports: [notes]\n" in stock.read_text(), stock.read_text()
-    other.unlink()
-    backlog_port.unlay(tmp_path, blocks, [])
-    assert stock.read_text() == STOCK
-
-
-def test_an_import_the_port_held_at_the_base_survives_the_unlay(tmp_path):
-    """b704 f1: a port area whose model file held `imports: [notes]` at the base keeps it once the item that says a
-    note is taken out against that base, though no line left in the area says a note."""
-    blocks = _repo(tmp_path, STOCK.replace("imports: []", "imports: [notes]"))
-    stock = tmp_path / "spec" / "model" / "stock.md"
-    base = subprocess.run(["git", "-C", str(tmp_path), "rev-parse", "HEAD"], capture_output=True, text=True,
-                          check=True).stdout.strip()
-    backlog_port.lay(tmp_path, blocks, [])
-    backlog_port.unlay(tmp_path, blocks, [], base)
-    assert "imports: [notes]\n" in stock.read_text(), stock.read_text()
 
 
 PLOTS = "---\nid: model/ex.com/prod/ctx/plots\narea: plots\nkind: core\nimports: []\n---\n\n# Plots\n\n```model\nobject plot\n```\n"
@@ -86,8 +44,7 @@ NOTEBOOK = "---\narea: notes\nlanguage: codified-2\nretired: []\n---\n\n# Notebo
 
 def test_two_areas_an_item_makes_import_the_one_whose_word_the_other_says(tmp_path):
     """b830: a core area the item makes, whose line says a word of another area it makes, laid with its model file
-    importing that area, as is an area the spec holds whose item line says it; taken out once the other area's model
-    and words are, the made model file gone and the import out of the area left."""
+    importing that area, as is an area the spec holds whose item line says it."""
     _repo(tmp_path)
     (tmp_path / "spec" / "capabilities").mkdir()
     (tmp_path / "spec" / "capabilities" / "notebook.md").write_text(NOTEBOOK)
@@ -101,8 +58,3 @@ def test_two_areas_an_item_makes_import_the_one_whose_word_the_other_says(tmp_pa
     assert "plots" in watering.read_text().split("imports: [", 1)[1].split("]")[0], watering.read_text()
     assert "spec/model/watering.md" in files
     assert "imports: [plots]\n" in (tmp_path / "spec" / "model" / "notes.md").read_text()
-    plots.unlink()                                  # as backlog_model takes them out again
-    words.unlink()
-    backlog_port.unlay(tmp_path, blocks, [])
-    assert not watering.exists()
-    assert (tmp_path / "spec" / "model" / "notes.md").read_text() == NOTES

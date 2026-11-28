@@ -1,6 +1,6 @@
 """work line and the readiness bar in a context with a domain model (the domain contract design, §10): an item's
 model lines and vocabulary entries kept in its `### <area> model` block byte-stable, laid into spec/model/ and
-spec/vocabulary/ with its requirement lines, the item passing `work ready`, and the unlay leaving spec/ as it was."""
+spec/vocabulary/ with its requirement lines, and the item passing `work ready`."""
 import pathlib
 import shutil
 
@@ -59,14 +59,13 @@ def test_an_item_with_a_model_line_a_term_and_a_line_is_ready(modelled):
     assert backlog_items.find(modelled, "b1").status == "ready"
 
 
-def test_the_lay_and_the_unlay(modelled, tmp_path):
+def test_the_lay(modelled, tmp_path):
     ok(work(modelled, "line", "b1", "--into", "notebook", "--model", MODEL))
     ok(work(modelled, "line", "b1", "--into", "notebook", "--relation", "note: pinned on → tag (one, optional)"))
     ok(work(modelled, "line", "b1", "--into", "notebook", "--term", TERM))
     ok(work(modelled, "line", "b1", "--into", "notebook", LINE))
     into = tmp_path / "copy"
     shutil.copytree(FIXTURE, into)
-    before = {p: p.read_bytes() for p in (into / "spec").rglob("*") if p.is_file()}
     item, files = backlog_items.find(modelled, "b1"), []
     backlog_lines.lay_onto(into, item, files)
     model = (into / "spec/model/notes.md").read_text()
@@ -74,9 +73,6 @@ def test_the_lay_and_the_unlay(modelled, tmp_path):
     assert "  relations: carries → tag (many)\n  relations: pinned on → tag (one, optional)" in model
     assert TERM in (into / "spec/vocabulary/notes.md").read_text()
     assert {"spec/model/notes.md", "spec/vocabulary/notes.md"} <= set(files)
-    backlog_lines.unlay(into, item)
-    after = {p: p.read_bytes() for p in (into / "spec").rglob("*") if p.is_file()}
-    assert after == before
 
 
 def test_a_model_line_that_does_not_read_is_refused(modelled):
@@ -94,12 +90,11 @@ def test_a_member_line_joins_an_element_declared_with_its_kind():
     laid = backlog_model.merged(body, lines)
     assert laid == ["object item kind of file", "  attributes: size (text)", "  relations: has → label (many)", "",
                     "service backlog", "  operation show(item)", "  operation tag(item)"]
-    assert backlog_model.unmerged(laid, lines) == body
 
 
 def test_a_new_capability_takes_model_lines_in_its_own_area(modelled, tmp_path):
     """b387: the model lines of a capability the item makes go to an area of its name, whose model file the lay makes
-    with the capability's purpose and the unlay removes."""
+    with the capability's purpose."""
     ok(work(modelled, "line", "b1", "--capability", "shelving", "--narrator", "a person", "Shelves of notes."))
     ok(work(modelled, "line", "b1", "--into", "shelving", "--model", "object shelf\n  attributes: name (text)"))
     blocks = backlog_section.read(backlog_items.find(modelled, "b1"), "b1")
@@ -107,16 +102,12 @@ def test_a_new_capability_takes_model_lines_in_its_own_area(modelled, tmp_path):
     assert blocks.models[0].lines == ("object shelf", "  attributes: name (text)")
     into = tmp_path / "copy"
     shutil.copytree(FIXTURE, into)
-    before = {p: p.read_bytes() for p in (into / "spec").rglob("*") if p.is_file()}
     item, files = backlog_items.find(modelled, "b1"), []
     backlog_lines.lay_onto(into, item, files)
     model = (into / "spec/model/shelving.md").read_text()
     assert "area: shelving\n" in model and "Shelves of notes." in model
     assert "```model\nobject shelf\n  attributes: name (text)\n```" in model
     assert "spec/model/shelving.md" in files
-    backlog_lines.unlay(into, item)
-    after = {p: p.read_bytes() for p in (into / "spec").rglob("*") if p.is_file()}
-    assert after == before
 
 
 def test_model_lines_for_an_unmade_capability_are_refused(modelled):

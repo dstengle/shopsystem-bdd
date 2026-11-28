@@ -1,7 +1,7 @@
 """The spec pieces beside an item's lines (capability readiness r5-r11, b43): a relation row, a given block, a universal
 condition and an upstream entry, each written onto the item's `## Requirements` by a flag of `work line` and
 committed, checked for its shape when written (its parse waits for `work ready`, as a line's does), and laid into
-`spec/` with the item's lines by backlog_lines (`lay_onto`, `unlay`, `renumber`), never straight onto the base.
+`spec/` with the item's lines by backlog_lines (`lay_onto`, `renumber`), never straight onto the base.
 
 A relation row goes onto the end of its capability's `## Relations` table (the table made when it has none), a given
 block under its group's lines, a universal condition as the next `[U<n>]` of `spec/universal.md` (past its
@@ -236,22 +236,6 @@ def with_lines(text, heading, lines, made=(), before=None):
     return text[:found.start(1)] + "\n".join(inside).strip("\n") + "\n\n" + text[found.end(1):].lstrip("\n")
 
 
-def without_lines(text, heading, lines, made=()):
-    """`text` less each of `lines` once in its `## <heading>` section, the section taken out when nothing but `made`
-    is left in it."""
-    found = re.search(r"(?ms)^## %s[ \t]*\n(.*?)(?=^## |\Z)" % re.escape(heading), text)
-    if found is None:
-        return text
-    kept = found.group(1).split("\n")
-    for line in lines:
-        if line in kept:
-            kept.remove(line)
-    left = [x for x in kept if x.strip()]
-    if left == list(made) or not left:
-        return (text[:found.start()].rstrip("\n") + "\n\n" + text[found.end():]).rstrip("\n") + "\n"
-    return text[:found.start(1)] + "\n".join(kept).strip("\n") + "\n\n" + text[found.end(1):].lstrip("\n")
-
-
 def _scaffold(into):
     """The text of the `spec/universal.md` a lay makes when the spec has none."""
     return ("---\nid: capability/%s/universal\ntitle: Universal conditions\ngroup: guarantees\nlanguage: "
@@ -277,24 +261,3 @@ def lay_spec(into, blocks, files):
         path.write_text(with_lines(path.read_text(), "Upstreams", ["- %s" % b for b in blocks.upstreams]))
         files.append(INDEX_REL)
     __import__("backlog_pack").lay(into, blocks, files)
-
-
-def unlay_spec(into, blocks, files):
-    """The reverse of `lay_spec`, a `spec/universal.md` the lay made taken out again (b476); each path changed added
-    to `files`."""
-    universal, index = Path(into) / UNIVERSAL_REL, Path(into) / INDEX_REL
-    if blocks.universal and universal.is_file():
-        text = universal.read_text()
-        for line in ["- [%s] %s" % u for u in blocks.universal]:
-            found = re.search(r"(?m)^%s\n?" % re.escape(line), text)
-            text = text if found is None else text[:found.start()] + text[found.end():]
-        made = text.rstrip("\n") == _scaffold(into).rstrip("\n")     # the file the lay made, taken out (b476)
-        if made or text != universal.read_text():
-            universal.unlink() if made else universal.write_text(text)
-            files.append(UNIVERSAL_REL)
-    if blocks.upstreams and index.is_file():
-        text = without_lines(index.read_text(), "Upstreams", ["- %s" % b for b in blocks.upstreams])
-        if text != index.read_text():
-            index.write_text(text)
-            files.append(INDEX_REL)
-    __import__("backlog_pack").unlay(into, blocks, files)

@@ -1,6 +1,5 @@
 """The spec pieces beside an item's lines (b43, readiness r5-r11): `work line --relation`, `--given`, `--universal` and
-`--upstream` written onto an item, read and rendered back, laid into a copy of `spec/` and taken out again, and the
-universal conditions renumbered past `spec/universal.md`'s and the items picked before."""
+`--upstream` written onto an item, read and rendered back, laid into a copy of `spec/`, and the universal conditions renumbered past `spec/universal.md`'s and the items picked before."""
 import shutil
 
 import backlog_forms
@@ -73,11 +72,10 @@ def test_an_upstream_already_in_the_index_is_refused(ready_repo):
     assert done.returncode == 1 and "is an upstream already" in done.stderr, done.stderr
 
 
-def test_lay_and_unlay_carry_every_piece(ready_repo, tmp_path):
+def test_lay_carries_every_piece(ready_repo, tmp_path):
     item = all_pieces(ready_repo)
     into = tmp_path / "copy"
     shutil.copytree(ready_repo / "spec", into / "spec")
-    before = {p: (into / p).read_text() for p in (CAP, "spec/index.md")}
     files = []
     assert backlog_lines.lay_onto(into, item, files) == ["work-queue"]
     assert files == ["spec/universal.md", "spec/index.md"]
@@ -90,11 +88,6 @@ def test_lay_and_unlay_carry_every_piece(ready_repo, tmp_path):
     universal = spec_read.read_universal(into)
     assert universal.problems == [] and [(u.id, u.text) for u in universal.conditions] == [("U1", UNIVERSAL)]
     assert "## Upstreams\n\n- %s\n" % UPSTREAM in (into / "spec" / "index.md").read_text()
-    files = []
-    assert backlog_lines.unlay(into, item, files) == ["work-queue"]
-    assert sorted(files) == ["spec/index.md", "spec/universal.md"]
-    assert {p: (into / p).read_text() for p in before} == before
-    assert spec_read.read_universal(into).conditions == []
 
 
 def test_a_row_joins_an_existing_table_and_a_bullet_the_upstreams():
@@ -107,8 +100,6 @@ def test_a_row_joins_an_existing_table_and_a_bullet_the_upstreams():
     made = backlog_forms.with_lines("# T\n\n## Terms\n\n## Behaviour\n", "Relations", [ROW], backlog_forms.HEADER,
                                     "Behaviour")
     assert made == "# T\n\n## Terms\n\n## Relations\n\n%s\n%s\n%s\n\n## Behaviour\n" % (*backlog_forms.HEADER, ROW)
-    assert backlog_forms.without_lines(made, "Relations", [ROW], backlog_forms.HEADER) == \
-        "# T\n\n## Terms\n\n## Behaviour\n"
 
 
 def test_renumber_moves_a_universal_condition_past_spec_and_taken(ready_repo):

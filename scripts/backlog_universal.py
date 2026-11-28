@@ -4,11 +4,8 @@ spec/universal.md switched to the new language on an item, and a new universal c
 (backlog_section): its `language: codified-2` line, and the old U id under its `retired:` line.
 
 Laid over a spec (`lay`), spec/universal.md's frontmatter says `language: codified-2`, and each retired condition is
-taken out of its `## Behaviour` and its id put into its `retired:`; taken out again (`unlay`), the marker says
-`codified-1` again and each retired condition is put back (by number), its text read off the file as git last held it
-with the condition in it."""
+taken out of its `## Behaviour` and its id put into its `retired:`."""
 import re
-import subprocess
 from pathlib import Path
 
 import backlog_recodify
@@ -77,48 +74,6 @@ def lay(into, blocks, files):
     text = backlog_retires._listed(text, blocks.universal_retired)
     text = backlog_recodify.lay(text) if blocks.universal_language else text
     _write(path, text, was, files)
-
-
-def _held(path, uid):
-    """The line of the condition `uid` as git last held it in `path`; refused when it never did."""
-    def git(*args):
-        return subprocess.run(["git", "-C", str(path.parent), *args], capture_output=True, text=True)
-    rel = git("ls-files", "--full-name", "--error-unmatch", path.name)
-    log = git("log", "--format=%H", "--", path.name) if rel.returncode == 0 else rel
-    for sha in log.stdout.split() if log.returncode == 0 else ():
-        shown = git("show", "%s:%s" % (sha, rel.stdout.strip()))
-        found = re.search(_line(uid), shown.stdout) if shown.returncode == 0 else None
-        if found is not None:
-            return found.group(0) if found.group(0).endswith("\n") else found.group(0) + "\n"
-    raise Refused("the retired universal condition %s is in no version git holds of %s" % (uid, path))
-
-
-def unlay(into, blocks, files):
-    """The reverse of `lay`: each retired condition put back before the first condition numbered above it (else after
-    the last), its id out of `retired:`, and the marker `codified-1` again."""
-    path = Path(into) / REL
-    if not (blocks.universal_language or blocks.universal_retired) or not path.is_file():
-        return
-    text = was = path.read_text()
-    back = []
-    for uid in blocks.universal_retired:
-        if re.search(_line(uid), text) is not None:
-            continue
-        line, back = _held(path, uid), back + [uid]
-        conditions = list(re.finditer(r"(?m)^- \[U([1-9]\d*)\] .*(?:\n  .*)*\n?", text))
-        later = [m for m in conditions if int(m.group(1)) > int(uid[1:])]
-        if later:
-            at = later[0].start()
-        elif conditions:
-            at = conditions[-1].end()
-            line = line if text[:at].endswith("\n") else "\n" + line
-        else:
-            text = text.rstrip("\n") + "\n\n"
-            at = len(text)
-        text = text[:at] + line + text[at:]
-    text = backlog_retires._listed(text, back, drop=True)
-    text = backlog_recodify.unlay(text) if blocks.universal_language else text
-    _write(path, text.rstrip("\n") + "\n", was, files)
 
 
 def _write(path, text, was, files):

@@ -8,10 +8,8 @@ of whichever item retires it, `supersedes` the old decision, `source` each such 
 ids>", its `## Context` one paragraph a retired id, naming it and the item that retires it with its lines (`entries`
 reads them back), and its `## Decision` the old one's; the old decision set `superseded` and the decisions index
 written again. A decision already superseded by a successor of this batch's lay (none of its items `delivered`) that
-a later lay retires ids of, as amend's relay does, has that successor written again with every item's retirements. An unlay (a park, review's parked items, amend's relay)
-writes each successor of the lay again with the retirements of its items left (the old decision kept superseded),
-and takes it out and sets the old decision `accepted` again only once no item of it is left (`unlay`). A decision
-number taken on the base meanwhile is a merge's concern, as for one written by hand."""
+a later lay retires ids of, as amend's relay does, has that successor written again with every item's retirements. A
+decision number taken on the base meanwhile is a merge's concern, as for one written by hand."""
 import datetime
 import re
 from pathlib import Path
@@ -147,29 +145,6 @@ def lay(tree, items, written=None):
         if written is not None:
             written += [(item, rel, ident) for item, _ in retirements if item.ident in new]
     return list(dict.fromkeys(changed)) + [_index(tree)] if changed else []
-
-
-def unlay(tree, items):
-    """Each successor a lay of the items wrote written again with the retirements of the items of it left, or, with
-    none left, taken out of the worktree and the decision it supersedes `accepted` again; the paths changed."""
-    tree, changed, gone = Path(tree), [], {item.ident for item in items}
-    found = _decisions(tree)
-    olds = {data.get("id"): (path, (data, body)) for path, (data, body) in found}
-    for old_id, (path, data, body) in _lays(found).items():
-        if not gone & set(as_list(data.get("source"))):
-            continue
-        left = {k: v for k, v in entries(body).items() if k not in gone and k in as_list(data.get("source"))}
-        old = olds.get(old_id)
-        if left and old:
-            changed.append(_again(tree, path, old, left))
-            continue
-        path.unlink()
-        changed.append(path.relative_to(tree).as_posix())
-        if old and old[0].exists() and old[1][0].get("status") == "superseded":
-            old[0].write_text(re.sub(r"(?m)^status: superseded$", "status: accepted",
-                                     old[0].read_text(encoding="utf-8"), count=1), encoding="utf-8")
-            changed.append(old[0].relative_to(tree).as_posix())
-    return changed + [_index(tree)] if changed else []
 
 
 def said(written):

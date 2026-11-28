@@ -1,5 +1,5 @@
 """`work line --retires` (b128): the new line and the old id under its block's `retired:`, the refusals, and the
-retired line laid out of a spec and put back."""
+retired line laid out of a spec."""
 import backlog_items
 import backlog_lines
 import backlog_section
@@ -98,31 +98,23 @@ def test_retires_takes_only_a_line_into_its_own_capability(ready_repo):
     assert done.returncode == 1 and "--retires takes a requirement line" in done.stderr, done.stderr
 
 
-def lay_and_unlay(repo, retired):
+def laid(repo, retired):
     write_item(repo, "b1", status="shaped")
     for ident in retired:
         assert work(repo, "line", "b1", "--retires", ident, LINE).returncode == 0
-    path = repo / CAP
-    was = path.read_text()
     backlog_lines.lay_onto(repo, item(repo))
-    laid = path.read_text()
-    git(repo, "commit", "-qam", "laid")
-    backlog_lines.unlay(repo, item(repo))
-    return was, laid, path.read_text()
+    return (repo / CAP).read_text()
 
 
-def test_a_line_laid_out_of_its_group_and_put_back(ready_repo):
-    was, laid, back = lay_and_unlay(ready_repo, ["work-queue#r1"])
-    cap = spec_read.capability(ready_repo / CAP)
-    assert "- [r1] " not in laid and "- [r2] " in laid and "retired: [r1]" in laid
-    assert back == was and cap.problems == []
+def test_a_line_laid_out_of_its_group(ready_repo):
+    text = laid(ready_repo, ["work-queue#r1"])
+    assert "- [r1] " not in text and "- [r2] " in text and "retired: [r1]" in text
 
 
-def test_a_group_s_last_line_takes_its_group_out_and_back(ready_repo):
-    was, laid, back = lay_and_unlay(ready_repo, ["work-queue#r3", "work-queue#r4"])
-    assert "[g2]" not in laid and "[g3]" not in laid and "```given\nthe file" not in laid
-    assert "retired: [g2, r3, g3, r4]" in laid
-    assert back == was
+def test_a_group_s_last_line_takes_its_group_out(ready_repo):
+    text = laid(ready_repo, ["work-queue#r3", "work-queue#r4"])
+    assert "[g2]" not in text and "[g3]" not in text and "```given\nthe file" not in text
+    assert "retired: [g2, r3, g3, r4]" in text
 
 
 def test_laid_over_a_copy_the_spec_reads_clean(ready_repo, tmp_path):

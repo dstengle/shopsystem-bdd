@@ -57,7 +57,7 @@ def test_retires_a_nonexistent_condition_is_refused_changing_nothing(ready_repo)
     assert git(ready_repo, "rev-parse", "HEAD") == head
 
 
-def test_laid_and_put_back(ready_repo):
+def test_laid(ready_repo):
     path = with_universal(ready_repo)
     assert work(ready_repo, "line", "b1", "--recodify", "universal").returncode == 0
     done = work(ready_repo, "line", "b1", "--universal", NEW, "--retires", "universal#U2")
@@ -69,7 +69,3 @@ def test_laid_and_put_back(ready_repo):
     assert "language: codified-2" in laid and "retired: [U2]" in laid and "[U2]" not in laid.split("---")[2]
     found = spec_read.read_universal(ready_repo)
     assert found.problems == [] and [u.id for u in found.conditions] == ["U1", "U3", "U4"]
-    git(ready_repo, "commit", "-qam", "laid")
-    backlog_lines.unlay(ready_repo, item(ready_repo))
-    lines = [line for line in path.read_text().split("\n") if line]     # backlog_forms' lay drops a blank line
-    assert lines == [line for line in UNIVERSAL.split("\n") if line]

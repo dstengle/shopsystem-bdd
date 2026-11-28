@@ -10,11 +10,9 @@ parameters) in place of that operation's own (given `<service>.<operation>` alon
 writes from the domain model's operation), refused when the domain model, with the item's model lines laid, has no
 such operation; `work line <item> --withhold <service>.<operation>` keeps the operation withheld, its table out.
 `lay` puts each table into the contract in place of the operation's own and out of `[unexposed]`, and each withheld
-operation into `[unexposed]` with its table out (the contract made when missing); `unlay` puts back what the contract
-held at the batch's base (b479), as git last held it otherwise when no base is given."""
+operation into `[unexposed]` with its table out (the contract made when missing)."""
 import re
 import shutil
-import subprocess
 import tempfile
 from collections import namedtuple
 from pathlib import Path
@@ -184,55 +182,4 @@ def lay(into, blocks, files):
             text = adapter_tables.listed(adapter_tables.without(text, ident), ident, True)
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(text, encoding="utf-8")
-        files.append(path.relative_to(into).as_posix())
-
-
-def _state(text, ident):
-    return adapter_tables.table(text, ident), ident in adapter_tables.unexposed(text)
-
-
-def _versions(path):
-    """The texts git holds of `path`, newest first."""
-    def git(*args):
-        return subprocess.run(["git", "-C", str(path.parent), *args], capture_output=True, text=True)
-    rel = git("ls-files", "--full-name", "--error-unmatch", path.name)
-    if rel.returncode != 0:
-        return []
-    shas = git("log", "--format=%H", "--", path.name).stdout.split()
-    shown = (git("show", "%s:%s" % (sha, rel.stdout.strip())) for sha in shas)
-    return [s.stdout for s in shown if s.returncode == 0]
-
-
-def _at_base(path, base):
-    """The text of `path` at the commit `base`, empty when that commit holds no such file."""
-    def git(*args):
-        return subprocess.run(["git", "-C", str(path.parent), *args], capture_output=True, text=True)
-    prefix = git("rev-parse", "--show-prefix").stdout.strip()
-    shown = git("show", "%s:%s%s" % (base, prefix, path.name))
-    return shown.stdout if shown.returncode == 0 else ""
-
-
-def unlay(into, blocks, files, base=None):
-    """The reverse of `lay`: each operation the block names put back as the contract at the commit `base` (the batch's
-    base, b479) held it, no table and not unexposed when it held none, nothing else of the contract changed; with no
-    `base`, as the newest version git holds that held it otherwise. A contract left with nothing removed."""
-    for block in getattr(blocks, "adapters", ()):
-        path = contract_path(into, block.port)
-        if not path.is_file():
-            continue
-        text = path.read_text(encoding="utf-8")
-        versions = None if base else _versions(path)
-        held = _at_base(path, base) if base else None
-        for ident in [i for i, _ in block.tables] + list(block.withheld):
-            if base:
-                tables, listed = _state(held, ident)
-            else:
-                now = _state(text, ident)
-                tables, listed = next((s for s in (_state(v, ident) for v in versions) if s != now), (None, False))
-            text = adapter_tables.without(text, ident)
-            text = adapter_tables.listed(adapter_tables.with_table(text, tables) if tables else text, ident, listed)
-        if not text.strip():
-            path.unlink()
-        else:
-            path.write_text(text, encoding="utf-8")
         files.append(path.relative_to(into).as_posix())

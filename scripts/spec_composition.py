@@ -1,5 +1,5 @@
 """spec/index.md's `## Composition` written from the capability files (b606, batches r113-r115), as `work batch start`
-writes it on every lay and the unlay of a parked item writes it again: the index form, one table `| area | kind |
+writes it on every lay: the index form, one table `| area | kind |
 capabilities |`, each area's row naming the capabilities of that area that hold a requirement (a `- [r<n>]` line of
 their `## Behaviour`). A capability with no live requirement (retired, or every line moved) is named nowhere in the
 index: its file, with `retired:` and `## Moved`, and spec/moves.json stay its record. The section's prose before its
