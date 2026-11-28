@@ -4,7 +4,8 @@ of whose Thens other requirements entail, named with the premises of each Then.
 Each response I of a requirement L is a query q(L,I) when some other requirement on L's trigger, untriggered, or (on a
 run) refusing could give it (`index`). Its world holds what L states, each such premise is one clingo rule over it
 (spec_entail_rules), and every query is answered in one stratified model of grammar/entail.lp (parts of CHUNK
-queries, each its own solve). A counted response (`count`, I15), and one on a thing restricted by only or a count over its row (b272), is never a query. Response I is entailed when it is forced. A codified-2 line reads as its check facts
+queries, each its own solve; the queries with a chain (stratum C) in the first parts, so that its rules are grounded
+for few parts, b874). A counted response (`count`, I15), and one on a thing restricted by only or a count over its row (b272), is never a query. Response I is entailed when it is forced. A codified-2 line reads as its check facts
 (spec_lf_facts), so the form's meaning is what the check reads; codified-1 lines are read alike.
 
 In a context importing the request pack, refuse is primitive (the domain contract design, §5.2): every refusal a
@@ -28,7 +29,7 @@ from spec_entail_rules import Premises, parse, q
 from spec_solve_pairs import Finding, order
 
 ENTAIL = Path(__file__).resolve().parent.parent / "grammar" / "entail.lp"
-CHUNK = 1000
+CHUNK = 200
 REFUSALS = (["does", "e_refuse"], ["does", "refused"])     # a trigger on a refusal: the CLI pack's, the request pack's
 REFUSE = re.compile(r"^- A tool refuses a command when it exits with an error on it\.$", re.MULTILINE)
 
@@ -88,7 +89,7 @@ def programs(facts, bridge=True, chunk=CHUNK):
     P = Premises(reqs, dom)
     idx = index(P)
     domain = [f for f in facts if f.split("(")[0] in ("kind", "sub", "val", "dalt", "dlit")]
-    keys, rules, out = sorted(idx), {}, []
+    keys, rules, out = sorted(idx, key=lambda k: (not idx[k][1], k)), {}, []      # the chained queries together
     chained = {}
     background = ENTAIL.read_text()
     for n in range(0, len(keys), chunk):
