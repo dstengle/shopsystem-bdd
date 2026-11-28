@@ -635,17 +635,16 @@ shall [x3: service the batches service (constant), x5: service the specification
 From: b898 r49.
 
 ```reading
-While an item retires an area and another area imports the area, when the batches service applies the item to a specification, the specification service shall keep a domain model that holds no area that imports the area.
+While an area imports an area and an item retires the area, when the batches service applies the item to a specification, the specification service shall keep a domain model that holds no area that imports the area.
 shall [x4: service the batches service (constant), x6: service the specification service (constant)]
-  while [x1: item, x2: area, x3: area]
-    retire#5(subject: x1, object: x2)
-    distinct(x3, x2)
-    import#3(subject: x3, object: x3)
+  while [x1: area, x2: area, x3: item]
+    import#3(subject: x1, object: x2)
+    retire#5(subject: x3, object: x2)
   when [x5: specification]
-    request(e1, specification.apply, subject: x4, object: x1, to: x5)
+    request(e1, specification.apply, subject: x4, object: x3, to: x5)
   response [x7: domain model]
     not [x8: area]
-      import#3(subject: x8, object: x3)
+      import#3(subject: x8, object: x2)
       in(x8, x7)
     keep(e2, subject: x6, object: x7)
 ```

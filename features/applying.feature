@@ -469,11 +469,11 @@ Feature: Applying
 
   @g49 @r49
   Scenario: An item applied that retires an area keeps no area importing it
-    Given an item i1
-    And an area a1
-    And the item i1 retires the area a1
+    Given an area a1
     And an area a2
-    And the area a2 imports the area a2
+    And the area a1 imports the area a2
+    And an item i1
+    And the item i1 retires the area a2
     And a specification s1
     And an area a3
     And the area a3 imports the area a2
